@@ -1,0 +1,25 @@
+{
+  "name": "wulacms/system",
+  "description": "wulacms内容管理系统的内核模块",
+  "type": "wula-module",
+  "require": {
+	  "wula/wula-installer": "^1.0",
+    "wulacms/backend":"*"
+  },
+  "license": "MIT",
+  "authors": [
+	{
+	  "name": "Leo Ning",
+	  "email": "windywany@gmail.com"
+	}
+  ],
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  },
+  "support": {
+	  "issues": "https://github.com/ninggf/wulacms_module_system/issues"
+  },
+  "homepage": "https://www.wulacms.com/modules/system"
+}

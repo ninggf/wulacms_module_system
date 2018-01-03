@@ -3,8 +3,8 @@
   "description": "wulacms内容管理系统的内核模块",
   "type": "wula-module",
   "require": {
-	  "wula/wula-installer": "^1.0",
-    "wulacms/backend":"*"
+	"wula/wula-installer": "^1.0",
+	"wulacms/backend": "*"
   },
   "license": "MIT",
   "authors": [
@@ -14,12 +14,12 @@
 	}
   ],
   "extra": {
-    "branch-alias": {
-      "dev-master": "1.0-dev"
-    }
+	"branch-alias": {
+	  "dev-master": "1.0-dev"
+	}
   },
   "support": {
-	  "issues": "https://github.com/ninggf/wulacms_module_system/issues"
+	"issues": "https://github.com/ninggf/wulacms_module_system/issues"
   },
   "homepage": "https://www.wulacms.com/modules/system"
 }

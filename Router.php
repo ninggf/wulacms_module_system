@@ -8,10 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace system\controllers;
+namespace system;
 
 use wulaphp\mvc\controller\SubModuleRouter;
+use wulaphp\mvc\view\JsonView;
 
-class IndexController extends SubModuleRouter {
-	//nothing to do
+class Router extends SubModuleRouter {
+}
+
+function a($view, $args) {
+	return new JsonView([array_sum($args)]);
 }

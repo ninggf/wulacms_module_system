@@ -67,7 +67,7 @@ trait SystemHookHandlers {
 			if ($passport->cando('m:system/account')) {
 				$account              = $system->getMenu('account');
 				$account->name        = '管理员';
-				$account->data['url'] = App::url('system/users');
+				$account->data['url'] = App::url('system/account/users');
 				$account->pos         = 1;
 				$account->icon        = '&#xe630;';
 			}
@@ -94,5 +94,59 @@ trait SystemHookHandlers {
 		$res->addOperate('acl', '授权');
 		$manager->getResource('system/module', '模块', 'm');
 		$manager->getResource('system/log', '日志', 'm');
+	}
+
+	/**
+	 * 管理员表格.
+	 *
+	 * @param array $cols
+	 *
+	 * @filter  get_columns_of_core.admin.table
+	 * @return array
+	 */
+	public static function adminTableColumns($cols) {
+		$cols['roles']     = [
+			'name'   => '角色',
+			'show'   => true,
+			'width'  => 120,
+			'order'  => 10,
+			'render' => function ($v) {
+				$rs = [];
+				foreach ($v as $r) {
+					$rs[] = $r['name'];
+				}
+
+				return implode(',', $rs);
+			}
+		];
+		$cols['phone']     = ['name' => '手机', 'show' => true, 'width' => 120, 'order' => 20];
+		$cols['email']     = ['name' => '邮箱', 'show' => false, 'order' => 30];
+		$cols['lastlogin'] = [
+			'name'   => '最后登录',
+			'show'   => true,
+			'width'  => 150,
+			'sort'   => 'lastlogin',
+			'order'  => 50,
+			'render' => function ($v) {
+				return date('Y-m-d H:i:s', $v);
+			}
+		];
+		$cols['status']    = [
+			'name'   => '激活',
+			'show'   => true,
+			'width'  => 60,
+			'order'  => 60,
+			'sort'   => 'status',
+			'align'  => 'center',
+			'render' => function ($v) {
+				if ($v) {
+					return '<span class="active"><i class="fa fa-check text-success text-active"></i></span>';
+				} else {
+					return '<span><i class="fa fa-times text-danger text"></i></span>';
+				}
+			}
+		];
+
+		return $cols;
 	}
 }

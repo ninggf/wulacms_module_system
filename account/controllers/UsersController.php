@@ -11,10 +11,19 @@
 namespace system\account\controllers;
 
 use backend\classes\IFramePageController;
+use backend\form\BootstrapFormRender;
+use system\classes\form\AdminForm;
 use system\model\RoleTable;
 use system\model\UserTable;
+use wulaphp\validator\JQueryValidatorController;
 
+/**
+ * @package    system\account\controllers
+ * @acl        m:system/account
+ */
 class UsersController extends IFramePageController {
+	use JQueryValidatorController;
+
 	public function index() {
 		$data           = [];
 		$roleM          = new RoleTable();
@@ -22,6 +31,25 @@ class UsersController extends IFramePageController {
 		$data['canAcl'] = $this->passport->cando('acl:system/account');
 
 		return $this->render($data);
+	}
+
+	public function edit($id = '') {
+		$form = new AdminForm(true);
+		if ($id) {
+			$admin = $form->get($id);
+			$user  = $admin->get(0);
+			if ($id != 1) {
+				$user['roles'] = $admin->roles()->toArray('id');
+			}
+			$data['avatar'] = $user['avatar'];
+			$form->inflateByData($user);
+			$form->removeRule('password', 'required');
+		}
+		$data['form']  = BootstrapFormRender::v($form);
+		$data['id']    = $id;
+		$data['rules'] = $form->encodeValidatorRule($this);
+
+		return view($data);
 	}
 
 	public function grid() {

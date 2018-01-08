@@ -9,9 +9,8 @@
         <td>{$row.nickname}</td>
         {'core.admin.table'|tablerow:$row}
         <td class="text-right">
-            <a href="{'~core/users/edit'|app}/{$row.id}" data-ajax="dialog" data-dialog-width="700px"
-               data-dialog-id="dlg-admin-form" data-dialog-title="编辑『{$row.username|escape}』" data-dialog-type="orange"
-               data-dialog-icon="fa fa-user" class="btn btn-xs edit-admin"> <i
+            <a href="{'system/account/users/edit'|app}/{$row.id}" data-ajax="dialog" data-area="700px,auto"
+               data-title="编辑『{$row.username|escape}』" class="btn btn-xs edit-admin"> <i
                         class="fa fa-pencil-square-o text-primary"></i>
             </a>
         </td>

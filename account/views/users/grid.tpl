@@ -2,19 +2,18 @@
     <header class="bg-light header b-b clearfix">
         <div class="row m-t-sm">
             <div class="col-sm-6 m-b-xs">
-                <a href="{'~core/users/edit'|app}" class="btn btn-sm btn-success edit-admin" data-ajax="dialog"
-                   data-dialog-width="700px" data-dialog-id="dlg-admin-form" data-dialog-title="新的管理员"
-                   data-dialog-type="green" data-dialog-icon="fa fa-user">
+                <a href="{'system/account/users/edit'|app}" class="btn btn-sm btn-success edit-admin" data-ajax="dialog"
+                   data-area="700px,auto" data-title="新的管理员">
                     <i class="fa fa-plus"></i> 新管理员
                 </a>
                 <div class="btn-group">
-                    <a href="{'~core/users/del'|app}" data-ajax data-grp="#core-admin-table tbody input.grp:checked"
+                    <a href="{'system/account/users/del'|app}" data-ajax data-grp="#core-admin-table tbody input.grp:checked"
                        data-confirm="你真的要删除这些用户吗？" data-warn="请选择要删除的用户" class="btn btn-danger btn-sm"><i
                                 class="fa fa-trash"></i> 删除</a>
-                    <a href="{'~core/users/set-status/0'|app}" data-ajax
+                    <a href="{'system/account/users/set-status/0'|app}" data-ajax
                        data-grp="#core-admin-table tbody input.grp:checked" data-confirm="你真的要禁用这些用户吗？"
                        data-warn="请选择要禁用的用户" class="btn btn-sm btn-warning"><i class="fa fa-square-o"></i> 禁用</a>
-                    <a href="{'~core/users/set-status/1'|app}" data-ajax
+                    <a href="{'system/account/users/set-status/1'|app}" data-ajax
                        data-grp="#core-admin-table tbody input.grp:checked" data-confirm="你真的要激活这些用户吗？"
                        data-warn="请选择要激活的用户" class="btn btn-sm btn-primary"><i class="fa fa-check-square-o"></i>
                         激活</a>

@@ -17,18 +17,21 @@ use system\model\RoleTable;
 use wulaphp\auth\AclResourceManager;
 use wulaphp\io\Ajax;
 use wulaphp\validator\JQueryValidatorController;
+use wulaphp\validator\ValidateException;
 
 /**
  * Class RoleController
  * @package    system\account\controllers
  * @acl        m:system/account
+ * @accept     system\model\RoleTable
  */
 class RoleController extends IFramePageController {
 	use JQueryValidatorController;
 
 	public function index() {
-		$roleM         = new RoleTable();
-		$data['roles'] = $roleM->findAll(null, 'id,name')->limit(0, 500)->asc('id');
+		$roleM          = new RoleTable();
+		$data['roles']  = $roleM->findAll(null, 'id,name')->limit(0, 500)->asc('id');
+		$data['canAcl'] = $this->passport->cando('acl:system/account');
 
 		return $this->render('role/index', $data);
 	}
@@ -48,6 +51,28 @@ class RoleController extends IFramePageController {
 		$data['form']  = BootstrapFormRender::v($form);
 
 		return view($data);
+	}
+
+	public function savePost($id) {
+		$form = new RoleTable(true);
+		$role = $form->inflate();
+		try {
+			if ($id) {
+				$rst = $form->updateRole($role);
+			} else {
+				unset($role['id']);
+				$rst = $form->createRole($role);
+			}
+			if ($rst) {
+				return Ajax::reload('#core-role-list', $id ? '角色已经更新' : '新的角色已经添加');
+			}
+		} catch (ValidateException $ve) {
+			return Ajax::validate('RoleForm', $ve->getErrors());
+		} catch (\PDOException $pe) {
+			return Ajax::error('数据库出错:' . $pe->getMessage());
+		}
+
+		return Ajax::error('保存角色数据时出错了，请联系管理员');
 	}
 
 	public function del($id) {

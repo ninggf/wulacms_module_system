@@ -11,9 +11,11 @@
                             <a href="{'system/module/upgradable'|app}">可升级（{$upgCnt}）</a>
                         </li>
                     {/if}
-                    <li class="{if $type=='uninstalled'}active{/if}">
-                        <a href="{'system/module/uninstalled'|app}">未安装（{$uninsCnt}）</a>
-                    </li>
+                    {if $uninsCnt>0}
+                        <li class="{if $type=='uninstalled'}active{/if}">
+                            <a href="{'system/module/uninstalled'|app}">未安装（{$uninsCnt}）</a>
+                        </li>
+                    {/if}
                 </ul>
             </header>
             <section class="scrollable bg-white-only">

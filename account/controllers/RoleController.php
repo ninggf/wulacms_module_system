@@ -10,7 +10,7 @@
 
 namespace system\account\controllers;
 
-use backend\classes\IFramePageController;
+use backend\classes\BackendController;
 use backend\form\BootstrapFormRender;
 use system\model\AclTable;
 use system\model\RoleTable;
@@ -25,7 +25,7 @@ use wulaphp\validator\ValidateException;
  * @acl        m:system/account
  * @accept     system\model\RoleTable
  */
-class RoleController extends IFramePageController {
+class RoleController extends BackendController {
 	use JQueryValidatorController;
 
 	public function index() {
@@ -33,7 +33,7 @@ class RoleController extends IFramePageController {
 		$data['roles']  = $roleM->findAll(null, 'id,name')->limit(0, 500)->asc('id');
 		$data['canAcl'] = $this->passport->cando('acl:system/account');
 
-		return $this->render('role/index', $data);
+		return view('role/index', $data);
 	}
 
 	/**

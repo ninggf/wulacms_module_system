@@ -24,7 +24,7 @@
                     <input type="hidden" id="admin-role-id" name="rid" value=""/>
                     <div class="checkbox m-l-xs m-r-xs">
                         <label>
-                            <input type="checkbox" name="status" value="0" onchange="$('#btn-do-search').click()"/> 被禁用的
+                            <input type="checkbox" name="status" id="ustatus" value="0"/> 被禁用的
                         </label>
                     </div>
                     <div class="input-group input-group-sm">

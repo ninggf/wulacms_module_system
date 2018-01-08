@@ -86,41 +86,42 @@ class UserTable extends FormTable {
 	 * @param array $data
 	 *
 	 * @return bool 更新成功返回true,反之返回false.
-	 *
-	 * @throws \wulaphp\validator\ValidateException
-	 * @throws  \PDOException
 	 */
 	public function updateAccount($data) {
-		if (isset($data['roles'])) {
-			$rst = $this->trans(function (DatabaseConnection $db) use ($data) {
-				$id    = $data['id'];
-				$roles = $data['roles'];
-				unset($data['roles']);
-				if (!$this->update($data, ['id' => $id])) {
-					return false;
-				}
-				if (!$db->delete()->from('{user_role}')->where(['user_id' => $id])->exec()) {
-					return false;
-				}
-				if ($roles) {
-					$rs = [];
-					array_unique($roles);
-					foreach ($roles as $rid) {
-						$rs[] = ['user_id' => $id, 'role_id' => $rid];
-					}
-					if (!$db->insert($rs, true)->into('{user_role}')->exec()) {
+		try {
+			if (isset($data['roles'])) {
+				$rst = $this->trans(function (DatabaseConnection $db) use ($data) {
+					$id    = $data['id'];
+					$roles = $data['roles'];
+					unset($data['roles']);
+					if (!$this->update($data, ['id' => $id])) {
 						return false;
 					}
-				}
+					if (!$db->delete()->from('{user_role}')->where(['user_id' => $id])->exec()) {
+						return false;
+					}
+					if ($roles) {
+						$rs = [];
+						array_unique($roles);
+						foreach ($roles as $rid) {
+							$rs[] = ['user_id' => $id, 'role_id' => $rid];
+						}
+						if (!$db->insert($rs, true)->into('{user_role}')->exec()) {
+							return false;
+						}
+					}
 
-				return true;
-			});
+					return true;
+				});
 
-			return $rst;
-		} else {
-			$id = $data['id'];
+				return $rst;
+			} else {
+				$id = $data['id'];
 
-			return $this->update($data, ['id' => $id]);
+				return $this->update($data, ['id' => $id]);
+			}
+		} catch (\Exception $e) {
+			return false;
 		}
 	}
 

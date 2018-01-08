@@ -45,13 +45,15 @@
 			$('#acl-form').get(0).reset();
 		});
 		//对话框处理
-		$('#core-account-workset').on('before.dialog', '.edit-admin', function (e) {
+		$('#core-account-workset').on('before.dialog', '.edit-admin', function (e) { // 增加编辑用户
 			e.options.btn = ['保存', '取消'];
 			e.options.yes = function () {
-				$('#core-admin-form').submit();
+				$('#core-admin-form').on('ajax.success', function () {
+					layer.closeAll()
+				}).submit();
 				return false;
 			};
-		}).on('before.dialog', '.edit-role', function (e) {
+		}).on('before.dialog', '.edit-role', function (e) { //增加，编辑角色
 			e.options.btn = ['保存', '取消'];
 			e.options.yes = function () {
 				$('#core-role-form').on('ajax.success', function () {
@@ -59,7 +61,7 @@
 				}).submit();
 				return false;
 			};
-		}).on('click', 'a.role-li', function () {
+		}).on('click', 'a.role-li', function () { //分角色查看用户
 			var me = $(this), mp = me.closest('li'), rid = mp.data('rid'), group = me.closest('ul');
 			if (mp.hasClass('active')) {
 				return;
@@ -69,10 +71,12 @@
 			$('#admin-role-id').val(rid ? rid : '');
 			$('[data-table-form="#core-admin-table"]').submit();
 			return false;
+		}).on('change', '#ustatus', function () { //按状态查看用户
+			$('#btn-do-search').click();
 		});
 		$('body').on('uploader.remove', '#user-avatar', function () {
 			if (confirm('你真的要删除当前头像吗?')) {
-				$.get("{'~core/users/del-avatar'|app}/{$id}")
+				$.get("{'system/account/users/del-avatar'|app}/{$id}")
 			} else {
 				return false;
 			}

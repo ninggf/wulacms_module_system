@@ -79,7 +79,7 @@ class IndexController extends IFramePageController {
 				if ($m->install(App::db())) {
 					RtCache::delete('modules@cmf');
 
-					return Ajax::reload('document', '『' . $m->getName() . '』安装成功');
+					return Ajax::reload('top', '『' . $m->getName() . '』安装成功');
 				}
 
 				return Ajax::error('无法安装『' . $m->getName() . '』');

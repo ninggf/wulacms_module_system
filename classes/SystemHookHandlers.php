@@ -58,7 +58,7 @@ trait SystemHookHandlers {
 		if ($passport->cando('m:system')) {
 			$system = $ui->getMenu('system');
 			if ($passport->cando('m:system/module')) {
-				$module              = $system->getMenu('module', '模块管理', 999990);
+				$module              = $system->getMenu('module', '模块', 999998);
 				$module->icon        = '&#xe857;';
 				$module->iconCls     = 'layui-icon';
 				$module->data['url'] = App::url('system/module');
@@ -66,7 +66,7 @@ trait SystemHookHandlers {
 			}
 			if ($passport->cando('m:system/account')) {
 				$account              = $system->getMenu('account');
-				$account->name        = '管理员';
+				$account->name        = '账户';
 				$account->data['url'] = App::url('system/account/users');
 				$account->pos         = 1;
 				$account->icon        = '&#xe630;';

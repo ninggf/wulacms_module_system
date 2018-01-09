@@ -3,7 +3,7 @@
         <div class="col-sm-9">
             <form id="core-admin-form" name="AdminForm" data-validate="{$rules|escape}"
                   action="{'system/account/users/save'|app}" data-ajax data-ajax-done="reload:#core-admin-table"
-                  method="post">
+                  method="post" data-loading>
                 <input type="hidden" name="id" id="id" value="{$id}"/>
                 {$form|render}
             </form>

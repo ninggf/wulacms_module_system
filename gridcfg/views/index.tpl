@@ -1,6 +1,6 @@
 <div class="container-fluid p-t-xs wulaui">
     <form action="{'system/gridcfg/save'|app}" data-ajax id="table-column-form"
-          class="form-horizontal" method="post" data-ajax-done="close:parent">
+          class="form-horizontal" method="post" data-ajax-done="close:parent" data-loading>
         <input type="hidden" name="table" value="{$table}"/>
         <input type="hidden" name="reload" value="{$reload}"/>
         {foreach $columns as $cid => $col}

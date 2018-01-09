@@ -10,7 +10,7 @@
                     <div class="hbox">
                         <aside>
                             <form name="UserTable" action="{'system/account/profile'|app}"
-                                  data-validate="{$rules|escape}" data-ajax method="post" role="form" id="UserTable">
+                                  data-validate="{$rules|escape}" data-ajax method="post" role="form" id="UserTable" data-loading>
                                 <input type="hidden" name="id" value="{$uid}"/>
                                 {$form|render}
                                 <div class="form-group">
@@ -33,7 +33,7 @@
                 </div>
                 <div class="tab-pane" id="my-pwd-pane">
                     <form name="ChPwdForm" action="{'system/account/profile/chpwd'|app}"
-                          data-validate="{$pwdrules|escape}" data-ajax method="post" role="form">
+                          data-validate="{$pwdrules|escape}" data-ajax method="post" role="form" data-loading>
                         <input type="hidden" name="id" value="{$uid}"/>
                         {$pwdform|render}
                         <div class="form-group">

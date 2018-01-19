@@ -13,6 +13,7 @@ namespace system {
 	use system\classes\SystemHookHandlers;
 	use wula\cms\CmfModule;
 	use wulaphp\app\App;
+	use wulaphp\db\DatabaseConnection;
 
 	/**
 	 * 系统内核模块.
@@ -42,6 +43,23 @@ namespace system {
 			$v['1.0.0'] = '初始版本';
 
 			return $v;
+		}
+
+		/**
+		 * 升级到1.0.0版本时执行
+		 *
+		 * @param \wulaphp\db\DatabaseConnection $db
+		 *
+		 * @return bool
+		 */
+		protected function upgradeTo1_0_0(DatabaseConnection $db) {
+			$widgets = json_encode(['welcome' => ['id' => 'welcome', 'pos' => 1, 'width' => 12, 'name' => '欢迎']]);
+
+			return $db->insert([
+				'user_id' => 1,
+				'name'    => 'widgets',
+				'value'   => $widgets
+			])->into('{user_meta}')->exec(true);
 		}
 	}
 

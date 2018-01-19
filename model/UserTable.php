@@ -148,6 +148,14 @@ class UserTable extends FormTable {
 					return false;
 				}
 			}
+			//用户默认小部件
+			$widgets = json_encode(['welcome' => ['id' => 'welcome', 'pos' => 1, 'width' => 12, 'name' => '欢迎']]);
+
+			$this->db()->insert([
+				'user_id' => $id,
+				'name'    => 'widgets',
+				'value'   => $widgets
+			])->into('{user_meta}')->exec();
 
 			return $id;
 		});

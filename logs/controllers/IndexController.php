@@ -17,7 +17,7 @@ use wulaphp\db\sql\Condition;
 /**
  * Class IndexController
  * @package system\logs\controllers
- * @acl     m:system/logs
+ * @acl     m:system/log
  */
 class IndexController extends IFramePageController {
 	public function index() {

@@ -84,14 +84,14 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}acl` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}syslog` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `type` VARCHAR(16) NOT NULL COMMENT '日志类型',
     `time` INT NOT NULL COMMENT '时间',
     `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
     `level` ENUM('INFO', 'WARN', 'ERROR') NULL DEFAULT 'INFO' COMMENT '级别',
     `ip` VARCHAR(64) NULL COMMENT 'IP',
     `log` TEXT NULL COMMENT '日志正文',
     PRIMARY KEY (`id`),
-    INDEX `IDX_USERID` (`user_id` ASC),
-    INDEX `IDX_TIME` (`time` ASC , `user_id` ASC)
+    INDEX `IDX_USERID` (`user_id` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='系统日志表'";
 
 $tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员'),(1,'站长','拥有所有权限')";

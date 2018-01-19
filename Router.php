@@ -11,11 +11,7 @@
 namespace system;
 
 use wulaphp\mvc\controller\SubModuleRouter;
-use wulaphp\mvc\view\JsonView;
 
 class Router extends SubModuleRouter {
-}
 
-function a($view, $args) {
-	return new JsonView([array_sum($args)]);
 }

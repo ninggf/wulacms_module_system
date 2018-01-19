@@ -65,13 +65,14 @@ class UserTable extends FormTable {
 	 * 更新用户最后登录信息.
 	 *
 	 * @param int $uid
+	 * @param int $time
 	 *
 	 * @return bool
 	 */
-	public function updateLoginInfo($uid) {
+	public function updateLoginInfo($uid, $time) {
 		if ($uid) {
 			try {
-				return $this->update(['lastip' => Request::getIp(), 'lastlogin' => time()], ['id' => $uid]);
+				return $this->update(['lastip' => Request::getIp(), 'lastlogin' => $time], ['id' => $uid]);
 			} catch (ValidateException $e) {
 				return false;
 			}

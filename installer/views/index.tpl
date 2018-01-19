@@ -105,11 +105,6 @@
                                 <input type="text" name="domain" class="form-control"/>
                                 <div class="note">指定后只能通过此域名登录后台</div>
                             </div>
-                            <div class="col-xs-6">
-                                <label for="">网站管理路径</label>
-                                <input type="text" name="dashboard" class="form-control" placeholder="backend"/>
-                                <div class="note">指定后只能通过此路径访问后台</div>
-                            </div>
                         </div>
                         <div class="form-group clearfix">
                             <div class="col-xs-6">

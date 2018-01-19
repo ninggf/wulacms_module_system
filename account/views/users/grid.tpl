@@ -1,7 +1,7 @@
 <section class="vbox wulaui" id="core-users-workset">
     <header class="bg-light header b-b clearfix">
         <div class="row m-t-sm">
-            <div class="col-sm-6 m-b-xs">
+            <div class="col-sm-6 hidden-xs m-b-xs">
                 <a href="{'system/account/users/edit'|app}" class="btn btn-sm btn-success edit-admin" data-ajax="dialog"
                    data-area="700px,auto" data-title="新的管理员">
                     <i class="fa fa-plus"></i> 新管理员
@@ -19,7 +19,7 @@
                         激活</a>
                 </div>
             </div>
-            <div class="col-sm-6 m-b-xs text-right">
+            <div class="col-sm-6 col-xs-12 m-b-xs text-right">
                 <form data-table-form="#core-admin-table" class="form-inline">
                     <input type="hidden" id="admin-role-id" name="rid" value=""/>
                     <div class="checkbox m-l-xs m-r-xs">

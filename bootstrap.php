@@ -41,6 +41,7 @@ namespace system {
 
 		public function getVersionList() {
 			$v['1.0.0'] = '初始版本';
+			$v['1.1.0'] = '添加任务队列支持(php artisan task:queue)';
 
 			return $v;
 		}

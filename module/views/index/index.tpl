@@ -6,9 +6,9 @@
                     <li class="m-l-lg {if $type=='installed'}active{/if}">
                         <a href="{'system/module/installed'|app}" class="text-primary">已安装（{$insCnt}）</a>
                     </li>
-                    {if $upgCnt>0}
+                    {if $upCnt>0}
                         <li class="{if $type=='upgradable'}active{/if}">
-                            <a href="{'system/module/upgradable'|app}">可升级（{$upgCnt}）</a>
+                            <a href="{'system/module/upgradable'|app}">可升级（{$upCnt}）</a>
                         </li>
                     {/if}
                     {if $uninsCnt>0}

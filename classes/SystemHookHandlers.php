@@ -10,6 +10,7 @@
 
 namespace system\classes;
 
+use system\classes\cmd\TaskQueueCommand;
 use wulaphp\app\App;
 use wulaphp\io\Response;
 use wulaphp\router\Router;
@@ -58,7 +59,7 @@ trait SystemHookHandlers {
 		if ($passport->cando('m:system')) {
 			$system = $ui->getMenu('system');
 			if ($passport->cando('m:system/module')) {
-				$module              = $system->getMenu('module', '模块', 999998);
+				$module              = $system->getMenu('module', __('Modules'), 999996);
 				$module->icon        = '&#xe857;';
 				$module->iconCls     = 'layui-icon';
 				$module->data['url'] = App::url('system/module');
@@ -66,17 +67,25 @@ trait SystemHookHandlers {
 			}
 			if ($passport->cando('m:system/account')) {
 				$account              = $system->getMenu('account');
-				$account->name        = '账户';
+				$account->name        = __('Accounts');
 				$account->data['url'] = App::url('system/account/users');
 				$account->pos         = 1;
 				$account->icon        = '&#xe630;';
 			}
+			if ($passport->cando('m:system/task')) {
+				$task              = $system->getMenu('task');
+				$task->name        = __('Tasks');
+				$task->data['url'] = App::url('system/task');
+				$task->pos         = 999995;
+				$task->iconCls     = 'layui-icon';
+				$task->icon        = '&#xe628;';
+			}
 			if ($passport->cando('m:system/log')) {
-				$account              = $system->getMenu('logs');
-				$account->name        = '日志';
-				$account->data['url'] = App::url('system/logs');
-				$account->pos         = 999999;
-				$account->icon        = '&#xe64a;';
+				$log              = $system->getMenu('logs');
+				$log->name        = __('System Logs');
+				$log->data['url'] = App::url('system/logs');
+				$log->pos         = 999998;
+				$log->icon        = '&#xe64a;';
 			}
 		}
 	}
@@ -93,6 +102,7 @@ trait SystemHookHandlers {
 		$res = $manager->getResource('system/account', '管理员', 'm');
 		$res->addOperate('acl', '授权');
 		$manager->getResource('system/module', '模块', 'm');
+		$manager->getResource('system/task', '模块', 'm');
 		$manager->getResource('system/log', '日志', 'm');
 	}
 
@@ -148,5 +158,17 @@ trait SystemHookHandlers {
 		];
 
 		return $cols;
+	}
+
+	/**
+	 * @param array $cmds
+	 *
+	 * @filter artisan\getCommands
+	 * @return array
+	 */
+	public static function queueCmd($cmds) {
+		$cmds[] = new TaskQueueCommand();
+
+		return $cmds;
 	}
 }

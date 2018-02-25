@@ -101,4 +101,31 @@ $tables['1.0.0'][] = "CREATE TABLE `{prefix}user_gridcfg` (
   `grid` varchar(48) NOT NULL COMMENT '表格ID',
   `columns` text COMMENT '显示列表',
   PRIMARY KEY (`uid`,`grid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表格列'";
+) ENGINE=InnoDB DEFAULT CHARACTER SET={encoding} COMMENT='用户表格列'";
+
+$tables['1.1.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}task_queue` (
+    `id` VARCHAR(32) NOT NULL COMMENT '任务编号',
+    `create_time` INT UNSIGNED NOT NULL,
+    `name` VARCHAR(256) NOT NULL COMMENT '任务名',
+    `task` VARCHAR(256) NOT NULL COMMENT '任务类',
+    `priority` ENUM('I', 'H', 'L') NOT NULL DEFAULT 'I' COMMENT '优先级',
+    `progress` SMALLINT NOT NULL DEFAULT 0 COMMENT '进度',
+    `status` ENUM('D','P', 'R', 'F', 'E') NOT NULL DEFAULT 'P' COMMENT '状态',
+    `runat` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '指定运行时间',
+    `retryCnt` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '重试次数',
+    `retryInt` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '重试间隔',
+    `retry` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '失败后尝试次数',
+    `run_time` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '运行时间',
+    `finish_time` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '结束时间',
+    `options` TEXT NULL COMMENT '配置选项(json)',
+    `msg` TEXT NULL COMMENT '错误信息',
+    PRIMARY KEY (`id`),
+    INDEX `IDX_STATUS` (`status` ASC , `runat` ASC , `retry` ASC)
+)  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='任务队列'";
+
+$tables['1.1.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}task_log` (
+    `task_id` VARCHAR(32) NOT NULL,
+    `create_time` INT UNSIGNED NOT NULL,
+    `content` TEXT NULL,
+    INDEX `FK_TASK_ID` (`task_id` ASC , `create_time` ASC)
+)  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='任务执行日志'";

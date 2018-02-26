@@ -108,7 +108,7 @@ class TaskQueue extends Table {
 
 	/**
 	 * 获取所有可以手动创建的任务.
-	 * @use filter:system\registerTas([])
+	 * @use filter:system\registerTask([])
 	 * @return array
 	 */
 	public static function tasks() {

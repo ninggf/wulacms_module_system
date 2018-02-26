@@ -121,7 +121,7 @@ class TaskQueueCommand extends ArtisanMonitoredTask {
 				} else {
 					if ($rst['retry'] < $rst['retryCnt']) {
 						$intv = $rst['retryInt'] ? $rst['retryInt'] : $this->interval;
-						$sql  = 'UPDATE {task_queue} SET run_time = 0, retry = retry + 1, status = %s,runat = %d, msg = %s WHERE id = %s';
+						$sql  = 'UPDATE {task_queue} SET run_time = 0,progress = 0, retry = retry + 1, status = %s,runat = %d, msg = %s WHERE id = %s';
 						$this->db->cud($sql, 'P', time() + $intv, $msg, $rst['id']);
 						$this->loge('retry task: ' . $rst['id'] . ' [' . ($rst['retry'] + 1) . ']');
 					} else {

@@ -14,6 +14,9 @@
                     <a href="{'system/task/del'|app}" data-ajax data-grp="#table tbody input.grp:checked"
                        data-confirm="你真的要删除这些任务吗？" data-warn="请选择要删除的任务" class="btn btn-danger btn-sm"><i
                                 class="fa fa-trash"></i> {'Delete'|t}</a>
+                    <button class="btn btn-sm" id="btn-reload">
+                        <i class="fa fa-refresh"></i>
+                    </button>
                 </div>
                 <div class="col-xs-8 text-right m-b-xs">
                     <form data-table-form="#table" id="search-form" class="form-inline">
@@ -142,11 +145,8 @@
 			layer.closeAll();
 			table.reload();
 		});
-
-		function getProgress() {
+		$('#btn-reload').click(function () {
 			table.reload();
-		}
-
-		setInterval(getProgress, 10000);
+		});
 	})
 </script>

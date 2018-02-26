@@ -11,6 +11,7 @@
 namespace system\task\controllers;
 
 use backend\classes\IFramePageController;
+use system\task\TaskLog;
 use system\task\TaskQueue;
 use wulaphp\db\sql\Condition;
 use wulaphp\io\Ajax;
@@ -69,22 +70,31 @@ class IndexController extends IFramePageController {
 		return Ajax::reload('#table', '任务已经删除');
 	}
 
-	public function status($ids) {
-		if (empty($ids)) {
+	public function status($id, $time = 0) {
+		if (empty($id)) {
 			return Ajax::success();
 		}
 		$table  = new TaskQueue();
-		$status = $table->findAll(['id IN' => explode(',', $ids)], 'id,progress,finish_time,retryCnt,retry,status')->toArray();
-		array_walk($status, function (&$item) {
-			if ($item['finish_time']) {
-				$item['finish_time'] = date('Y-m-d H:i:s', $item['finish_time']);
-			}
-			if ($item['retryCnt']) {
-				$item['retrys'] = "{$item['retry']}/{$item['retryCnt']}";
-			}
-		});
+		$status = $table->findAll(['id' => $id], 'id,progress,finish_time,retryCnt,retry,status')->get();
 
-		return ['progress' => $status];
+		if ($status['finish_time']) {
+			$status['finish_time'] = date('Y-m-d H:i:s', $status['finish_time']);
+		}
+		$status['retrys'] = "{$status['retry']}/{$status['retryCnt']}";
+		if ($status) {
+			$tl   = new TaskLog();
+			$logs = $tl->getLogs($id, $time);
+		} else {
+			$logs = [];
+		}
+		$lg = [];
+		if ($logs) {
+			foreach ($logs as $l) {
+				$lg[] = '<p data-time="' . $l['create_time'] . '">' . date('Y-m-d H:i:s', $l['create_time']) . ' ' . $l['content'] . '</p>';
+			}
+		}
+
+		return ['progress' => $status, 'logs' => implode('', $lg)];
 	}
 
 	public function data($q, $type, $runat, $count) {
@@ -95,7 +105,7 @@ class IndexController extends IFramePageController {
 		if ($type) {
 			$where['status'] = $type;
 		} else {
-			$where['status IN'] = ['P', 'R'];
+			$where['status IN'] = ['D', 'P', 'R'];
 		}
 		if ($runat == '1') {
 			$where['runat'] = 0;
@@ -131,7 +141,16 @@ class IndexController extends IFramePageController {
 		if (empty($id)) {
 			Response::respond(404, $id . '为空');
 		}
-		$data = [];
+
+		$tq   = new TaskQueue();
+		$task = $tq->get(['id' => $id])->ary();
+		if (!$task) {
+			Response::error('任务不存在');
+		}
+
+		$tl           = new TaskLog();
+		$data['task'] = $task;
+		$data['logs'] = $tl->getLogs($id);
 
 		return $this->render($data);
 	}

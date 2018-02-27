@@ -102,7 +102,7 @@ trait SystemHookHandlers {
 		$res = $manager->getResource('system/account', '管理员', 'm');
 		$res->addOperate('acl', '授权');
 		$manager->getResource('system/module', '模块', 'm');
-		$manager->getResource('system/task', '模块', 'm');
+		$manager->getResource('system/task', '任务', 'm');
 		$manager->getResource('system/log', '日志', 'm');
 	}
 
@@ -167,7 +167,9 @@ trait SystemHookHandlers {
 	 * @return array
 	 */
 	public static function queueCmd($cmds) {
-		$cmds[] = new TaskQueueCommand();
+		if (WULACMF_INSTALLED) {
+			$cmds[] = new TaskQueueCommand();
+		}
 
 		return $cmds;
 	}

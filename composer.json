@@ -3,8 +3,7 @@
   "description": "wulacms内容管理系统的内核模块",
   "type": "wula-module",
   "require": {
-	"wula/wula-installer": "^1.0",
-	"wulacms/backend": "^1.0.0"
+	"wula/wula-installer": "^1.0"
   },
   "license": "MIT",
   "authors": [

@@ -97,7 +97,7 @@ class EditController extends BackendController {
 				return Ajax::error('无法保存任务');
 			}
 		} catch (ValidateException $e) {
-			return Ajax::validate('', $e->getErrors());
+			return Ajax::validate('TaskEditForm', $e->getErrors());
 		} catch (\Exception $ee) {
 			return Ajax::error($ee->getMessage());
 		}

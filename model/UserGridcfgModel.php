@@ -18,9 +18,17 @@ class UserGridcfgModel extends Table {
 	public static $passportType = 'admin';
 
 	public static function echoSetButton($id, $reload) {
-		$url = App::url('system/gridcfg/') . urlencode($id) . '/' . urlencode($reload);
+		$url     = App::url('system/gridcfg/') . urlencode($id) . '/' . urlencode($reload);
+		$user    = whoami(self::$passportType);
+		$uid     = $user->uid;
+		$columns = count(self::getColumns($id, $uid));
+		if ($columns) {
+			$h = min($columns * 38, 500) + 93;
 
-		return '<a href="' . $url . '" data-dialog data-area="400px,300px" data-title="表格设置"><i class="fa fa-th-list"></i></a>';
+			return '<a href="' . $url . '" data-dialog data-area="400px,' . $h . 'px" data-title="表格设置"><i class="fa fa-th-list"></i></a>';
+		} else {
+			return null;
+		}
 	}
 
 	public static function echoHead($id) {

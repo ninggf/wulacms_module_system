@@ -55,7 +55,7 @@ class IndexController extends IFramePageController {
 				$db->insert($data)->into('{user_gridcfg}')->exec();
 			}
 
-			return Ajax::reload($reload ? 'parent:' . $reload : 'document', '表格配置完成');
+			return Ajax::reload($reload ? 'parent:' . $reload : 'parent:document', '表格配置完成');
 		} catch (\Exception $e) {
 			return Ajax::error('表格配置出错:' . $e->getMessage());
 		}

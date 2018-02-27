@@ -70,7 +70,7 @@ trait SystemHookHandlers {
 				$account->name        = __('Accounts');
 				$account->data['url'] = App::url('system/account/users');
 				$account->pos         = 1;
-				$account->icon        = '&#xe630;';
+				$account->icon        = '&#xe672;';
 			}
 			if ($passport->cando('m:system/task')) {
 				$task              = $system->getMenu('task');

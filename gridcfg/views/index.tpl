@@ -17,7 +17,7 @@
             </div>
         {/foreach}
         <div class="form-group m-b-xs">
-            <div class="col-xs-4 col-xs-offset-8 m-t-md text-right">
+            <div class="col-xs-4 col-xs-offset-8 m-t-xs text-right">
                 <button class="btn btn-primary">保存</button>
             </div>
         </div>

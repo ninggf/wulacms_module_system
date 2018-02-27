@@ -20,6 +20,7 @@ use wulaphp\validator\ValidateException;
 class UserTable extends FormTable {
 	use JQueryValidator;
 	/**
+	 * @var \backend\form\HiddenField
 	 * @type int
 	 */
 	public $id;
@@ -117,7 +118,7 @@ class UserTable extends FormTable {
 
 				return $rst;
 			} else {
-				$id = $data['id'];
+				$id = isset($data['id']) ? $data['id'] : 0;
 
 				return $this->update($data, ['id' => $id]);
 			}

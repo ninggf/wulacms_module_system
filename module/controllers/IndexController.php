@@ -45,7 +45,6 @@ class IndexController extends IFramePageController {
 	public function stop($module) {
 		$m = App::getModuleById($module);
 		if ($m) {
-			/**@var \wula\cms\CmfModule $m */
 			if ($m->isKernel) {
 				return Ajax::error('无法停用内核模块');
 			}
@@ -61,7 +60,6 @@ class IndexController extends IFramePageController {
 	public function start($module) {
 		$m = App::getModuleById($module);
 		if ($m) {
-			/**@var \wula\cms\CmfModule $m */
 			$m->start();
 			RtCache::delete('modules@cmf');
 
@@ -75,7 +73,6 @@ class IndexController extends IFramePageController {
 		$m = App::getModuleById($module);
 		if ($m) {
 			try {
-				/**@var \wula\cms\CmfModule $m */
 				if ($m->install(App::db())) {
 					RtCache::delete('modules@cmf');
 
@@ -94,12 +91,10 @@ class IndexController extends IFramePageController {
 	public function uninstall($module) {
 		$m = App::getModuleById($module);
 		if ($m) {
-			/**@var \wula\cms\CmfModule $m */
 			if ($m->isKernel) {
 				return Ajax::error('无法卸载内核模块');
 			}
 			try {
-				/**@var \wula\cms\CmfModule $m */
 				if ($m->uninstall()) {
 					RtCache::delete('modules@cmf');
 
@@ -119,7 +114,6 @@ class IndexController extends IFramePageController {
 		$m = App::getModuleById($module);
 		if ($m) {
 			try {
-				/**@var \wula\cms\CmfModule $m */
 				if ($m->upgrade(App::db(), $m->getCurrentVersion(), $m->installedVersion)) {
 					RtCache::delete('modules@cmf');
 

@@ -73,7 +73,7 @@
             <div data-table-pager="#table" data-limit="10"></div>
         </footer>
     </section>
-    <aside class="aside aside-xs b-l hidden-xs">
+    <aside class="aside aside-sm b-l hidden-xs">
         <div class="vbox">
             <header class="bg-light dk header b-b">
                 <p>状态</p>

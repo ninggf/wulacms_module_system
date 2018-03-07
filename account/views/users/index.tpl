@@ -32,7 +32,7 @@
     </section>
 </section>
 <script>
-	layui.use(['jquery', 'layer', 'wulaui'], ($, layer) => {
+	layui.use(['jquery', 'layer', 'wulaui'], ($, layer, wui) => {
 		//授权
 		$('#acl-space').on('click', '#acl-cancel', () => {
 			$('#acl-space').addClass('hidden');
@@ -76,7 +76,7 @@
 		});
 		$('body').on('uploader.remove', '#user-avatar', function () {
 			if (confirm('你真的要删除当前头像吗?')) {
-				$.get("{'system/account/users/del-avatar'|app}/{$id}")
+				$.get("{'system/account/users/del-avatar/'|app}" + $('#id').val())
 			} else {
 				return false;
 			}

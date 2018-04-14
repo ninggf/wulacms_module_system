@@ -69,6 +69,15 @@ class TaskQueueCommand extends ArtisanMonitoredTask {
 		return true;
 	}
 
+	protected function getOperate() {
+		if ($this->arvc < 3) {
+			$this->help();
+			exit(1);
+		}
+
+		return parent::getOperate();
+	}
+
 	/**
 	 * 从数据库中取出任务执行.
 	 *

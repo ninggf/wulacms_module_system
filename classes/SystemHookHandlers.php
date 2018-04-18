@@ -88,6 +88,15 @@ trait SystemHookHandlers {
 				$log->icon        = '&#xe64a;';
 			}
 		}
+		//应用
+		$apps            = $ui->getMenu('apps', __('Applications'), 10);
+		$apps->icon      = '&#xe637;';
+		$apps->iconStyle = 'color:green';
+		//活动管理
+		$act            = $ui->getMenu('activity', __('Activity'), 20);
+		$act->icon      = '&#xe756;';
+		$act->iconCls   = 'layui-icon';
+		$act->iconStyle = 'color:red';
 	}
 
 	/**

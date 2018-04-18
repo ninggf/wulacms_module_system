@@ -10,6 +10,7 @@
 return [
 	'You entered an incorrect username or password.' => '你输入的用户名或密码不正确.',
 	'Your account is locked.'                        => '你的账户被锁定了',
-	'Applications'                                   => '我的应用',
-	'Activity'                                       => '活动管理'
+	'Applications'                                   => '应用',
+	'Activities'                                     => '活动',
+	'Reports'                                        => '报表'
 ];

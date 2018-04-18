@@ -97,6 +97,9 @@ trait SystemHookHandlers {
 		$act->icon      = '&#xe756;';
 		$act->iconCls   = 'layui-icon';
 		$act->iconStyle = 'color:red';
+		//报表
+		$report       = $ui->getMenu('reports', __('Reports'), 30);
+		$report->icon = '&#xe74d;';
 	}
 
 	/**

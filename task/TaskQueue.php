@@ -68,10 +68,11 @@ class TaskQueue extends Table {
 	 * @param int        $retryCnt [optional] 重试.
 	 * @param int|string $runat    [optional] 定时.
 	 * @param null|array $options  [optional] 参数.
+	 * @param int        $interval 重试间隔
 	 *
 	 * @return string|bool 任务ID或false
 	 */
-	public function newTask($name, $task, $status = 'P', $retryCnt = 0, $runat = 0, $options = null) {
+	public function newTask($name, $task, $status = 'P', $retryCnt = 0, $runat = 0, $options = null, $interval = 0) {
 		if (empty($name)) {
 			return false;
 		}
@@ -83,6 +84,7 @@ class TaskQueue extends Table {
 		$data['name']        = (string)$name;
 		$data['task']        = $task;
 		$data['retryCnt']    = intval($retryCnt);
+		$data['retryInt']    = abs(intval($interval));
 		$data['runat']       = intval(is_string($runat) ? @strtotime($runat) : $runat);
 		if ($options && is_array($options)) {
 			$data['options'] = @json_encode($options);
@@ -112,7 +114,9 @@ class TaskQueue extends Table {
 	 * @return array
 	 */
 	public static function tasks() {
-		$tasks = apply_filter('system\registerTask', []);
+		$tasks = apply_filter('system\registerTask', [
+			'system\task\ScriptTask' => '脚本任务'
+		]);
 
 		return $tasks;
 	}

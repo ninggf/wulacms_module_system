@@ -9,7 +9,7 @@
         <td>
             <p>[{$priorities[$item.priority]}]
                 {if $item.status == 'D' || $item.status == 'E' || $item.runat > $ctime}
-                    <a href="{'system/task/edit/'|app}{$item.id}" class="edit-task" data-title="编辑任务"
+                    <a href="{'system/task/edit'|app}/{$item.id}" class="edit-task" data-title="编辑任务"
                        data-area="500px,auto" data-ajax="dialog">{$item.name}</a>
                 {else}
                     {$item.name}
@@ -23,7 +23,7 @@
         <td>{if $item.runat}{$item.runat|date_format:'Y-m-d H:i:s'}{/if}</td>
         <td rel="{$item.id}" class="task-s-{$item.status}">
             {if $item.status != 'P' && $item.status != 'D'}
-                <a href="{'system/task/log/'|app}{$item.id}" title="任务[{$item.id}]" data-tab="&#xe659;">{$item.progress}
+                <a href="{'system/task/log'|app}/{$item.id}" title="任务[{$item.id}]" data-tab="&#xe659;">{$item.progress}
                     %</a>
             {else}
                 {$item.progress}%

@@ -52,28 +52,28 @@
                                         <td class="text-right">
                                             <div class="btn-group">
                                                 {if $m.status == -1}
-                                                    <a href="{'system/module/install/'|app}{$m.namespace}" data-ajax
+                                                    <a href="{'system/module/install'|app}/{$m.namespace}" data-ajax
                                                        data-confirm="你真要安装该模块吗?" class="btn btn-xs btn-primary"
                                                        title="安装"><i class="fa fa-hdd-o"></i></a>
                                                 {elseif $m.status == 1}
-                                                    <a href="{'system/module/stop/'|app}{$m.namespace}" data-ajax
+                                                    <a href="{'system/module/stop'|app}/{$m.namespace}" data-ajax
                                                        data-confirm="你真的要停用模块『{$m.name}』吗?"
                                                        class="btn btn-xs btn-warning" title="停用"><i
                                                                 class="fa fa-pause"></i></a>
-                                                    <a href="{'system/module/uninstall/'|app}{$m.namespace}" data-ajax
+                                                    <a href="{'system/module/uninstall'|app}/{$m.namespace}" data-ajax
                                                        data-confirm="你真的要卸载模块『{$m.name}』吗?"
                                                        class="btn btn-xs btn-danger" title="卸载"><i
                                                                 class="fa fa-trash-o"></i></a>
                                                 {elseif $m.status==2}
-                                                    <a href="{'system/module/upgrade/'|app}{$m.namespace}" data-ajax
+                                                    <a href="{'system/module/upgrade'|app}/{$m.namespace}" data-ajax
                                                        data-confirm="你确定要升级此模块吗?" class="btn btn-xs btn-primary"
                                                        title="升级"><i class="fa fa-arrow-up"></i></a>
                                                 {else}
-                                                    <a href="{'system/module/start/'|app}{$m.namespace}" data-ajax
+                                                    <a href="{'system/module/start'|app}/{$m.namespace}" data-ajax
                                                        data-confirm="你确定要启用模块『{$m.name}』吗?"
                                                        class="btn btn-xs btn-success" title="启用"><i
                                                                 class="fa fa-play"></i></a>
-                                                    <a href="{'system/module/uninstall/'|app}{$m.namespace}" data-ajax
+                                                    <a href="{'system/module/uninstall'|app}/{$m.namespace}" data-ajax
                                                        data-confirm="你真的要卸载模块『{$m.name}』吗?"
                                                        class="btn btn-xs btn-danger" title="卸载"><i
                                                                 class="fa fa-trash-o"></i></a>

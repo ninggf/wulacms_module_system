@@ -76,7 +76,7 @@
 		});
 		$('body').on('uploader.remove', '#user-avatar', function () {
 			if (confirm('你真的要删除当前头像吗?')) {
-				$.get("{'system/account/users/del-avatar/'|app}" + $('#id').val())
+				$.get("{'system/account/users/del-avatar'|app}/" + $('#id').val())
 			} else {
 				return false;
 			}

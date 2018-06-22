@@ -10,7 +10,8 @@
                     <div class="hbox">
                         <aside>
                             <form name="UserTable" action="{'system/account/profile'|app}"
-                                  data-validate="{$rules|escape}" data-ajax method="post" role="form" id="UserTable" data-loading>
+                                  data-validate="{$rules|escape}" data-ajax method="post" role="form" id="UserTable"
+                                  data-loading>
                                 <input type="hidden" name="id" value="{$uid}"/>
                                 {$form|render}
                                 <div class="form-group">
@@ -46,11 +47,11 @@
         </div>
     </section>
     <script type="text/javascript">
-		layui.use(['jquery', 'bootstrap', 'wulaui'], function ($, wulaui) {
+		layui.use(['jquery', 'bootstrap', 'wulaui'], function ($, b, wulaui) {
 			$('#user-avatar').on('uploader.remove', function () {
 				if (confirm('你确定要删除当前头像吗？')) {
 					$.get("{'system/account/profile/del-avatar'|app}").done(function () {
-						parent.updateAvatar(wulaui.assets('avatar.jpg'))
+						parent.updateAvatar(wulaui.assets('jqadmin/images/avatar.jpg'))
 					});
 				} else {
 					return false;

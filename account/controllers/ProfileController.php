@@ -80,7 +80,7 @@ class ProfileController extends IFramePageController {
 			$locale = new LocaleUploader();
 			$locale->delete($avatar);
 		}
-		$this->passport->avatar = App::assets('wula/jqadmin/images/avatar.jpg');
+		$this->passport->avatar = App::assets('jqadmin/images/avatar.jpg');
 		$this->passport->store();
 
 		return Ajax::success('');

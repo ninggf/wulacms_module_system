@@ -18,7 +18,7 @@ class UserGridcfgModel extends Table {
 	public static $passportType = 'admin';
 
 	public static function echoSetButton($id, $reload) {
-		$url     = App::url('system/gridcfg/') . urlencode($id) . '/' . urlencode($reload);
+		$url     = App::url('system/gridcfg') . '/' . urlencode($id) . '/' . urlencode($reload);
 		$user    = whoami(self::$passportType);
 		$uid     = $user->uid;
 		$columns = count(self::getColumns($id, $uid));

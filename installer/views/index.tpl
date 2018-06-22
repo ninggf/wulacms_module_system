@@ -11,12 +11,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
     {loaduicss bootstrap="bootstrap.min.css" animate="animate.min.css" main="page.css"}
-    <link rel="stylesheet" href="{'wula/jqadmin/css/md.min.css'|vendor}">
-    <link rel="stylesheet" href="{'wula/jqadmin/plugin/fuelux/fuelux.min.css'|vendor}">
+    <link rel="stylesheet" href="{'jqadmin/css/md.min.css'|vendor}">
+    <link rel="stylesheet" href="{'jqadmin/plugin/fuelux/fuelux.min.css'|vendor}">
     <script src="{'jquery.min.js'|vendor}"></script>
-    <script src="{'wula/jqadmin/plugin/fuelux/fuelux.min.js'|vendor}"></script>
-    <script src="{'wula/jqadmin/plugin/parsley/parsley.min.js'|vendor}"></script>
+    <script src="{'jqadmin/plugin/fuelux/fuelux.min.js'|vendor}"></script>
+    <script src="{'jqadmin/plugin/parsley/parsley.min.js'|vendor}"></script>
     {initjq config=1}
+    <style type="text/css">
+        .bg-dark a, .bg-dark a:hover {
+            color: #0366d6;
+        }
+    </style>
 </head>
 <body>
 <section id="content" class="m-t-md wrapper-md m-b-xs animated fadeInDown p-b-xs">

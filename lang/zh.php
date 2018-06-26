@@ -12,5 +12,6 @@ return [
 	'Your account is locked.'                        => '你的账户被锁定了',
 	'Applications'                                   => '应用',
 	'Activities'                                     => '活动',
-	'Reports'                                        => '报表'
+	'Reports'                                        => '报表',
+	'Attachments'                                    => '附件'
 ];

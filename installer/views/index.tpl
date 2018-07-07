@@ -198,7 +198,7 @@
 <footer id="footer">
     <div class="text-center padder clearfix">
         <p>
-            <small>{'wulacms'|t:$version}<br/>&copy; 2017</small>
+            <small>{'wulacms'|t:$version}<br/>&copy; 2017 - {'Y'|date}</small>
         </p>
     </div>
 </footer>

@@ -13,5 +13,6 @@ return [
 	'Applications'                                   => '应用',
 	'Activities'                                     => '活动',
 	'Reports'                                        => '报表',
-	'Attachments'                                    => '附件'
+	'Attachments'                                    => '附件',
+	'Install'                                        => '安装'
 ];

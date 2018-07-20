@@ -53,7 +53,7 @@
         </div>
     </div>
     <script>
-		layui.link("{'wula/jqadmin/css/md.min.css'|vendor}")
+		layui.link("{'jqadmin/css/md.min.css'|vendor}")
 			.use(['jquery', 'bootstrap', 'highlight'], function ($) {
 				$('#module-doc .markdown-body pre code').each(function (i, code) {
 					hljs.highlightBlock(code);

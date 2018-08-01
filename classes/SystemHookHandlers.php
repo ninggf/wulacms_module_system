@@ -60,8 +60,9 @@ trait SystemHookHandlers {
 			$system = $ui->getMenu('system');
 			if ($passport->cando('m:system/module')) {
 				$module              = $system->getMenu('module', __('Modules'), 999996);
-				$module->icon        = '&#xe857;';
-				$module->iconCls     = 'layui-icon';
+				$module->icon        = '&#xe635;';
+				$module->iconCls     = 'alicon';
+				$module->iconStyle   = 'color:orange';
 				$module->data['url'] = App::url('system/module');
 				$module->badge       = count(App::modules('upgradable'));
 			}
@@ -77,15 +78,16 @@ trait SystemHookHandlers {
 				$task->name        = __('Tasks');
 				$task->data['url'] = App::url('system/task');
 				$task->pos         = 999995;
-				$task->iconCls     = 'layui-icon';
-				$task->icon        = '&#xe628;';
+				$task->iconCls     = 'alicon';
+				$task->icon        = '&#xe610;';
 			}
 			if ($passport->cando('m:system/log')) {
 				$log              = $system->getMenu('logs');
 				$log->name        = __('System Logs');
 				$log->data['url'] = App::url('system/logs');
 				$log->pos         = 999998;
-				$log->icon        = '&#xe64a;';
+				$log->icon        = '&#xe623;';
+				$log->iconCls     = 'alicon';
 			}
 		}
 		//应用

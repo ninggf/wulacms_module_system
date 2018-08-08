@@ -31,3 +31,31 @@ return ['host'=>'localhost','port'=>6379,'db'=>0,'auth'=>'','timeout'=>5];
 > * `db` 数据库
 > * `auth` 密码
 > * `timeout` 连接超时
+
+## 勾子
+
+1. 1.`system\logs`: 注册系统日志类型
+    ```php
+        bind('system\logs',array $types){
+            $types['mylog'] = '我的日志';
+            
+            return $types;
+        }
+    ```
+> 注册类型后就可以使用`\system\classes\Syslog`类记录日志并通过后台查看:
+> ```php
+>    Syslog::info('这是我的日志内容',1,'mylog');
+> ```
+
+2. 2.`system\registerTask`： 注册任务
+    ```php
+        bind('system\registerTask',array $tasks){
+           'your\task\TaskClass' => '你的任务'
+            return $tasks;
+        }
+    ``` 
+> 关于任务请参见 `\system\classes\Task`类。
+
+## 命令
+
+1. `task:queue` 运行后台任务

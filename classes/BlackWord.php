@@ -82,7 +82,14 @@ class BlackWord {
 		return $keywords;
 	}
 
-	private static function santize($string) {
+	/**
+	 * 对字符进行一般消毒.
+	 *
+	 * @param string $string
+	 *
+	 * @return string 消毒后的字符串.
+	 */
+	public static function santize(string $string): string {
 		return preg_replace('/([^a-z\d])(\s|\*|\+|\-|_|,|\\\\|\/)+([^a-z\d])/i', '\1\3', $string);
 	}
 

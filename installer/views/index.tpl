@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="bg-dark">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>{'Install'|t} - {'wulacms'|t:$version}</title>
@@ -25,7 +25,7 @@
 </head>
 <body>
 <section id="content" class="m-t-md wrapper-md m-b-xs animated fadeInDown p-b-xs">
-    <div class="container aside-xxl" style="min-width: 800px">
+    <div class="container aside-xxl" style="min-width: 1000px">
         <div class="clearfix"><a href="." class="navbar-brand">WulaCMS安装程序<sub>{$version}</sub></a></div>
         <section class="panel panel-default m-t-md bg-white wizard" id="install-wizard">
             <div class="wizard-steps clearfix" id="form-wizard">
@@ -198,7 +198,7 @@
 <footer id="footer">
     <div class="text-center padder clearfix">
         <p>
-            <small>{'wulacms'|t:$version}<br/>&copy; 2017 - {'Y'|date}</small>
+            <small>{'wulacms'|t:$version}<br/>&copy; 2014 - {'Y'|date} MIT </small>
         </p>
     </div>
 </footer>

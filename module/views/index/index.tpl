@@ -1,24 +1,45 @@
-<div class="hbox stretch wulaui layui-hide" id="module-page">
+<div class="hbox stretch wulaui layui-hide bg-white-only" id="module-page">
+    <aside class="hidden-xs aside-sm b-r">
+        <div class="vbox">
+            <header class="bg-light lter header b-b">
+                <p>模块分组</p>
+            </header>
+            <section class="hidden-xs scrollable m-t-xs">
+                <ul class="nav nav-pills nav-stacked no-radius" id="core-module-groups">
+                    <li class="active">
+                        <a href="javascript:"> 全部 </a>
+                    </li>
+                    {foreach $groups as $gp}
+                        <li>
+                            <a href="javascript:" rel="{$gp}"> {$gp}</a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </section>
+        </div>
+    </aside>
     <section>
         <div class="vbox">
-            <header class="header clearfix bg-light dk b-b">
-                <ul class="nav nav-tabs" id="module-tabs">
-                    <li class="m-l-lg {if $type=='installed'}active{/if}">
-                        <a href="{'system/module/installed'|app}" class="text-primary">已安装（{$insCnt}）</a>
-                    </li>
-                    {if $upCnt>0}
-                        <li class="{if $type=='upgradable'}active{/if}">
-                            <a href="{'system/module/upgradable'|app}">可升级（{$upCnt}）</a>
+            <header class="header bg-light lter clearfix p-l-none p-r-none">
+                <div class="layui-tab layui-tab-brief caller-tab m-b-none">
+                    <ul class="layui-tab-title m-b-none">
+                        <li class="{if $type=='installed'}layui-this{/if}">
+                            <a href="{'system/module/installed'|app}" class="text-primary">已安装（{$insCnt}）</a>
                         </li>
-                    {/if}
-                    {if $uninsCnt>0}
-                        <li class="{if $type=='uninstalled'}active{/if}">
-                            <a href="{'system/module/uninstalled'|app}">未安装（{$uninsCnt}）</a>
-                        </li>
-                    {/if}
-                </ul>
+                        {if $upCnt>0}
+                            <li class="{if $type=='upgradable'}layui-this{/if}">
+                                <a href="{'system/module/upgradable'|app}">可升级（{$upCnt}）</a>
+                            </li>
+                        {/if}
+                        {if $uninsCnt>0}
+                            <li class="{if $type=='uninstalled'}layui-this{/if}">
+                                <a href="{'system/module/uninstalled'|app}">未安装（{$uninsCnt}）</a>
+                            </li>
+                        {/if}
+                    </ul>
+                </div>
             </header>
-            <section class="scrollable bg-white-only">
+            <section class="scrollable">
                 <div class="tab-content" style="height: 100%">
                     <div class="tab-pane active" id="module-list" style="height: 100%">
                         <div class="table-responsive">
@@ -90,39 +111,20 @@
             </section>
         </div>
     </section>
-    <aside class="hidden-xs aside-sm b-l bg-white-only">
-        <div class="vbox">
-            <header class="bg-light dk header b-b">
-                <p>模块分组 ({$groups|count})</p>
-            </header>
-            <section class="hidden-xs scrollable m-t-xs">
-                <ul class="nav nav-pills nav-stacked no-radius" id="core-module-groups">
-                    <li class="active">
-                        <a href="javascript:;"> 全部 </a>
-                    </li>
-                    {foreach $groups as $gp}
-                        <li>
-                            <a href="javascript:;" rel="{$gp}"> {$gp}</a>
-                        </li>
-                    {/foreach}
-                </ul>
-            </section>
-        </div>
-    </aside>
-    <script>
-		layui.use(['jquery', 'wulaui'], ($) => {
-			let group = $('#core-module-groups');
-			group.find('a').click(function () {
-				let me = $(this), mp = me.closest('li');
-				if (mp.hasClass('active')) {
-					return;
-				}
-				group.find('li').not(mp).removeClass('active');
-				mp.addClass('active');
-				$('#core-module-table').wulatable('filter', 'gp', me.attr('rel'));
-				return false;
-			});
-			$('#module-page').removeClass('layui-hide')
-		})
+    <script type="text/javascript">
+        layui.use(['jquery', 'wulaui'], ($) => {
+            let group = $('#core-module-groups');
+            group.find('a').click(function () {
+                let me = $(this), mp = me.closest('li');
+                if (mp.hasClass('active')) {
+                    return;
+                }
+                group.find('li').not(mp).removeClass('active');
+                mp.addClass('active');
+                $('#core-module-table').wulatable('filter', 'gp', me.attr('rel'));
+                return false;
+            });
+            $('#module-page').removeClass('layui-hide')
+        })
     </script>
 </div>

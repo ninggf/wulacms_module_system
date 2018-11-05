@@ -1,26 +1,33 @@
-### WULACMS软件许可协议
+### The MIT License (MIT)
 
-**重要提示 - 请认真阅读:** 本协议是您（自然人、法人或其他组织）与wulacms开发组之间（网址：[www.wulacms.com](https://www.wulacms.com)）有关复制、下载、安装、使用乌拉网站管理系统(WulaCMS）以及任何相关材料（统一称作“软件”）的法律协议。一旦复制、下载、安装或者以其他方式使用本“软件”，即表明您同意接受本协议各项条款的约束，同时包括接受wulacms开发组对协议各项条款随时所做的任何修改。如果您不同意本协议中的条款，请勿复制、下载、查看、安装或者以其他方式使用本“软件”。
+Copyright (c) 2014 wulacms.com 
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
 
-**1.许可**
+of this software and associated documentation files (the "Software"), to deal
 
-本软件(wulacms)是采用MIT许可的[开源软件](https://github.com/ninggf/wulacms)，其依赖的其它组件所使用的许可，请详见各组件(包括模块、类库等)。
+in the Software without restriction, including without limitation the rights
 
-**2.免责说明**
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 
-wulacms开发组不对本“软件”提供任何明示、暗示或任何其它形式的担保和表示。在任何情况下，对于因使用或无法使用本软件而导致的任何损失（包括但不仅限于商业利润损失、业务中断或业务信息丢失），wulacms开发组无需向您或任何第三方负责，即使wulacms开发组已被告知可能会造成此类损失。在任何情况下， wulacms开发组均不就任何直接的、间接的、附带的、后果性的、特别的、惩戒性的和处罚性的损害赔偿承担任何责任，无论该主张是基于保证、合同、侵权（包括疏忽）或是基于其他原因作出。
-  
-  wulacms开发组不对使用本“软件”构建的网站中任何信息内容以及导致的任何版权纠纷、法律争议和后果承担任何责任，全部责任由您自行承担。
-  
-  wulacms开发组可能会经常提供“软件”更新或升级，但wulacms开发组没有为根据本协议许可的“软件”提供维护或更新的责任。
-  
-**3.权利和所有权的保留**
+copies of the Software, and to permit persons to whom the Software is
 
-wulacms开发组保留所有未在本协议中明确授予您的权利。wulacms开发组保留随时更新本协议的权利，且无需另行通知，更新后的内容将在wulacms开发组官方网站公布，您可以随时访问wulacms开发组官方网站查阅最新版许可条款。
- 
-**4.协议终止**
+furnished to do so, subject to the following conditions:
 
-您一旦开始安装或者使用本“软件”，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的许可权力同时，也受到相关的约束和限制，本协议许可范围以外的行为，将直接违反本协议并构成侵权。一旦您违反本协议的条款，wulacms开发组随时可能终止本协议、收回许可和授权，并要求您承担相应法律和经济责任。
+The above copyright notice and this permission notice shall be included in all
 
-<p class="text-right"><strong>wulacms开发组</strong>&nbsp;&nbsp;</p>
+copies or substantial portions of the Software.
+
+***THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR***
+
+***IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,***
+
+***FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE***
+
+***AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER***
+
+***LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,***
+
+***OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE***
+
+***SOFTWARE.***

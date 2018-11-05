@@ -18,16 +18,19 @@
     <script src="{'jqadmin/plugin/parsley/parsley.min.js'|vendor}"></script>
     {initjq config=1}
     <style type="text/css">
-        .bg-dark a, .bg-dark a:hover {
-            color: #0366d6;
+        .markdown-body strong em{
+            font-style: normal;
+        }
+        .markdown-body p{
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
-<section id="content" class="m-t-md wrapper-md m-b-xs animated fadeInDown p-b-xs">
+<section id="content" class="m-t-lg wrapper-md m-b-xs animated fadeInDown p-b-xs">
     <div class="container aside-xxl" style="min-width: 1000px">
-        <div class="clearfix"><a href="." class="navbar-brand">WulaCMS安装程序<sub>{$version}</sub></a></div>
-        <section class="panel panel-default m-t-md bg-white wizard" id="install-wizard">
+        <div class="clearfix"><a href="." class="navbar-brand">WulaCMS安装程序<sub>1.0</sub><sub style="margin-left: 15px">欢迎使用wulacms创造价值</sub></a></div>
+        <section class="panel panel-default m-t-xs bg-white wizard" id="install-wizard">
             <div class="wizard-steps clearfix" id="form-wizard">
                 <ul class="steps">
                     <li data-target="#step1" class="active"><span class="badge badge-info">1</span>欢迎</li>
@@ -45,7 +48,7 @@
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="check" data-required="true" data-error-message="请同意本协议"/>
+                                <input type="checkbox" name="check" checked="checked" data-required="true" data-error-message="请同意本协议"/>
                                 我同意
                             </label>
                         </div>
@@ -189,7 +192,7 @@
                 </form>
                 <div class="actions pull-right">
                     <button type="button" class="btn btn-default btn-sm btn-prev" disabled="disabled">上一步</button>
-                    <button type="button" class="btn btn-default btn-sm btn-next" data-last="下一步">下一步</button>
+                    <button type="button" class="btn btn-primary btn-sm btn-next" data-last="下一步">下一步</button>
                 </div>
             </div>
         </section>
@@ -198,7 +201,7 @@
 <footer id="footer">
     <div class="text-center padder clearfix">
         <p>
-            <small>{'wulacms'|t:$version}<br/>&copy; 2014 - {'Y'|date} MIT </small>
+            <small>{'Powered by WulaCMS v%s'|t:$version}<br/>&copy; 2014 - {'Y'|date} MIT </small>
         </p>
     </div>
 </footer>

@@ -1,7 +1,7 @@
 <section class="hbox stretch wulaui" id="core-account-workset">
     <aside class="aside aside-md b-r">
         <section class="vbox">
-            <header class="header bg-light b-b">
+            <header class="header bg-light lt b-b">
                 <button class="btn btn-icon btn-default btn-sm pull-right visible-xs m-r-xs" data-toggle="class:show"
                         data-target="#core-role-wrap">
                     <i class="fa fa-reorder"></i>

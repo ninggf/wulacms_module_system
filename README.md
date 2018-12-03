@@ -56,6 +56,26 @@ return ['host'=>'localhost','port'=>6379,'db'=>0,'auth'=>'','timeout'=>5];
     ``` 
 > 关于任务请参见 `\system\classes\Task`类。
 
-## 命令
+## 任务
 
-1. `task:queue` 运行后台任务
+通过`artisan service`来运行任务队列。
+
+### 添加任务服务
+
+在`service_config.php`添加服务:
+
+```php
+'taskq' => [
+    'type'   => 'script',
+    'worker' => 5,
+    'sleep'  => 10,
+    'script' => 'modules/system/task/worker.php'
+]
+```
+
+根据需要调整`worker`和`sleep`的值
+
+### 任务保留参数
+
+1. `crontab`: 类linux的crontab配置
+2. `repeatInterval`: 重复间隔，单位秒

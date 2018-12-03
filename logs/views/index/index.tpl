@@ -1,6 +1,6 @@
 <div class="hbox stretch wulaui layui-hide" id="syslog-page">
     <section class="vbox">
-        <header class="header bg-light clearfix b-b">
+        <header class="header bg-light lt clearfix b-b">
             <div class="row m-t-sm">
                 <div class="col-xs-12 text-right m-b-xs">
                     <form data-table-form="#table" id="search-form" class="form-inline">
@@ -56,7 +56,7 @@
     </section>
     <aside class="aside aside-md b-l hidden-xs">
         <div class="vbox">
-            <header class="bg-light dk header b-b">
+            <header class="bg-light lt header b-b">
                 <p>日志分组</p>
             </header>
             <section class="hidden-xs scrollable m-t-xs">

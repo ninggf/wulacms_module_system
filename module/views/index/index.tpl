@@ -1,7 +1,7 @@
 <div class="hbox stretch wulaui layui-hide bg-white-only" id="module-page">
     <aside class="hidden-xs aside-sm b-r">
         <div class="vbox">
-            <header class="bg-light lter header b-b">
+            <header class="bg-light lt header b-b">
                 <p>模块分组</p>
             </header>
             <section class="hidden-xs scrollable m-t-xs">
@@ -20,7 +20,7 @@
     </aside>
     <section>
         <div class="vbox">
-            <header class="header bg-light lter clearfix p-l-none p-r-none">
+            <header class="header bg-light lt clearfix p-l-none p-r-none">
                 <div class="layui-tab layui-tab-brief caller-tab m-b-none">
                     <ul class="layui-tab-title m-b-none">
                         <li class="{if $type=='installed'}layui-this{/if}">

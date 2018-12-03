@@ -129,3 +129,6 @@ $tables['1.1.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}task_log` (
     `content` TEXT NULL,
     INDEX `FK_TASK_ID` (`task_id` ASC , `create_time` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='任务执行日志'";
+
+$tables['2.0.1'][] = "ALTER TABLE `{prefix}user`
+ADD COLUMN `pid` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '主账户ID' AFTER `id`";

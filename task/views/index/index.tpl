@@ -1,6 +1,6 @@
 <div class="hbox stretch wulaui layui-hide" id="task-list">
     <section class="vbox">
-        <header class="header bg-light clearfix b-b">
+        <header class="header bg-light lt clearfix b-b">
             <div class="row m-t-sm">
                 <div class="col-xs-4 m-b-xs">
                     <a href="{'system/task/edit/add'|app}" class="btn btn-sm btn-success new-task" data-ajax="dialog"
@@ -14,9 +14,12 @@
                     <a href="{'system/task/del'|app}" data-ajax data-grp="#table tbody input.grp:checked"
                        data-confirm="你真的要删除这些任务吗？" data-warn="请选择要删除的任务" class="btn btn-danger btn-sm"><i
                                 class="fa fa-trash"></i> {'Delete'|t}</a>
+                    <a href="{'system/task/clear'|app}" data-ajax id="clearTask" data-confirm="你真的要清空已完成任务吗？"
+                       class="btn btn-warning btn-sm hidden"><i class="fa fa-eraser"></i> 清空</a>
                     <button class="btn btn-sm" id="btn-reload">
-                        <i class="fa fa-refresh"></i>
+                        <i class="fa fa-refresh"></i> {'Refresh'|t}
                     </button>
+
                 </div>
                 <div class="col-xs-8 text-right m-b-xs">
                     <form data-table-form="#table" id="search-form" class="form-inline">
@@ -48,7 +51,7 @@
         </header>
         <section class="w-f">
             <div class="table-responsive">
-                <table id="table" data-auto data-table="{'system/task/data'|app}" data-sort="status,d"
+                <table id="table" data-auto data-table="{'system/task/data'|app}" data-sort="run_time,d"
                        style="min-width: 800px">
                     <thead>
                     <tr>
@@ -62,7 +65,7 @@
                         <th width="100" data-sort="runat,a">定时</th>
                         <th width="80" data-sort="progress,a">进度</th>
                         <th width="100" data-sort="retryCnt,a">重试</th>
-                        <th width="100" data-sort="run_time,a">运行时间</th>
+                        <th width="100" data-sort="run_time,d">运行时间</th>
                         <th width="100" data-sort="finish_time,a">结束时间</th>
                     </tr>
                     </thead>
@@ -75,7 +78,7 @@
     </section>
     <aside class="aside aside-sm b-l hidden-xs">
         <div class="vbox">
-            <header class="bg-light dk header b-b">
+            <header class="bg-light lt header b-b">
                 <p>状态</p>
             </header>
             <section class="hidden-xs scrollable m-t-xs">
@@ -94,59 +97,65 @@
     </aside>
     <a class="hidden edit-task" id="for-edit-task"></a>
 </div>
-<script>
-	layui.use(['jquery', 'bootstrap', 'wulaui'], function ($, b, wui) {
-		var group = $('#task-status'), table = $('#table');
-		group.find('a').click(function () {
-			var me = $(this), mp = me.closest('li');
-			if (mp.hasClass('active')) {
-				return;
-			}
-			group.find('li').not(mp).removeClass('active');
-			mp.addClass('active');
-			$('#type').val(me.attr('rel'));
-			$('#search-form').submit();
-			return false;
-		});
-		$('input[name="runat"]').change(function () {
-			$('#search-form').submit();
-		});
+<script type="text/javascript">
+    layui.use(['jquery', 'bootstrap', 'wulaui'], function ($, b, wui) {
+        var group = $('#task-status'), table = $('#table');
+        group.find('a').click(function () {
+            var me = $(this), mp = me.closest('li');
+            if (mp.hasClass('active')) {
+                return;
+            }
+            group.find('li').not(mp).removeClass('active');
+            mp.addClass('active');
+            var rel = me.attr('rel');
+            $('#type').val(rel);
+            if (rel == 'F') {
+                $('#clearTask').removeClass('hidden');
+            } else {
+                $('#clearTask').addClass('hidden');
+            }
+            $('#search-form').submit();
+            return false;
+        });
+        $('input[name="runat"]').change(function () {
+            $('#search-form').submit();
+        });
 
-		$('#task-list').on('before.dialog', '.new-task', function (e) { // 增加编辑用户
-			e.options.btn = ['创建', '取消'];
-			e.options.yes = function () {
-				if ($('#task-select').val()) {
-					$('#new-task-form').data('dialogId', layer.index).submit();
-				}
-				return false;
-			};
-		}).on('before.dialog', '.edit-task', function (e) {
-			e.options.btn = ['保存', '取消'];
-			e.options.yes = function () {
-				$('#edit-task-form').data('dialogId', layer.index).submit();
-				return false;
-			};
-		}).removeClass('layui-hide');
+        $('#task-list').on('before.dialog', '.new-task', function (e) { // 增加编辑用户
+            e.options.btn = ['创建', '取消'];
+            e.options.yes = function () {
+                if ($('#task-select').val()) {
+                    $('#new-task-form').data('dialogId', layer.index).submit();
+                }
+                return false;
+            };
+        }).on('before.dialog', '.edit-task', function (e) {
+            e.options.btn = ['保存', '取消'];
+            e.options.yes = function () {
+                $('#edit-task-form').data('dialogId', layer.index).submit();
+                return false;
+            };
+        }).removeClass('layui-hide');
 
-		$('body').on('ajax.success', '#new-task-form', function (e, data) {
-			layer.close($(this).data('dialogId'));
-			if (group.find('li.active a[rel=D]').length > 0) {
-				table.reload();
-			} else {
-				group.find('a[rel=D]').click();
-			}
-			wui.dialog({
-				content: wui.app('system/task/edit/' + data.args.id),
-				type   : 'ajax',
-				area   : '500px,auto',
-				title  : '编辑任务'
-			}, $('#for-edit-task'));
-		}).on('ajax.success', '#edit-task-form', function () {
-			layer.closeAll();
-			table.reload();
-		});
-		$('#btn-reload').click(function () {
-			table.reload();
-		});
-	})
+        $('body').on('ajax.success', '#new-task-form', function (e, data) {
+            layer.close($(this).data('dialogId'));
+            if (group.find('li.active a[rel=D]').length > 0) {
+                table.reload();
+            } else {
+                group.find('a[rel=D]').click();
+            }
+            wui.dialog({
+                content: wui.app('system/task/edit/' + data.args.id),
+                type   : 'ajax',
+                area   : '500px,auto',
+                title  : '编辑任务'
+            }, $('#for-edit-task'));
+        }).on('ajax.success', '#edit-task-form', function () {
+            layer.closeAll();
+            table.reload();
+        });
+        $('#btn-reload').click(function () {
+            table.reload();
+        });
+    })
 </script>

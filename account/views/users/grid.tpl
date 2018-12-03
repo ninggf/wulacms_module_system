@@ -1,5 +1,5 @@
 <section class="vbox wulaui" id="core-users-workset">
-    <header class="bg-light header b-b clearfix">
+    <header class="bg-light lt header b-b clearfix">
         <div class="row m-t-sm">
             <div class="col-sm-6 hidden-xs m-b-xs">
                 <a href="{'system/account/users/edit'|app}" class="btn btn-sm btn-success edit-admin" data-ajax="dialog"

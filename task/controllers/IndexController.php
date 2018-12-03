@@ -23,135 +23,142 @@ use wulaphp\io\Response;
  * @acl     m:system/task
  */
 class IndexController extends IFramePageController {
-	private $groups   = ['D' => '新建', 'P' => '等待', 'R' => '运行', 'F' => '完成', 'E' => '出错'];
-	private $priority = ['I' => '中', 'H' => '高', 'L' => '低'];
+    private $groups   = ['D' => '新建', 'P' => '等待', 'R' => '运行', 'F' => '完成', 'E' => '出错'];
+    private $priority = ['I' => '中', 'H' => '高', 'L' => '低'];
 
-	public function index() {
+    public function index() {
 
-		$data['groups'] = $this->groups;
+        $data['groups'] = $this->groups;
 
-		return $this->render($data);
-	}
+        return $this->render($data);
+    }
 
-	/**
-	 * 再次执行
-	 *
-	 * @param string $ids
-	 *
-	 * @return \wulaphp\mvc\view\JsonView
-	 */
-	public function restart($ids) {
-		if (empty($ids)) {
-			return Ajax::error('未提供任务编号');
-		}
+    /**
+     * 再次执行
+     *
+     * @param string $ids
+     *
+     * @return \wulaphp\mvc\view\JsonView
+     */
+    public function restart($ids) {
+        if (empty($ids)) {
+            return Ajax::error('未提供任务编号');
+        }
 
-		$ids   = explode(',', $ids);
-		$table = new TaskQueue();
-		$table->restartTask($ids);
+        $ids   = explode(',', $ids);
+        $table = new TaskQueue();
+        $table->restartTask($ids);
 
-		return Ajax::reload('#table', '任务已经重新启动');
-	}
+        return Ajax::reload('#table', '任务已经重新启动');
+    }
 
-	/**
-	 * 删除
-	 *
-	 * @param string $ids
-	 *
-	 * @return \wulaphp\mvc\view\JsonView
-	 */
-	public function del($ids) {
-		if (empty($ids)) {
-			return Ajax::error('未提供任务编号');
-		}
-		$ids   = explode(',', $ids);
-		$table = new TaskQueue();
-		$table->deleteTask($ids);
+    /**
+     * 删除
+     *
+     * @param string $ids
+     *
+     * @return \wulaphp\mvc\view\JsonView
+     */
+    public function del($ids) {
+        if (empty($ids)) {
+            return Ajax::error('未提供任务编号');
+        }
+        $ids   = explode(',', $ids);
+        $table = new TaskQueue();
+        $table->deleteTask($ids);
 
-		return Ajax::reload('#table', '任务已经删除');
-	}
+        return Ajax::reload('#table', '任务已经删除');
+    }
 
-	public function status($id, $time = 0) {
-		if (empty($id)) {
-			return Ajax::success();
-		}
-		$table  = new TaskQueue();
-		$status = $table->findAll(['id' => $id], 'id,progress,finish_time,retryCnt,retry,status')->get();
+    public function clear() {
+        $table = new TaskQueue();
+        $table->clearTask();
 
-		if ($status['finish_time']) {
-			$status['finish_time'] = date('Y-m-d H:i:s', $status['finish_time']);
-		}
-		$status['retrys'] = "{$status['retry']}/{$status['retryCnt']}";
-		if ($status) {
-			$tl   = new TaskLog();
-			$logs = $tl->getLogs($id, $time);
-		} else {
-			$logs = [];
-		}
-		$lg = [];
-		if ($logs) {
-			foreach ($logs as $l) {
-				$lg[] = '<p data-time="' . $l['create_time'] . '">' . date('Y-m-d H:i:s', $l['create_time']) . ' ' . $l['content'] . '</p>';
-			}
-		}
+        return Ajax::reload('#table', '完成的任务已清空');
+    }
 
-		return ['progress' => $status, 'logs' => implode('', $lg)];
-	}
+    public function status($id, $time = 0) {
+        if (empty($id)) {
+            return Ajax::success();
+        }
+        $table  = new TaskQueue();
+        $status = $table->findAll(['id' => $id], 'id,progress,finish_time,retryCnt,retry,status')->get();
 
-	public function data($q, $type, $runat, $count) {
-		$table = new TaskQueue();
-		$query = $table->select()->page()->sort();
+        if ($status['finish_time']) {
+            $status['finish_time'] = date('Y-m-d H:i:s', $status['finish_time']);
+        }
+        $status['retrys'] = "{$status['retry']}/{$status['retryCnt']}";
+        if ($status) {
+            $tl   = new TaskLog();
+            $logs = $tl->getLogs($id, $time);
+        } else {
+            $logs = [];
+        }
+        $lg = [];
+        if ($logs) {
+            foreach ($logs as $l) {
+                $lg[] = '<p data-time="' . $l['create_time'] . '">' . date('Y-m-d H:i:s', $l['create_time']) . ' ' . $l['content'] . '</p>';
+            }
+        }
 
-		$where = [];
-		if ($type) {
-			$where['status'] = $type;
-		} else {
-			$where['status IN'] = ['D', 'P', 'R'];
-		}
-		if ($runat == '1') {
-			$where['runat'] = 0;
-		} else if ($runat == '2') {
-			$where['runat >'] = 0;
-		}
-		if ($q) {
-			$qw = Condition::parseSearchExpression($q, [
-				'定时'   => '@runat',
-				'任务'   => 'task',
-				'id'   => 'id',
-				'ID'   => 'id',
-				'task' => 'task'
-			]);
-			if ($qw) {
-				$query->where($qw);
-			} else {
-				$where['task LIKE'] = "%$q%";
-			}
-		}
-		$query->where($where);
-		$data['items']      = $query->toArray();
-		$data['total']      = $count ? $query->total('id') : '';
-		$data['groups']     = $this->groups;
-		$data['priorities'] = $this->priority;
-		$data['tdCls']      = ['P' => '', 'F' => 'success', 'E' => 'danger', 'R' => 'info'];
-		$data['ctime']      = time() + 180;
+        return ['progress' => $status, 'logs' => implode('', $lg)];
+    }
 
-		return view($data);
-	}
+    public function data($q, $type, $runat, $count) {
+        $table = new TaskQueue();
+        $query = $table->select()->page()->sort();
 
-	public function log($id) {
-		if (empty($id)) {
-			Response::respond(404, $id . '为空');
-		}
+        $where = [];
+        if ($type) {
+            $where['status'] = $type;
+        } else {
+            $where['status IN'] = ['D', 'P', 'R'];
+        }
+        if ($runat == '1') {
+            $where['runat'] = 0;
+        } else if ($runat == '2') {
+            $where['runat >'] = 0;
+        }
+        if ($q) {
+            $qw = Condition::parseSearchExpression($q, [
+                '定时'   => '@runat',
+                '任务'   => 'task',
+                'id'   => 'id',
+                'ID'   => 'id',
+                'task' => 'task'
+            ]);
+            if ($qw) {
+                $query->where($qw);
+            } else {
+                $where['task LIKE'] = "%$q%";
+            }
+        }
+        $query->where($where);
+        $data['items']      = $query->toArray();
+        $data['total']      = $count ? $query->total('id') : '';
+        $data['groups']     = $this->groups;
+        $data['priorities'] = $this->priority;
+        $data['tdCls']      = ['P' => '', 'F' => 'success', 'E' => 'danger', 'R' => 'info'];
+        $data['ctime']      = time() + 180;
 
-		$tq   = new TaskQueue();
-		$task = $tq->get(['id' => $id])->ary();
-		if (!$task) {
-			Response::error('任务不存在');
-		}
+        return view($data);
+    }
 
-		$tl           = new TaskLog();
-		$data['task'] = $task;
-		$data['logs'] = $tl->getLogs($id);
+    public function log($id) {
+        if (empty($id)) {
+            Response::respond(404, $id . '为空');
+        }
 
-		return $this->render($data);
-	}
+        $tq   = new TaskQueue();
+        $task = $tq->get(['id' => $id])->ary();
+        if (!$task) {
+            Response::error('任务不存在');
+        }
+
+        $tl           = new TaskLog();
+        $data['task'] = $task;
+        $data['logs'] = $tl->getLogs($id);
+
+        return $this->render($data);
+    }
 }

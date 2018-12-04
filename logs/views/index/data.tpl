@@ -2,7 +2,7 @@
 {foreach $items as $item}
     <tr>
         <td class="{$tdCls[$item.level]}"></td>
-        <td>{$item.time|date_format:'Y年m月d日H点i分'}</td>
+        <td>{$item.time|date_format:'Y-m-d H:i:s'}</td>
         <td>{$item.nickname}({$item.username})</td>
         <td>{$item.ip}</td>
         <td>{$item.log|escape}</td>

@@ -23,8 +23,12 @@
                                 错误
                             </label>
                         </div>
+                        <div class="input-group input-group-sm date">
+                            <input type="text" class="form-control" autocomplete="off" name="date" id="date" style="width: 170px">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        </div>
                         <div class="input-group input-group-sm">
-                            <input id="search" data-expend="300" type="text" name="q" class="input-sm form-control" placeholder="{'Search'|t}" autocomplete="off"/>
+                            <input id="search" data-expend="150" type="text" name="q" class="input-sm form-control" placeholder="{'Search'|t}" autocomplete="off"/>
                             <span class="input-group-btn">
                                 <button class="btn btn-sm btn-info" id="btn-do-search" type="submit">Go!</button>
                             </span>
@@ -40,11 +44,11 @@
                     <thead>
                     <tr>
                         <th width="1"></th>
-                        <th width="200" data-sort="time,d">日期 & 时间</th>
-                        <th width="160" data-sort="user_id,a">用户</th>
-                        <th width="160" data-sort="ip,a">IP</th>
+                        <th width="120" data-sort="time,d">日期 & 时间</th>
+                        <th width="140" data-sort="user_id,a">用户</th>
+                        <th width="130" data-sort="ip,a">IP</th>
                         <th>日志</th>
-                        <th width="120" data-sort="type,a">组</th>
+                        <th width="100" data-sort="type,a">组</th>
                     </tr>
                     </thead>
                 </table>
@@ -54,7 +58,7 @@
             <div data-table-pager="#table" data-limit="30"></div>
         </footer>
     </section>
-    <aside class="aside aside-md b-l hidden-xs">
+    <aside class="aside aside-sm b-l hidden-xs">
         <div class="vbox">
             <header class="bg-light lt header b-b">
                 <p>日志分组</p>
@@ -62,11 +66,11 @@
             <section class="hidden-xs scrollable m-t-xs">
                 <ul class="nav nav-pills nav-stacked no-radius" id="syslog-apps">
                     <li class="active">
-                        <a href="javascript:;"> 全部 </a>
+                        <a href="javascript:"> 全部 </a>
                     </li>
                     {foreach $groups as $gp=>$name}
                         <li>
-                            <a href="javascript:;" rel="{$gp}"> {$name}</a>
+                            <a href="javascript:" rel="{$gp}"> {$name}</a>
                         </li>
                     {/foreach}
                 </ul>
@@ -75,7 +79,7 @@
     </aside>
 </div>
 <script>
-	layui.use(['jquery', 'bootstrap', 'wulaui'], function ($) {
+	layui.use(['jquery','laydate', 'bootstrap', 'wulaui'], function ($,laydate) {
 		var group = $('#syslog-apps');
 		group.find('a').click(function () {
 			var me = $(this), mp = me.closest('li');
@@ -91,7 +95,11 @@
 		$('input[name="level"]').change(function () {
 			$('#search-form').submit();
 		});
-
+        laydate.render({
+            elem: '#date',
+            range: '~',
+            max: "{'Y-m-d'|date}"
+        });
 		$('#syslog-page').removeClass('layui-hide')
 	})
 </script>

@@ -2,7 +2,7 @@
     <section class="vbox">
         <header class="header bg-light lt clearfix b-b">
             <div class="row m-t-sm">
-                <div class="col-xs-4 m-b-xs">
+                <div class="col-xs-12 col-sm-6 m-b-xs">
                     <a href="{'system/task/edit/add'|app}" class="btn btn-sm btn-success new-task" data-ajax="dialog"
                        data-area="300px,auto" data-title="新建任务">
                         <i class="fa fa-plus"></i> {'New'|t:' '}
@@ -17,11 +17,11 @@
                     <a href="{'system/task/clear'|app}" data-ajax id="clearTask" data-confirm="你真的要清空已完成任务吗？"
                        class="btn btn-warning btn-sm hidden"><i class="fa fa-eraser"></i> 清空</a>
                     <button class="btn btn-sm" id="btn-reload">
-                        <i class="fa fa-refresh"></i> {'Refresh'|t}
+                        <i class="fa fa-refresh"></i>
                     </button>
 
                 </div>
-                <div class="col-xs-8 text-right m-b-xs">
+                <div class="col-sm-6 hidden-xs text-right m-b-xs">
                     <form data-table-form="#table" id="search-form" class="form-inline">
                         <input type="hidden" id="type" name="type" value=""/>
                         <div class="btn-group" data-toggle="buttons">
@@ -31,15 +31,15 @@
                             </label>
                             <label class="btn btn-sm btn-info">
                                 <input type="radio" name="runat" value="2"><i class="fa fa-check text-active"></i>
-                                定时任务
+                                定时
                             </label>
                             <label class="btn btn-sm btn-warning">
                                 <input type="radio" name="runat" value="1"><i class="fa fa-check text-active"></i>
-                                普通任务
+                                普通
                             </label>
                         </div>
                         <div class="input-group input-group-sm">
-                            <input id="search" data-expend="300" type="text" name="q" class="input-sm form-control"
+                            <input id="search" type="text" name="q" class="input-sm form-control"
                                    placeholder="{'Search'|t}" autocomplete="off"/>
                             <span class="input-group-btn">
                                 <button class="btn btn-sm btn-info" id="btn-do-search" type="submit">Go!</button>
@@ -73,10 +73,10 @@
             </div>
         </section>
         <footer class="footer b-t">
-            <div data-table-pager="#table" data-limit="10"></div>
+            <div data-table-pager="#table" data-limit="20"></div>
         </footer>
     </section>
-    <aside class="aside aside-sm b-l hidden-xs">
+    <aside class="aside aside-xs b-l hidden-xs">
         <div class="vbox">
             <header class="bg-light lt header b-b">
                 <p>状态</p>
@@ -84,11 +84,11 @@
             <section class="hidden-xs scrollable m-t-xs">
                 <ul class="nav nav-pills nav-stacked no-radius" id="task-status">
                     <li class="active">
-                        <a href="javascript:;"> 全部 </a>
+                        <a href="javascript:"> 全部 </a>
                     </li>
                     {foreach $groups as $gp=>$name}
                         <li>
-                            <a href="javascript:;" rel="{$gp}" title="{$name}"> {$name}</a>
+                            <a href="javascript:" rel="{$gp}" title="{$name}"> {$name}</a>
                         </li>
                     {/foreach}
                 </ul>

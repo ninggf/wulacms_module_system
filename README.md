@@ -62,14 +62,12 @@ return ['host'=>'localhost','port'=>6379,'db'=>0,'auth'=>'','timeout'=>5];
 
 ### 添加任务服务
 
-在`service_config.php`添加服务:
+任务队列会默认添加到`service`配置中,如果有需要可以在`service_config.php`进行修改:
 
 ```php
 'taskq' => [
-    'type'   => 'script',
     'worker' => 5,
-    'sleep'  => 10,
-    'script' => 'modules/system/task/worker.php'
+    'sleep'  => 10
 ]
 ```
 

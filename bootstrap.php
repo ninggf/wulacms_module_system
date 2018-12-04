@@ -51,6 +51,26 @@ namespace system {
         }
 
         /**
+         * @param \wulaphp\conf\Configuration $service
+         *
+         * @filter on_load_service_config
+         * @return \wulaphp\conf\Configuration
+         */
+        public static function onLoadService($service) {
+            $cfg = $service->get('services.taskq', []);
+            $cfg = array_merge([
+                'type'   => 'script',
+                'worker' => 5,
+                'sleep'  => 10,
+                'script' => App::getModule('system')->getPath('task/worker.php', false)
+            ], $cfg);
+
+            $service->set('services.taskq', $cfg);
+
+            return $service;
+        }
+
+        /**
          * 升级到1.0.0版本时执行
          *
          * @param \wulaphp\db\DatabaseConnection $db

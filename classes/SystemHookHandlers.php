@@ -90,7 +90,7 @@ trait SystemHookHandlers {
             }
         }
         //应用
-        $apps            = $ui->getMenu('apps', __('Applications'), 100);
+        $apps            = $ui->getMenu('apps', __('Applications'), 20);
         $apps->icon      = '&#xe637;';
         $apps->iconStyle = 'color:green';
         //活动管理

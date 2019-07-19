@@ -46,6 +46,9 @@ namespace system {
             $v['2.0.0'] = '不再支持 php 5.6.x版本';
             $v['2.0.1'] = '支持子账户';
             $v['2.1.0'] = '优化任务管理';
+            $v['2.2.0'] = '队列分组';
+            $v['2.3.0'] = '定时队列';
+            $v['2.4.0'] = '用户可以有角色（SAAS)';
 
             return $v;
         }
@@ -57,15 +60,22 @@ namespace system {
          * @return \wulaphp\conf\Configuration
          */
         public static function onLoadService($service) {
-            $cfg = $service->get('services.taskq', []);
-            $cfg = array_merge([
+            //databse queue
+            $service->setm('services.taskq', [
                 'type'   => 'script',
-                'worker' => 5,
-                'sleep'  => 10,
-                'script' => App::getModule('system')->getPath('task/worker.php', false)
-            ], $cfg);
-
-            $service->set('services.taskq', $cfg);
+                'worker' => 1,
+                'sleep'  => 1,
+                'script' => App::getModule('system')->getPath('task/taskw.php', false),
+                'env'    => ['loop' => 1]
+            ]);
+            //regular queue
+            $service->setm('services.redisq', [
+                'type'   => 'script',
+                'worker' => 1,
+                'sleep'  => 1,
+                'script' => App::getModule('system')->getPath('task/redisw.php', false),
+                'env'    => ['loop' => 1]
+            ]);
 
             return $service;
         }

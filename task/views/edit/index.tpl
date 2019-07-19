@@ -1,6 +1,7 @@
 <div class="container-fluid wulaui m-t-sm">
     <form id="edit-task-form" name="TaskEditForm" data-validate="{$rules|escape}" action="{'system/task/edit/save'|app}"
-          data-ajax data-ajax-done="reload:#table" method="post" data-loading>
+          data-ajax method="post" data-loading>
+        <input type="hidden" name="tq" value="{$tq}"/>
         {$tform|render}
         {if $form}
             <div class="line line-dashed line-lg pull-in"></div>

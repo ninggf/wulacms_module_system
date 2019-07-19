@@ -3,27 +3,24 @@
         <header class="header bg-light lt clearfix b-b">
             <div class="row m-t-sm">
                 <div class="col-xs-12 col-sm-6 m-b-xs">
-                    <a href="{'system/task/edit/add'|app}" class="btn btn-sm btn-success new-task" data-ajax="dialog"
+                    <a href="{'system/task/edit/add'|app}?tq={$tq}" class="btn btn-sm btn-success new-task" data-ajax="dialog"
                        data-area="300px,auto" data-title="新建任务">
                         <i class="fa fa-plus"></i> {'New'|t:' '}
                     </a>
-                    <a href="{'system/task/restart'|app}" data-ajax data-grp="#table tbody input.grp:checked"
+                    <a href="{'system/task/restart'|app}?tq={$tq}" data-ajax data-grp="#table tbody input.grp:checked"
                        data-confirm="你真的要启动这些任务吗？" data-warn="请选择要启动的任务" class="btn btn-sm btn-primary"><i
                                 class="fa fa-play-circle-o"></i>
                         {'Start'|t}</a>
-                    <a href="{'system/task/del'|app}" data-ajax data-grp="#table tbody input.grp:checked"
+                    <a href="{'system/task/del'|app}?tq={$tq}" data-ajax data-grp="#table tbody input.grp:checked"
                        data-confirm="你真的要删除这些任务吗？" data-warn="请选择要删除的任务" class="btn btn-danger btn-sm"><i
                                 class="fa fa-trash"></i> {'Delete'|t}</a>
-                    <a href="{'system/task/clear'|app}" data-ajax id="clearTask" data-confirm="你真的要清空已完成任务吗？"
+                    <a href="{'system/task/clear'|app}?tq={$tq}" data-ajax id="clearTask" data-confirm="你真的要清空已完成任务吗？"
                        class="btn btn-warning btn-sm hidden"><i class="fa fa-eraser"></i> 清空</a>
-                    <button class="btn btn-sm" id="btn-reload">
-                        <i class="fa fa-refresh"></i>
-                    </button>
-
                 </div>
                 <div class="col-sm-6 hidden-xs text-right m-b-xs">
                     <form data-table-form="#table" id="search-form" class="form-inline">
                         <input type="hidden" id="type" name="type" value=""/>
+                        <input type="hidden" id="tq" name="tq" value="{$tq}"/>
                         <div class="btn-group" data-toggle="buttons">
                             <label class="btn btn-sm btn-default active">
                                 <input type="radio" name="runat" value=""><i class="fa fa-check text-active"></i>
@@ -109,7 +106,7 @@
             mp.addClass('active');
             var rel = me.attr('rel');
             $('#type').val(rel);
-            if (rel == 'F') {
+            if (rel == 'F' || rel == 'E') {
                 $('#clearTask').removeClass('hidden');
             } else {
                 $('#clearTask').addClass('hidden');
@@ -139,23 +136,22 @@
 
         $('body').on('ajax.success', '#new-task-form', function (e, data) {
             layer.close($(this).data('dialogId'));
+            if(data.code != 200){
+                return;
+            }
             if (group.find('li.active a[rel=D]').length > 0) {
                 table.reload();
             } else {
                 group.find('a[rel=D]').click();
             }
             wui.dialog({
-                content: wui.app('system/task/edit/' + data.args.id),
+                content: wui.app('system/task/edit/' + data.args.id+'?tq='+data.args.tq),
                 type   : 'ajax',
                 area   : '500px,auto',
                 title  : '编辑任务'
             }, $('#for-edit-task'));
         }).on('ajax.success', '#edit-task-form', function () {
             layer.closeAll();
-            table.reload();
-        });
-        $('#btn-reload').click(function () {
-            table.reload();
         });
     })
 </script>

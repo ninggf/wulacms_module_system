@@ -10,10 +10,26 @@
 
 namespace system\task;
 
+use wulaphp\app\App;
 use wulaphp\db\Table;
 
 class TaskQueue extends Table {
     protected $autoIncrement = false;
+    protected $fixedTable    = false;
+
+    /**
+     * TaskQueue constructor.
+     *
+     * @param string                              $table 表名
+     * @param null|\wulaphp\db\DatabaseConnection $db
+     */
+    public function __construct($table = '', $db = null) {
+        if ($table) {
+            $this->table      = $table;
+            $this->fixedTable = true;
+        }
+        parent::__construct($db);
+    }
 
     /**
      * 启动任务.
@@ -75,10 +91,12 @@ class TaskQueue extends Table {
      * @param int|string $runat    [optional] 定时.
      * @param null|array $options  [optional] 参数.
      * @param int        $interval 重试间隔
+     * @param string     $group    任务所在组
+     * @param string     $task_id  标识
      *
      * @return string|bool 任务ID或false
      */
-    public function newTask($name, $task, $status = 'P', $retryCnt = 0, $runat = 0, $options = null, $interval = 0) {
+    public function newTask($name, $task, $status = 'P', $retryCnt = 0, $runat = 0, $options = null, $interval = 0, $group = '0', $task_id = '0') {
         if (empty($name)) {
             return false;
         }
@@ -87,16 +105,18 @@ class TaskQueue extends Table {
         }
         $data['id']          = uniqid();
         $data['create_time'] = time();
-        $data['name']        = (string)$name;
+        $data['name']        = strval($name);
         $data['task']        = $task;
         $data['retryCnt']    = intval($retryCnt);
         $data['retryInt']    = abs(intval($interval));
         $data['runat']       = intval(is_string($runat) ? @strtotime($runat) : $runat);
+        $data['group']       = substr($group, 0, 12);
+        $data['task_id']     = substr($task_id, 0, 32);
 
         if ($options && is_array($options)) {
             $data['options'] = @json_encode($options);
-            if (isset($data['options']['crontab'])) {
-                $runat = \CrontabHelper::next_runtime($data['options']['crontab']);
+            if (isset($options['crontab']) && $options['crontab']) {
+                $runat = \CrontabHelper::next_runtime($options['crontab']);
                 if ($runat) {
                     $data['runat'] = $runat;
                 }
@@ -106,8 +126,21 @@ class TaskQueue extends Table {
         if (in_array($status, ['D', 'P'])) {
             $data['status'] = $status;
         }
+        if (!$this->fixedTable && $data['group']) {
+            //必须指定组才随机分配任务
+            $taskQueueNum = App::icfg('taskQueueNum');
+            if ($taskQueueNum > 1) {
+                list($usec, $sec) = explode(' ', microtime());
+                mt_srand((float)$sec + ((float)$usec * 100000));
+                $no = mt_rand(0, $taskQueueNum - 1);
+                if ($no) {
+                    $this->table = '{task_queue_' . $no . '}';
+                }
+            }
+        }
 
         $rst = $this->insert($data);
+
         if ($rst) {
             return $data['id'];
         }
@@ -142,5 +175,22 @@ class TaskQueue extends Table {
         ]);
 
         return $tasks;
+    }
+
+    /**
+     * 获取具体队列实例.
+     *
+     * @param int $tq
+     *
+     * @return \system\task\TaskQueue
+     */
+    public static function tq($tq) {
+        if ($tq) {
+            $table = new TaskQueue('task_queue_' . $tq);
+        } else {
+            $table = new TaskQueue('task_queue');
+        }
+
+        return $table;
     }
 }

@@ -9,7 +9,7 @@
         <td>
             <p>[{$priorities[$item.priority]}]
                 {if $item.status == 'D' || $item.status == 'E' || $item.runat > $ctime}
-                    <a href="{'system/task/edit'|app}/{$item.id}" class="edit-task" data-title="编辑任务"
+                    <a href="{'system/task/edit'|app}/{$item.id}?tq={$tq}" class="edit-task" data-title="编辑任务"
                        data-area="500px,auto" data-ajax="dialog">{$item.name}</a>
                 {else}
                     {$item.name}

@@ -27,8 +27,9 @@ class IndexController extends IFramePageController {
     private $priority = ['I' => '中', 'H' => '高', 'L' => '低'];
 
     public function index() {
-
+        $tq             = irqst('tq');
         $data['groups'] = $this->groups;
+        $data['tq']     = intval($tq);
 
         return $this->render($data);
     }
@@ -46,7 +47,8 @@ class IndexController extends IFramePageController {
         }
 
         $ids   = explode(',', $ids);
-        $table = new TaskQueue();
+        $tq    = irqst('tq');
+        $table = TaskQueue::tq($tq);
         $table->restartTask($ids);
 
         return Ajax::reload('#table', '任务已经重新启动');
@@ -64,14 +66,16 @@ class IndexController extends IFramePageController {
             return Ajax::error('未提供任务编号');
         }
         $ids   = explode(',', $ids);
-        $table = new TaskQueue();
+        $tq    = irqst('tq');
+        $table = TaskQueue::tq($tq);
         $table->deleteTask($ids);
 
         return Ajax::reload('#table', '任务已经删除');
     }
 
     public function clear() {
-        $table = new TaskQueue();
+        $tq    = irqst('tq');
+        $table = TaskQueue::tq($tq);
         $table->clearTask();
 
         return Ajax::reload('#table', '完成的任务已清空');
@@ -81,7 +85,8 @@ class IndexController extends IFramePageController {
         if (empty($id)) {
             return Ajax::success();
         }
-        $table  = new TaskQueue();
+        $tq     = irqst('tq');
+        $table  = TaskQueue::tq($tq);
         $status = $table->findAll(['id' => $id], 'id,progress,finish_time,retryCnt,retry,status')->get();
 
         if ($status['finish_time']) {
@@ -105,7 +110,8 @@ class IndexController extends IFramePageController {
     }
 
     public function data($q, $type, $runat, $count) {
-        $table = new TaskQueue();
+        $tq    = irqst('tq');
+        $table = TaskQueue::tq($tq);
         $query = $table->select()->page()->sort();
 
         $where = [];
@@ -140,6 +146,7 @@ class IndexController extends IFramePageController {
         $data['priorities'] = $this->priority;
         $data['tdCls']      = ['P' => '', 'F' => 'success', 'E' => 'danger', 'R' => 'info'];
         $data['ctime']      = time() + 180;
+        $data['tq']         = $tq;
 
         return view($data);
     }
@@ -149,7 +156,8 @@ class IndexController extends IFramePageController {
             Response::respond(404, $id . '为空');
         }
 
-        $tq   = new TaskQueue();
+        $tq   = irqst('tq');
+        $tq   = TaskQueue::tq($tq);
         $task = $tq->get(['id' => $id])->ary();
         if (!$task) {
             Response::error('任务不存在');

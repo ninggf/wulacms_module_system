@@ -1,26 +1,24 @@
 {
-  "name": "wulacms/system",
-  "description": "wulacms内容管理系统的内核模块",
-  "type": "wula-module",
-  "require": {
-	"wula/wula-installer": "^2.0",
-	"michelf/php-markdown": "^1.7"
-  },
-  "license": "MIT",
-  "authors": [
-	{
-	  "name": "Leo Ning",
-	  "email": "windywany@gmail.com"
-	}
-  ],
-  "extra": {
-	"branch-alias": {
-	  "dev-master": "1.0-dev",
-	  "v2.0": "2.0-dev"
-	}
-  },
-  "support": {
-	"issues": "https://github.com/ninggf/wulacms_module_system/issues"
-  },
-  "homepage": "https://www.wulacms.com/modules/system"
+    "name": "wulacms/system",
+    "description": "wulacms内核模块",
+    "type": "wula-module",
+    "require": {
+        "wula/wula-installer": "^2.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Leo Ning",
+            "email": "windywany@gmail.com"
+        }
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0"
+        }
+    },
+    "support": {
+        "issues": "https://github.com/ninggf/wulacms_module_system/issues"
+    },
+    "homepage": "https://www.wulacms.com/modules/system"
 }

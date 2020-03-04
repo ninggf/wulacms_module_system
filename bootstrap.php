@@ -8,43 +8,68 @@
  * file that was distributed with this source code.
  */
 
-namespace system {
+namespace system;
 
-    use system\classes\SystemHookHandlers;
-    use wula\cms\CmfModule;
-    use wulaphp\app\App;
+use wula\cms\CmfModule;
+use wulaphp\app\App;
+use wulaphp\io\Response;
+use wulaphp\router\Router;
 
-    /**
-     * 系统内核模块.
-     *
-     * @group kernel
-     * @subEnabled
-     */
-    class SystemModule extends CmfModule {
-        use SystemHookHandlers;
+/**
+ * 系统内核模块.
+ *
+ * @group kernel
+ * @subEnabled
+ */
+class SystemModule extends CmfModule {
 
-        public function getName() {
-            return '系统内核';
-        }
-
-        public function getDescription() {
-            return 'wualcms系统内核模块，提供用户、模块、日志、等基础功能。';
-        }
-
-        public function getHomePageURL() {
-            return 'https://www.wulacms.com/modules/system';
-        }
-
-        public function getAuthor() {
-            return 'Leo Ning';
-        }
-
-        public function getVersionList() {
-            $v['1.0.0'] = '初始版本';
-
-            return $v;
-        }
+    public function getName() {
+        return '内核';
     }
 
-    App::register(new SystemModule());
+    public function getDescription() {
+        return 'wualcms系统内核模块，提供用户、模块、日志、等基础功能。';
+    }
+
+    public function getHomePageURL() {
+        return 'https://www.wulacms.com/modules/system';
+    }
+
+    public function getAuthor() {
+        return 'Leo Ning';
+    }
+
+    public function getVersionList() {
+        $v['1.0.0'] = '初始版本';
+
+        return $v;
+    }
+
+    /**
+     * 处理安装.
+     *
+     * @param Router $router
+     * @param string $url
+     *
+     * @bind router\beforeDispatch
+     */
+    public static function beforeDispatch($router, $url) {
+        if (!WULACMF_INSTALLED) {
+            if (PHP_RUNTIME_NAME == 'cli-server' && is_file(WWWROOT . $url)) {
+                return;//运行在开发服务器
+            }
+            $installURL = App::url('system/installer');
+            if (WWWROOT_DIR != '/') {
+                $regURL = substr($installURL, strlen(WWWROOT_DIR) - 1);
+            } else {
+                $regURL = $installURL;
+            }
+            $regURL = ltrim($regURL, '/');
+            if (!Router::is($regURL . '(/.*)?', true)) {
+                Response::redirect($installURL);
+            }
+        }
+    }
 }
+
+App::register(new SystemModule());

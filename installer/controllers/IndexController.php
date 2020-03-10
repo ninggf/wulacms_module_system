@@ -10,7 +10,6 @@
 
 namespace system\installer\controllers;
 
-use wulaphp\app\App;
 use wulaphp\io\Response;
 use wulaphp\mvc\controller\Controller;
 
@@ -32,15 +31,6 @@ class IndexController extends Controller {
     }
 
     public function index() {
-        if (!file_exists(TMP_PATH . 'install.txt')) {
-            $uuid = md5(uniqid());
-            if (file_put_contents(TMP_PATH . 'install.txt', $uuid)) {
-                Response::redirect(App::url('system/installer/setup'));
-            } else {
-                Response::error('tmp dir: ' . TMP_DIR . ' cannot write!');
-            }
-        } else {
-            Response::redirect(App::url('system/installer/setup'));
-        }
+        return 'install index page';
     }
 }

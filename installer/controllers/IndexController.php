@@ -143,9 +143,10 @@ class IndexController extends Controller {
         $f     = CONFIG_PATH;
         $dir[] = ['conf目录', CmfModule::checkFile($f)];
 
-        $step = sess_get('step', 'home');
+        $step   = sess_get('step', 'home');
+        $config = sess_get('stepData', []);
 
-        return view(['requirements' => $checked, 'dirs' => $dir, 'step' => $step]);
+        return view(['requirements' => $checked, 'dirs' => $dir, 'step' => $step, 'data' => $config]);
     }
 
     /**
@@ -153,7 +154,14 @@ class IndexController extends Controller {
      * @return array
      */
     public function verify() {
-        return ['verified' => 1];
+        $code     = rqst('code');
+        $verified = 0;
+        if ($code && $code == @file_get_contents(TMP_PATH . 'install.txt')) {
+            $verified             = 1;
+            $_SESSION['verified'] = 1;
+        }
+
+        return ['verified' => $verified];
     }
 
     /**
@@ -164,9 +172,22 @@ class IndexController extends Controller {
      * @return array
      */
     public function setup($step) {
+        $verified = sess_get('verified', 0);
+        if (!$verified) {
+            return ['status' => 0, 'step' => 'verify'];
+        }
         $_SESSION['step'] = $step;
+        $cfg              = rqst('cfg');
 
-        return ['status' => 1, 'step' => $step];
+        if ($step == 'db') {
+            //TODO: 验证数据库连接
+        }
+
+        $config               = sess_get('stepData', []);
+        $config[ $step ]      = $cfg;
+        $_SESSION['stepData'] = $config;
+
+        return ['status' => 1];
     }
 
     /**
@@ -174,6 +195,15 @@ class IndexController extends Controller {
      * @return array
      */
     public function install() {
-        return ['ok' => 1];
+        $verified = sess_get('verified', 0);
+        if (!$verified) {
+            return ['status' => 0, 'step' => 'verify'];
+        }
+        $config = sess_get('stepData', []);
+        if (!$config) {
+            return ['status' => 0, 'step' => 'home'];
+        }
+
+        return ['status' => 1];
     }
 }

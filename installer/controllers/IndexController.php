@@ -171,7 +171,9 @@ class IndexController extends Controller {
      *
      * @return array
      */
-    public function setup($step) {
+    public function setup() {
+        $step = rqst('step');
+        
         $verified = sess_get('verified', 0);
         if (!$verified) {
             return ['status' => 0, 'step' => 'verify'];

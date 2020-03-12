@@ -10,7 +10,7 @@
     <script type="text/javascript" src="{'backend/layui.js'|res}"></script>
     <script type="text/javascript" src="{'backend/vue.min.js'|res}"></script>
 </head>
-<body>
+<body style="background: #2F4056;">
 {literal}
     <div class="install " v-cloak>
         <div class="install_body ">
@@ -62,11 +62,9 @@
                     <p class="title">安全码验证</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
                     <input type="text" placeholder="请输入安全码" class="layui-input" v-model="data.code">
-                    <span>安全码位于...........</span>
+                    <span style="color:#999">安全码位于...........</span>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="status==0?verify():go('next')">
-                        {{status==0?'验证':'下一步'}}
-                    </button>
+                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('verify')">下一步</button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
                 </div>
 
@@ -87,8 +85,8 @@
                         <label for="">测试3</label>
                     </p>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="status==0?setup('config'):go('next'),status=0">
-                        {{status==0?'验证':'下一步'}}
+                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('config')">
+                        下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
                 </div>
@@ -103,8 +101,8 @@
                     <input type="text" placeholder="host" class="layui-input" v-model="data.host">
                     <input type="text" placeholder="port" class="layui-input" v-model="data.port">
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="status==0?setup('db'):go('next'),status=0">
-                        {{status==0?'验证':'下一步'}}
+                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('db')">
+                        下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
                 </div>
@@ -114,9 +112,10 @@
                     <p class="tips layui-bg-orange">{{tips}}</p>
                     <input type="text" placeholder="username" v-model="data.username" class="layui-input">
                     <input type="text" placeholder="userpwd" v-model="data.userpwd" class="layui-input">
+                    <input type="text" placeholder="confirm pwd" v-model="data.confirm_pwd" class="layui-input">
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="status==0?setup('user'):go('next'),status=0">
-                        {{status==0?'验证':'下一步'}}
+                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="data.confirm_pwd==data.userpwd?setup('user'):tips='两次密码输入不一致'">
+                       下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
                 </div>

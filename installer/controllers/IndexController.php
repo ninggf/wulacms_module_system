@@ -41,11 +41,18 @@ class IndexController extends Controller {
      * @return \wulaphp\mvc\view\View
      */
     public function index() {
-        $checked[] = ['安全模式', CmfModule::checkEnv('safe_mode', 0)];
-        $checked[] = ['文件上传', CmfModule::checkEnv('file_uploads', 1)];
-        $checked[] = ['输出缓冲区', CmfModule::checkEnv('output_buffering', 0, true)];
-        $checked[] = ['自动开启SESSION', CmfModule::checkEnv('session.auto_start', 0)];
-
+        $checked[]  = ['安全模式', CmfModule::checkEnv('safe_mode', 0)];
+        $checked[]  = ['文件上传', CmfModule::checkEnv('file_uploads', 1)];
+        $checked[]  = ['输出缓冲区', CmfModule::checkEnv('output_buffering', 0, true)];
+        $checked[]  = ['自动开启SESSION', CmfModule::checkEnv('session.auto_start', 0)];
+        $checked[]  = [
+            'SESSION支持',
+            [
+                'required' => '开',
+                'checked'  => $this->sessionID ? '开' : '关',
+                'pass'     => $this->sessionID ? true : false
+            ]
+        ];
         $checked [] = [
             'PHP版本',
             [
@@ -159,9 +166,12 @@ class IndexController extends Controller {
         if ($code && $code == @file_get_contents(TMP_PATH . 'install.txt')) {
             $verified             = 1;
             $_SESSION['verified'] = 1;
+            $msg                  = '';
+        } else {
+            $msg = '安全码不正确';
         }
 
-        return ['verified' => $verified];
+        return ['status' => $verified, 'msg' => $msg, 'step' => 'verify'];
     }
 
     /**
@@ -173,7 +183,7 @@ class IndexController extends Controller {
      */
     public function setup() {
         $step = rqst('step');
-        
+
         $verified = sess_get('verified', 0);
         if (!$verified) {
             return ['status' => 0, 'step' => 'verify'];

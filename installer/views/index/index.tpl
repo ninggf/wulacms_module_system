@@ -16,7 +16,7 @@
         <div class="install_body ">
             <!-- 安装步骤 -->
             <div class="install_left">
-                <p>wulacms</p>
+                <p>wulacms <span class="layui-badge layui-bg-blue">3.0</span></p>
                 <ul class="install_left__steps">
                     <li v-for="(item,i) in step" :class="[current==item.name?'checked':'']">{{item.title}}</li>
                 </ul>
@@ -61,8 +61,8 @@
                 <div class="layui-form code" v-show="current=='verify'">
                     <p class="title">安全码验证</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
-                    <input type="text" placeholder="请输入安全码" class="layui-input" v-model="data.code">
-                    <span style="color:#999">安全码位于...........</span>
+                    <span style="color:#999">安全码在 <em style="color:#FF5722" >storage/tmp/install.txt</em>&nbsp;文件中</span>
+                    <input type="text" placeholder="请输入安全码" class="layui-input" v-model="verify.code">
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
                     <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('verify')">下一步</button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
@@ -70,19 +70,19 @@
 
                 <!-- 配置选择 -->
                 <div v-show="current=='config'">
-                    <p class="title">配置选择</p>
+                    <p class="title">运行模式</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
                     <p>
-                        <input type="radio" name="config" value="pro" v-model="data.config">
-                        <label for="">正式1</label>
+                        <input type="radio" name="config" value="pro" v-model="config.config">
+                        <label for="">正式:线上部署</label>
                     </p>
                     <p>
-                        <input type="radio" name="config" value="dev" v-model="data.config">
-                        <label for="">开发2</label>
+                        <input type="radio" name="config" value="dev" v-model="config.config">
+                        <label for="">测试:测试环境</label>
                     </p>
                     <p>
-                        <input type="radio" name="config" value="test" v-model="data.config">
-                        <label for="">测试3</label>
+                        <input type="radio" name="config" value="test" v-model="config.config">
+                        <label for="">开发:本地开发环境</label>
                     </p>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
                     <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('config')">
@@ -94,12 +94,12 @@
                 <div class="layui-form database" v-show="current=='db'">
                     <p class="title">数据库配置</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
-                    <p>DB:{{data.db}}</p>
-                    <input type="text" placeholder="Database name" class="layui-input" v-model="data.dbname">
-                    <input type="text" placeholder="Database username" class="layui-input" v-model="data.dbusername">
-                    <input type="text" placeholder="Database password" class="layui-input" v-model="data.dbpwd">
-                    <input type="text" placeholder="host" class="layui-input" v-model="data.host">
-                    <input type="text" placeholder="port" class="layui-input" v-model="data.port">
+                    <p>数据库:{{db.type}}</p>
+                    <input type="text" placeholder="数据库名称" class="layui-input" v-model="db.dbname">
+                    <input type="text" placeholder="用户名" class="layui-input" v-model="db.dbusername">
+                    <input type="text" placeholder="密码" class="layui-input" v-model="db.dbpwd">
+                    <input type="text" placeholder="host" class="layui-input" v-model="db.host">
+                    <input type="text" placeholder="port" class="layui-input" v-model="db.port">
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
                     <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('db')">
                         下一步
@@ -108,13 +108,14 @@
                 </div>
                 <!-- 用户创建 -->
                 <div class="layui-form database" v-show="current=='user'">
-                    <p class="title">用户创建</p>
+                    <p class="title">管理员创建</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
-                    <input type="text" placeholder="username" v-model="data.username" class="layui-input">
-                    <input type="text" placeholder="userpwd" v-model="data.userpwd" class="layui-input">
-                    <input type="text" placeholder="confirm pwd" v-model="data.confirm_pwd" class="layui-input">
+                    <input type="text" placeholder="管理员账号" v-model="user.name" class="layui-input">
+                    <input type="text" placeholder="管理员密码" v-model="user.pwd" class="layui-input">
+                    <input type="text" placeholder="确认管理员密码" v-model="user.confirm_pwd" class="layui-input">
+                    <input type="text" placeholder="管理面板路径" v-model="user.url" class="layui-input">
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="data.confirm_pwd==data.userpwd?setup('user'):tips='两次密码输入不一致'">
+                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
                        下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
@@ -149,7 +150,8 @@
     window.vueData = {
         step        : '{$step}',
         requirements: {$requirements|json_encode},
-        dirs        : {$dirs|json_encode}
+        dirs        : {$dirs|json_encode},
+        data        : {$data|json_encode}
     };
     layui.config({
         devMode: "<!-- @if env='dev' -->1<!-- @endif -->",

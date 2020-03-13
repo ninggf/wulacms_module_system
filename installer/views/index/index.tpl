@@ -105,19 +105,19 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">数据库名称</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.dbname" placeholder="数据库名称" class="layui-input dbname">
+                                <input type="text" v-model="db.dbname" placeholder="数据库名称" @focus="removeTips('dbname')" class="layui-input dbname">
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">用户名</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.dbusername" placeholder="数据库名称" class="layui-input dbusername">
+                                <input type="text" v-model="db.dbusername" placeholder="数据库名称"  @focus="removeTips('dbusername')" class="layui-input dbusername">
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">密码</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.dbpwd" placeholder="数据库名称" class="layui-input dbpwd">
+                                <input type="text" v-model="db.dbpwd" placeholder="数据库名称"  @focus="removeTips('dbpwd')" class="layui-input dbpwd">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -145,25 +145,25 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员账号</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.name" placeholder="请输入管理员账号" class="layui-input name">
+                            <input type="text" v-model="user.name" placeholder="请输入管理员账号" @focus="removeTips('name')" class="layui-input name">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员密码</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.pwd" placeholder="请输入管理员密码" class="layui-input pwd">
+                            <input type="text" v-model="user.pwd" placeholder="请输入管理员密码" @focus="removeTips('pwd')" class="layui-input pwd">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员账号</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.confirm_pwd" :class="[user.confirm_pwd==user.pwd?'':'tips']" placeholder="请确认管理员密码" class="layui-input confirm_pwd">
+                            <input type="text" v-model="user.confirm_pwd" :class="[user.confirm_pwd==user.pwd?'':'tips']" @focus="removeTips('confirm_pwd')"  placeholder="请确认管理员密码" class="layui-input confirm_pwd">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理面板路径</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.url" placeholder="URL" class="layui-input url">
+                            <input type="text" v-model="user.url" placeholder="URL" @focus="removeTips('url')" class="layui-input url">
                         </div>
                     </div>
 

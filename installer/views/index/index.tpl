@@ -16,7 +16,7 @@
         <div class="install_body ">
             <!-- 安装步骤 -->
             <div class="install_left">
-                <p>wulacms <span class="layui-badge layui-bg-blue">v3</span></p>
+                <p>wulacms <span class="layui-badge layui-bg-green">v3</span></p>
                 <ul class="install_left__steps">
                     <li v-for="(item,i) in step" :class="[current==item.name?'checked':'']">{{item.title}}</li>
                 </ul>
@@ -52,14 +52,14 @@
                             <i class="layui-icon layui-icon-close" v-else style="color:#ff9800"></i>
                         </span>
                     </p>
-                    <button :class="{'layui-btn-disabled':verifyNext()==0}" class="layui-btn layui-btn-primary install_right__next" @click="verifyNext()==1?go('next'):console.log('无法继续')">
+                    <button :class="{'layui-btn-disabled':verifyNext()==0}" class="layui-btn layui-btn-green install_right__next" @click="verifyNext()==1?go('next'):console.log('无法继续')">
                         继续
                     </button>
                 </div>
                 <!-- 安全码验证 -->
                 <div class="layui-form layui-form-pane code" v-show="current=='verify'">
                     <p class="title">安全码验证</p>
-                    <p class="tips layui-bg-orange">{{tips}}</p>
+                    <p class="tips">{{tips}}</p><br>
                     <span style="color:#999; display:inline-block;margin-top:10px">安全码在 <em style="color:#FF5722">storage/tmp/install.txt</em>&nbsp;文件中</span>
             
                     <div class="layui-form-item">
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('verify')">
+                    <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="setup('verify')">
                         下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
@@ -78,7 +78,7 @@
                 <!-- 配置选择 -->
                 <div v-show="current=='config'">
                     <p class="title">运行模式</p>
-                    <p class="tips layui-bg-orange">{{tips}}</p>
+                    <p class="tips">{{tips}}</p><br>
                     <p>
                         <input type="radio" name="config" value="pro" v-model="config.config">
                         <label for="">正式:线上部署</label>
@@ -92,7 +92,7 @@
                         <label for="">开发:本地开发环境</label>
                     </p>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('config')">
+                    <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="setup('config')">
                         下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
@@ -100,12 +100,12 @@
                 <!-- 数据库配置 -->
                 <div class="layui-form layui-form-pane database" v-show="current=='db'">
                     <p class="title">MySQL数据库配置</p>
-                    <p class="tips layui-bg-orange">{{tips}}</p>
+                    <p class="tips">{{tips}}</p><br>
                     <p>
                         <div class="layui-form-item">
                             <label class="layui-form-label">数据库名称</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.dbname" placeholder="数据库名称"  required  lay-verify="required" class="layui-input">
+                                <input type="text" v-model="db.dbname" placeholder="数据库名称" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -129,11 +129,11 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">Port</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.port" placeholder="Port(默认3306)" class="layui-input">
+                                <input type="number" v-model="db.port" placeholder="Port(默认3306)" class="layui-input">
                             </div>
                         </div>                    
                         <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                        <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('db')">
+                        <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="setup('db')">
                             下一步
                         </button>
                         <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
@@ -141,7 +141,7 @@
                 <!-- 用户创建 -->
                 <div class="layui-form layui-form-pane database" v-show="current=='user'">
                     <p class="title">管理员创建</p>
-                    <p class="tips layui-bg-orange">{{tips}}</p>
+                    <p class="tips">{{tips}}</p><br>
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员账号</label>
                         <div class="layui-input-block">
@@ -171,7 +171,7 @@
 
                     
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
+                    <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
                         下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
@@ -179,23 +179,23 @@
                 <!-- 安装 -->
                 <div class="layui-form progress" v-show="current=='install'">
                     <p class="title">安装</p>
-                    <p class="tips layui-bg-orange">{{tips}}</p>
-                    <h1>{{install_progress==100?'finish':'installing...'}}</h1>
+                    <p class="tips">{{tips}}</p><br>
+                    <h1>{{install_progress==100?'安装':'安装中请稍等...'}}</h1>
                     <div class=" layui-progress layui-progress-big" lay-filter="install-progress">
                         <div class="layui-progress-bar" lay-percent="0%">{{install_progress}}%</div>
                     </div>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-primary install_right__next" @click="doInstall" v-show="install_progress==0">
+                    <button class="layui-btn layui-btn-green install_right__next" @click="doInstall" v-show="install_progress==0">
                         安装
                     </button>
-                    <button v-show="install_progress>0" :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-primary install_right__next" @click="install_progress<100?console.log('aa'):go('next')">
+                    <button v-show="install_progress>0" :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-green install_right__next" @click="install_progress<100?console.log('aa'):go('next')">
                         {{install_progress < 100 ? '安装' : '完成 '}}
                     </button>
                 </div>
                 <!-- 完成 -->
                 <div class="layui-form progress" v-show="current=='finfish'">
                     <p class="title" style="text-align: center">完成</p>
-                    <a class="layui-btn layui-btn-primary install_right__next">进入wulacms</a>
+                    <a class="layui-btn layui-btn-green install_right__next">进入wulacms</a>
                 </div>
             </div>
         </div>

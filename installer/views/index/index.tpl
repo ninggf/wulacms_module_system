@@ -57,11 +57,17 @@
                     </button>
                 </div>
                 <!-- 安全码验证 -->
-                <div class="layui-form code" v-show="current=='verify'">
+                <div class="layui-form layui-form-pane code" v-show="current=='verify'">
                     <p class="title">安全码验证</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
-                    <span style="color:#999">安全码在 <em style="color:#FF5722">storage/tmp/install.txt</em>&nbsp;文件中</span>
-                    <input type="text" placeholder="请输入安全码" class="layui-input" v-model="verify.code">
+                    <span style="color:#999; display:inline-block;margin-top:10px">安全码在 <em style="color:#FF5722">storage/tmp/install.txt</em>&nbsp;文件中</span>
+            
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">安全码</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="verify.code" placeholder="请输入安全码" class="layui-input">
+                        </div>
+                    </div>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
                     <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('verify')">
                         下一步
@@ -92,16 +98,40 @@
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
                 </div>
                 <!-- 数据库配置 -->
-                <div class="layui-form database" v-show="current=='db'">
+                <div class="layui-form layui-form-pane database" v-show="current=='db'">
                     <p class="title">MySQL数据库配置</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
-                    <p>&nbsp;
                     <p>
-                        <input type="text" placeholder="数据库名称" class="layui-input" v-model="db.dbname">
-                        <input type="text" placeholder="用户名" class="layui-input" v-model="db.dbusername">
-                        <input type="text" placeholder="密码" class="layui-input" v-model="db.dbpwd">
-                        <input type="text" placeholder="Host(默认localhost)" class="layui-input" v-model="db.host">
-                        <input type="text" placeholder="Port(默认3306)" class="layui-input" v-model="db.port">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">数据库名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="db.dbname" placeholder="数据库名称"  required  lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="db.dbusername" placeholder="数据库名称" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="db.dbpwd" placeholder="数据库名称" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Host</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="db.host" placeholder="Host(默认localhost)" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Port</label>
+                            <div class="layui-input-block">
+                                <input type="text" v-model="db.port" placeholder="Port(默认3306)" class="layui-input">
+                            </div>
+                        </div>                    
                         <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
                         <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="setup('db')">
                             下一步
@@ -109,13 +139,37 @@
                         <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
                 </div>
                 <!-- 用户创建 -->
-                <div class="layui-form database" v-show="current=='user'">
+                <div class="layui-form layui-form-pane database" v-show="current=='user'">
                     <p class="title">管理员创建</p>
                     <p class="tips layui-bg-orange">{{tips}}</p>
-                    <input type="text" placeholder="管理员账号" v-model="user.name" class="layui-input">
-                    <input type="text" placeholder="管理员密码" v-model="user.pwd" class="layui-input">
-                    <input type="text" placeholder="确认管理员密码" v-model="user.confirm_pwd" class="layui-input">
-                    <input type="text" placeholder="管理面板路径" v-model="user.url" class="layui-input">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">管理员账号</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="user.name" placeholder="请输入管理员账号" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">管理员密码</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="user.pwd" placeholder="请输入管理员密码" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">管理员账号</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="user.confirm_pwd" placeholder="请确认管理员密码" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">管理面板路径</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="user.url" placeholder="URL" class="layui-input">
+                        </div>
+                    </div>
+
+
+
+                    
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
                     <button class="layui-btn layui-btn-primary install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
                         下一步
@@ -159,7 +213,7 @@
         base: "{'layui'|assets}"
     });
 
-    layui.use(['layer', 'element', 'form', '&install'], function () {
+    layui.use(['layer', 'element', 'form', '&install'], function (l,w,e,r) {
         var form = layui.form;
         form.render();
     })

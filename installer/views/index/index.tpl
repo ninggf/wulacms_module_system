@@ -65,7 +65,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">安全码</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="verify.code" placeholder="请输入安全码" class="layui-input">
+                            <input type="text" v-model="verify.code"  placeholder="请输入安全码" class="layui-input code">
                         </div>
                     </div>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
@@ -105,19 +105,19 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">数据库名称</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.dbname" placeholder="数据库名称" class="layui-input">
+                                <input type="text" v-model="db.dbname" placeholder="数据库名称" class="layui-input dbname">
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">用户名</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.dbusername" placeholder="数据库名称" class="layui-input">
+                                <input type="text" v-model="db.dbusername" placeholder="数据库名称" class="layui-input dbusername">
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">密码</label>
                             <div class="layui-input-block">
-                                <input type="text" v-model="db.dbpwd" placeholder="数据库名称" class="layui-input">
+                                <input type="text" v-model="db.dbpwd" placeholder="数据库名称" class="layui-input dbpwd">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -145,25 +145,25 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员账号</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.name" placeholder="请输入管理员账号" class="layui-input">
+                            <input type="text" v-model="user.name" placeholder="请输入管理员账号" class="layui-input name">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员密码</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.pwd" placeholder="请输入管理员密码" class="layui-input">
+                            <input type="text" v-model="user.pwd" placeholder="请输入管理员密码" class="layui-input pwd">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员账号</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.confirm_pwd" placeholder="请确认管理员密码" class="layui-input">
+                            <input type="text" v-model="user.confirm_pwd" :class="[user.confirm_pwd==user.pwd?'':'tips']" placeholder="请确认管理员密码" class="layui-input confirm_pwd">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理面板路径</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.url" placeholder="URL" class="layui-input">
+                            <input type="text" v-model="user.url" placeholder="URL" class="layui-input url">
                         </div>
                     </div>
 
@@ -171,7 +171,7 @@
 
                     
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
+                    <button  class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
                         下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>

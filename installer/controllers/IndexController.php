@@ -11,6 +11,7 @@
 namespace system\installer\controllers;
 
 use wula\cms\CmfModule;
+use wulaphp\app\App;
 use wulaphp\io\Response;
 use wulaphp\mvc\controller\Controller;
 use wulaphp\mvc\controller\SessionSupport;
@@ -177,8 +178,6 @@ class IndexController extends Controller {
     /**
      * 环境与语言选项
      *
-     * @param string $step
-     *
      * @return array
      */
     public function setup() {
@@ -192,7 +191,35 @@ class IndexController extends Controller {
         $cfg              = rqst('cfg');
 
         if ($step == 'db') {
-            //TODO: 验证数据库连接
+            $dbcfg = [
+                'host'     => $cfg['host'] ? $cfg['host'] : 'localhost',
+                'port'     => $cfg['port'] ? $cfg['port'] : 3306,
+                'user'     => $cfg['dbusername'],
+                'password' => $cfg['dbpwd'],
+                'encoding' => 'UTF8MB4'
+            ];
+
+            try {
+                $db = App::db($dbcfg);
+                if ($db == null) {
+                    throw new \Exception('无法连接数据库');
+                }
+            } catch (\Exception $e) {
+                return ['status' => 0, 'msg' => $e->getMessage(), 'step' => 'db'];
+            }
+        } else if ($step == 'user') {
+            $name = strtolower($cfg['name']);
+            if (!$name) {
+                return ['status' => 0, 'msg' => '管理员账号不能为空', 'step' => 'user'];
+            } else if ($name == 'admin') {
+                return ['status' => 0, 'msg' => '请不要使用admin做为管理员账号', 'step' => 'user'];
+            }
+            $pwd  = $cfg['pwd'];
+            $pwd1 = $cfg['confirm_pwd'];
+
+            if (!$pwd || $pwd != $pwd1) {
+                return ['status' => 0, 'msg' => '两次输入的密码不一致', 'step' => 'user'];
+            }
         }
 
         $config               = sess_get('stepData', []);
@@ -204,18 +231,71 @@ class IndexController extends Controller {
 
     /**
      * 安装
-     * @return array
+     * @nobuffer
+     * @return string
      */
     public function install() {
+        header('Content-Type: text/octet-stream');
+        set_time_limit(0);
         $verified = sess_get('verified', 0);
         if (!$verified) {
-            return ['status' => 0, 'step' => 'verify'];
+            return json_encode(['status' => 0, 'step' => 'verify']);
         }
         $config = sess_get('stepData', []);
         if (!$config) {
-            return ['status' => 0, 'step' => 'home'];
+            return json_encode(['status' => 0, 'step' => 'home']);
         }
+        $rtn = ['status' => 1, 'tip' => '创建数据库', 'step' => 'db', 'percent' => 5, 'done' => 0];
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
+        //TODO: 创建数据库
+        sleep(2);
+        $rtn['done']    = 1;
+        $rtn['percent'] = 10;
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
 
-        return ['status' => 1];
+        sleep(1);
+        $rtn = ['status' => 1, 'step' => 'user', 'tip' => '创建管理员', 'percent' => 15, 'done' => 0];
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
+        // TODO: 创建管理员
+        sleep(2);
+        $rtn['done']    = 1;
+        $rtn['percent'] = 18;
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
+
+        sleep(1);
+        $this->installModule('system', 20);
+
+        sleep(1);
+
+        return json_encode([
+            'status'  => 1,
+            'step'    => 'doen',
+            'tip'     => '安装完成',
+            'percent' => 100,
+            'done'    => 1
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
+    private function installModule($module, $percent) {
+        $m   = App::getModuleById($module);
+        $rtn = [
+            'status'  => 1,
+            'step'    => 'module-' . $module,
+            'tip'     => $m->getName(),
+            'percent' => $percent,
+            'done'    => 0
+        ];
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
+        // TODO: 安装模块
+        sleep(2);
+        $rtn['done']    = 1;
+        $rtn['percent'] = $percent + 5;
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
     }
 }

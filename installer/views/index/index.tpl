@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>安装</title>
+    <title>WulaCms安装程序 - 欢迎您使用wulacms！</title>
     <link rel="stylesheet" href="{'backend/css/layui.css'|res}">
     <link rel="stylesheet" href="{'backend/css/install.css'|res}">
     <script type="text/javascript" src="{'backend/layui.js'|res}"></script>
@@ -16,7 +16,7 @@
         <div class="install_body ">
             <!-- 安装步骤 -->
             <div class="install_left">
-                <p>wulacms <span class="layui-badge layui-bg-green">v3</span></p>
+                <p>WulaCms <span class="layui-badge layui-bg-green">v3</span></p>
                 <ul class="install_left__steps">
                     <li v-for="(item,i) in step" :class="[current==item.name?'checked':'']">{{item.title}}</li>
                 </ul>
@@ -61,11 +61,11 @@
                     <p class="title">安全码验证</p>
                     <p class="tips">{{tips}}</p><br>
                     <span style="color:#999; display:inline-block;margin-top:10px">安全码在 <em style="color:#FF5722">storage/tmp/install.txt</em>&nbsp;文件中</span>
-            
+
                     <div class="layui-form-item">
                         <label class="layui-form-label">安全码</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="verify.code"  placeholder="请输入安全码" class="layui-input code">
+                            <input type="text" v-model="verify.code" placeholder="请输入安全码" class="layui-input code">
                         </div>
                     </div>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
@@ -102,41 +102,41 @@
                     <p class="title">MySQL数据库配置</p>
                     <p class="tips">{{tips}}</p><br>
                     <p>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">数据库名称</label>
-                            <div class="layui-input-block">
-                                <input type="text" v-model="db.dbname" placeholder="数据库名称" @focus="removeTips('dbname')" class="layui-input dbname">
-                            </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">数据库名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="db.dbname" placeholder="数据库名称" @focus="removeTips('dbname')" class="layui-input dbname">
                         </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">用户名</label>
-                            <div class="layui-input-block">
-                                <input type="text" v-model="db.dbusername" placeholder="数据库名称"  @focus="removeTips('dbusername')" class="layui-input dbusername">
-                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="db.dbusername" placeholder="数据库名称" @focus="removeTips('dbusername')" class="layui-input dbusername">
                         </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">密码</label>
-                            <div class="layui-input-block">
-                                <input type="text" v-model="db.dbpwd" placeholder="数据库名称"  @focus="removeTips('dbpwd')" class="layui-input dbpwd">
-                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">密码</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="db.dbpwd" placeholder="数据库名称" @focus="removeTips('dbpwd')" class="layui-input dbpwd">
                         </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">Host</label>
-                            <div class="layui-input-block">
-                                <input type="text" v-model="db.host" placeholder="Host(默认localhost)" class="layui-input">
-                            </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">Host</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="db.host" placeholder="Host(默认localhost)" class="layui-input">
                         </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">Port</label>
-                            <div class="layui-input-block">
-                                <input type="number" v-model="db.port" placeholder="Port(默认3306)" class="layui-input">
-                            </div>
-                        </div>                    
-                        <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                        <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="setup('db')">
-                            下一步
-                        </button>
-                        <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">Port</label>
+                        <div class="layui-input-block">
+                            <input type="number" v-model="db.port" placeholder="Port(默认3306)" class="layui-input">
+                        </div>
+                    </div>
+                    <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
+                    <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="setup('db')">
+                        下一步
+                    </button>
+                    <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
                 </div>
                 <!-- 用户创建 -->
                 <div class="layui-form layui-form-pane database" v-show="current=='user'">
@@ -151,13 +151,13 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">管理员密码</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.pwd" placeholder="请输入管理员密码" @focus="removeTips('pwd')" class="layui-input pwd">
+                            <input type="password" v-model="user.pwd" placeholder="请输入管理员密码" @focus="removeTips('pwd')" class="layui-input pwd">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">管理员账号</label>
+                        <label class="layui-form-label">请重复密码</label>
                         <div class="layui-input-block">
-                            <input type="text" v-model="user.confirm_pwd" :class="[user.confirm_pwd==user.pwd?'':'tips']" @focus="removeTips('confirm_pwd')"  placeholder="请确认管理员密码" class="layui-input confirm_pwd">
+                            <input type="password" v-model="user.confirm_pwd" :class="[user.confirm_pwd==user.pwd?'':'tips']" @focus="removeTips('confirm_pwd')" placeholder="请确认管理员密码" class="layui-input confirm_pwd">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -167,11 +167,8 @@
                         </div>
                     </div>
 
-
-
-                    
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button  class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
+                    <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="user.confirm_pwd==user.pwd?setup('user'):tips='两次密码输入不一致'">
                         下一步
                     </button>
                     <i class="install_loading layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" v-show="status==1"></i>
@@ -180,16 +177,12 @@
                 <div class="layui-form progress" v-show="current=='install'">
                     <p class="title">安装</p>
                     <p class="tips">{{tips}}</p><br>
-                    <h1>{{install_progress==100?'安装':'安装中请稍等...'}}</h1>
+                    <h1>{{install_progress==100?'安装完成':'安装中请稍等...'}}</h1>
                     <div class=" layui-progress layui-progress-big" lay-filter="install-progress">
                         <div class="layui-progress-bar" lay-percent="0%">{{install_progress}}%</div>
                     </div>
-                    <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
-                    <button class="layui-btn layui-btn-green install_right__next" @click="doInstall" v-show="install_progress==0">
-                        安装
-                    </button>
-                    <button v-show="install_progress>0" :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-green install_right__next" @click="install_progress<100?console.log('aa'):go('next')">
-                        {{install_progress < 100 ? '安装' : '完成 '}}
+                    <button v-show="install_progress>0" :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-green install_right__next" @click="install_progress<100?go(''):go('next')">
+                        完成
                     </button>
                 </div>
                 <!-- 完成 -->
@@ -213,7 +206,7 @@
         base: "{'layui'|assets}"
     });
 
-    layui.use(['layer', 'element', 'form', '&install'], function (l,w,e,r) {
+    layui.use(['layer', 'element', 'form', '&install'], function (l, w, e, r) {
         var form = layui.form;
         form.render();
     })

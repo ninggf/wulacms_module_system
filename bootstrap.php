@@ -10,8 +10,10 @@
 
 namespace system;
 
+use system\classes\AdminPassport;
 use wula\cms\CmfModule;
 use wulaphp\app\App;
+use wulaphp\auth\Passport;
 use wulaphp\io\Response;
 use wulaphp\router\IURLDispatcher;
 use wulaphp\router\Router;
@@ -88,6 +90,21 @@ class SystemModule extends CmfModule {
                 return null;
             }
         }, 99999999);
+    }
+
+    /**
+     * @param Passport $passport
+     *
+     * @filter passport\newAdminPassport
+     *
+     * @return Passport
+     */
+    public static function createAdminPassport($passport) {
+        if ($passport instanceof Passport) {
+            $passport = new AdminPassport();
+        }
+
+        return $passport;
     }
 }
 

@@ -424,9 +424,10 @@ class IndexController extends Controller {
 
         $cfg = CONFIG_PATH . 'install_config.php';
         if (is_file($cfg)) {
-            $config         = @file_get_contents($cfg);
-            $r["'{alias}'"] = $dashboard ? "['dashboard' => '$dashboard']" : '';
-            $config         = str_replace(array_keys($r), array_values($r), $config);
+            $config          = @file_get_contents($cfg);
+            $r["'{alias}'"]  = $dashboard ? "['dashboard' => '$dashboard']" : '';
+            $r["'{domain}'"] = '';
+            $config          = str_replace(array_keys($r), array_values($r), $config);
         } else {
             if ($dashboard) {
                 $alias = "'alias' => ['dashboard'=>'$dashboard'],";

@@ -177,19 +177,31 @@
                 <div class="layui-form progress" v-show="current=='install'">
                     <p class="title">安装</p>
                     <p class="tips">{{tips}}</p><br>
-                    <h1>{{install_progress==100?'安装完成':'安装中请稍等...'}}</h1>
+
+                    <h1>{{install_progress==100?'安装完成':install_progress==-1?'安装失败':'安装中请稍等...'}}</h1>
+
+                    <ul class="progress_log">
+                        <li v-for="item in progress.list" class="layui-anim layui-anim-up">
+                            <span>{{item.tip}}</span> 
+                            <i v-show="item.done && item.status" class="layui-icon layui-icon-ok" style="color:#4caf50;"></i>
+                            <i v-show="!item.done && item.status" class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop" style="color:#FFB800"></i>
+                            <i v-show="!item.status" class="layui-icon layui-icon-close" style="color:red"></i>
+                        </li>
+                    </ul>
+
                     <div class=" layui-progress layui-progress-big" lay-filter="install-progress">
                         <div class="layui-progress-bar" lay-percent="0%">{{install_progress}}%</div>
                     </div>
-                    <button v-show="install_progress>0" :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-green install_right__next" @click="install_progress<100?go(''):go('next')">
-                        完成
+
+                    <button :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-primary install_right__pre" >
+                        进入界面
+                    </button>
+
+                    <button :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-primary install_right__next" >
+                        进入后台
                     </button>
                 </div>
-                <!-- 完成 -->
-                <div class="layui-form progress" v-show="current=='finfish'">
-                    <p class="title" style="text-align: center">完成</p>
-                    <a class="layui-btn layui-btn-green install_right__next">进入wulacms</a>
-                </div>
+               
             </div>
         </div>
     </div>
@@ -209,6 +221,7 @@
     layui.use(['layer', 'element', 'form', '&install'], function (l, w, e, r) {
         var form = layui.form;
         form.render();
+        
     })
 </script>
 </body>

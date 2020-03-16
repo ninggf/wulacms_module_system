@@ -12,6 +12,8 @@ namespace system\installer\controllers;
 
 use wula\cms\CmfModule;
 use wulaphp\app\App;
+use wulaphp\app\Module;
+use wulaphp\auth\Passport;
 use wulaphp\io\Response;
 use wulaphp\mvc\controller\Controller;
 use wulaphp\mvc\controller\SessionSupport;
@@ -245,57 +247,297 @@ class IndexController extends Controller {
         if (!$config) {
             return json_encode(['status' => 0, 'step' => 'home']);
         }
+        // 创建数据库
         $rtn = ['status' => 1, 'tip' => '创建数据库', 'step' => 'db', 'percent' => 5, 'done' => 0];
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
-        //TODO: 创建数据库
-        sleep(2);
+        $rtn['status']  = $this->setupDb($msg);
         $rtn['done']    = 1;
         $rtn['percent'] = 10;
+        if ($msg) {
+            $rtn['msg'] = $msg;
+        }
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
-
-        sleep(1);
-        $rtn = ['status' => 1, 'step' => 'user', 'tip' => '创建管理员', 'percent' => 15, 'done' => 0];
+        // 创建数据库结束
+        // 安装模块
+        $modules = ['system', 'backend'];
+        if (is_file(CONFIG_PATH . 'install_config.php')) {
+            $siteConfig = include CONFIG_PATH . 'install_config.php';
+            if (isset($siteConfig['modules'])) {
+                $modules = array_merge($modules, (array)$siteConfig['modules']);
+            }
+        }
+        $pp = 10;
+        $dp = 70 / count($modules);
+        foreach ($modules as $i => $m) {
+            $module = App::getModuleById($m);
+            if ($module) {
+                $this->installModule($m, $module, $pp, $dp);
+            }
+        }
+        // 安装模块结束
+        // 创建管理员
+        $rtn = ['status' => 1, 'step' => 'user', 'tip' => '创建管理员', 'percent' => $pp + 5, 'done' => 0];
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
-        // TODO: 创建管理员
-        sleep(2);
+        $rtn['status']  = $this->createAdmin($msg);
         $rtn['done']    = 1;
-        $rtn['percent'] = 18;
+        $rtn['percent'] = $pp + 10;
+        if ($msg) {
+            $rtn['msg'] = $msg;
+        }
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
-
-        sleep(1);
-        $this->installModule('system', 20);
-
-        sleep(1);
+        // 创建管理员结束
+        // 保存配置
+        $rtn = ['status' => 1, 'step' => 'cfg', 'tip' => '保存配置', 'percent' => $pp + 15, 'done' => 0];
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
+        $rtn['status']  = $this->saveConf($msg);
+        $rtn['done']    = 1;
+        $rtn['percent'] = 98;
+        if ($msg) {
+            $rtn['msg'] = $msg;
+        }
+        echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
+        flush();
 
         return json_encode([
             'status'  => 1,
             'step'    => 'doen',
             'tip'     => '安装完成',
             'percent' => 100,
+            'url'     => ['/', App::url('backend')],
             'done'    => 1
         ], JSON_UNESCAPED_UNICODE);
     }
 
-    private function installModule($module, $percent) {
-        $m   = App::getModuleById($module);
+    private function setupDb(&$msg = null) {
+        $stepData = sess_get('stepData', []);
+        $cfg      = $stepData['db'];
+        $dbcfg    = [
+            'host'     => $cfg['host'] ? $cfg['host'] : 'localhost',
+            'port'     => $cfg['port'] ? $cfg['port'] : 3306,
+            'user'     => $cfg['dbusername'],
+            'password' => $cfg['dbpwd'],
+            'encoding' => 'UTF8MB4'
+        ];
+        $dbname   = $cfg['dbname'];
+
+        try {
+            $db      = App::db($dbcfg);
+            $dialect = $db->getDialect();
+            $dbs     = $dialect->listDatabases();
+            $rst     = in_array($dbname, $dbs);
+            if (!$rst) {
+                $rst = $dialect->createDatabase($dbname, $dbcfg['encoding']);
+            }
+            if (!$rst) {
+                $msg = '无法创建数据库';
+
+                return 0;
+            }
+        } catch (\Exception $e) {
+        }
+
+        return 1;
+    }
+
+    private function createAdmin(&$msg = null) {
+        $msg              = '';
+        $stepData         = sess_get('stepData', []);
+        $admin            = $stepData['user'];
+        $username         = $admin['name'];
+        $password         = $admin['pwd'];
+        $user['id']       = 1;
+        $user['username'] = $username;
+        $user['nickname'] = '超级管理员';
+        $user['hash']     = Passport::passwd($password);
+
+        try {
+            $db = $this->getDb();
+            $db->start();
+            if ($db->insert($user)->into('user')->exec() && $db->insert([
+                    ['user_id' => 1, 'role_id' => 1],
+                    ['user_id' => 1, 'role_id' => 2]
+                ], true)->into('{user_role}')->exec()) {
+                $db->commit();
+            } else {
+                throw_exception('cannot create admin');
+            }
+        } catch (\Exception $e) {
+            $msg = '无法创建管理员:' . $e->getMessage();
+
+            return 0;
+        }
+
+        return 1;
+    }
+
+    private function installModule(string $module, Module $m, &$percent, $dp) {
         $rtn = [
             'status'  => 1,
             'step'    => 'module-' . $module,
-            'tip'     => $m->getName(),
+            'tip'     => '安装"' . $m->getName() . '"',
             'percent' => $percent,
             'done'    => 0
         ];
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
-        // TODO: 安装模块
-        sleep(2);
+        try {
+            $db      = $this->getDb();
+            $dialect = $db->getDialect();
+            if (!$m->install($db, 1)) {
+                $sqls = $m->getDefinedTables($dialect);
+                if ($sqls['tables']) {
+                    foreach ($sqls['tables'] as $t) {
+                        $db->exec('drop table if exists ' . $t);
+                    }
+                }
+                if ($sqls['views']) {
+                    foreach ($sqls['views'] as $t) {
+                        $db->exec('drop view if exists ' . $t);
+                    }
+                }
+                throw_exception('安装失败');
+            }
+        } catch (\Exception $e) {
+            $rtn['status'] = 0;
+            $rtn['msg']    = '安装模块"' . $m->getName() . '"失败';
+        }
+        $percent        += $dp;
         $rtn['done']    = 1;
-        $rtn['percent'] = $percent + 5;
+        $rtn['percent'] = $percent;
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
+    }
+
+    private function saveConf(&$msg = null) {
+        $msg       = '';
+        $setupData = sess_get('stepData', []);
+        $cfg       = $setupData['config'];
+        $user      = $setupData['user'];
+        $dbcfg     = $setupData['db'];
+        $app_mode  = $cfg['config'];
+        $dashboard = $user['url'] && $user['url'] != 'backend' ? $user['url'] : '';
+
+        $cfg = CONFIG_PATH . 'install_config.php';
+        if (is_file($cfg)) {
+            $config         = @file_get_contents($cfg);
+            $r["'{alias}'"] = $dashboard ? "['dashboard' => '$dashboard']" : '';
+            $config         = str_replace(array_keys($r), array_values($r), $config);
+        } else {
+            if ($dashboard) {
+                $alias = "'alias' => ['dashboard'=>'$dashboard'],";
+            }
+            $config = <<<CFG
+<?php
+
+return [
+    'debug'     => env('debug', DEBUG_WARN),
+    'resource'  => [
+        'combinate' => env('resource.combinate', 0),
+        'minify'    => env('resource.minify', 0)
+    ],
+    {$alias}
+];
+CFG;
+        }
+
+        if (!@file_put_contents(CONFIG_PATH . 'config.php', $config)) {
+            $msg = '无法保存配置文件';
+
+            return 0;
+        }
+        $dbconfig           = @file_get_contents(APPROOT . 'vendor' . '/wula/cms-support/tpl/dbconfig.php');
+        $r['{db.host}']     = $dbcfg['host'] ? $dbcfg['host'] : 'localhost';
+        $r['{db.port}']     = $dbcfg['port'] ? $dbcfg['port'] : 3306;
+        $r['{db.name}']     = $dbcfg['dbname'];
+        $r['{db.charset}']  = 'UTF8MB4';
+        $r['{db.user}']     = $dbcfg['dbusername'];
+        $r['{db.password}'] = $dbcfg['dbpwd'];
+        $dbconfig           = str_replace(array_keys($r), array_values($r), $dbconfig);
+        if (!@file_put_contents(CONFIG_PATH . 'dbconfig.php', $dbconfig)) {
+            @unlink(CONFIG_PATH . 'config.php');
+            $msg = '无法保存数据库配置文件';
+
+            return 0;
+        }
+        if ($app_mode == 'dev') {
+            $dcf[] = '[app]';
+            $dcf[] = 'debug = DEBUG_DEBUG';
+            $dcf[] = 'dashboard = ' . $dashboard;
+            $dcf[] = '[db]';
+            $dcf[] = 'db.host = ' . $r['{db.host}'];
+            $dcf[] = 'db.port = ' . $r['{db.port}'];
+            $dcf[] = 'db.name = ' . $r['{db.name}'];
+            $dcf[] = 'db.user = ' . $r['{db.user}'];
+            $dcf[] = 'db.password = ' . $r['{db.password}'];
+            $dcf[] = 'db.charset = ' . $r['{db.charset}'];
+            @file_put_contents(CONFIG_PATH . '.env', implode("\n", $dcf));
+        }
+
+        if (!@file_put_contents(CONFIG_PATH . 'install.lock', time())) {
+            @unlink(CONFIG_PATH . 'config.php');
+            @unlink(CONFIG_PATH . 'dbconfig.php');
+            @unlink(CONFIG_PATH . '.env');
+            $this->clearDb();
+            $data['msg'] = '无法保存锁定文件';
+        } else {
+            @unlink(TMP_PATH . 'install.txt');
+        }
+
+        return 1;
+    }
+
+    /**
+     * @return \wulaphp\db\DatabaseConnection
+     * @throws \Exception
+     */
+    private function getDb() {
+        $stepData = sess_get('stepData', []);
+        $cfg      = $stepData['db'];
+        $dbcfg    = [
+            'host'     => $cfg['host'] ? $cfg['host'] : 'localhost',
+            'port'     => $cfg['port'] ? $cfg['port'] : 3306,
+            'user'     => $cfg['dbusername'],
+            'password' => $cfg['dbpwd'],
+            'encoding' => 'UTF8MB4',
+            'dbname'   => $cfg['dbname']
+        ];
+
+        return App::db($dbcfg);
+    }
+
+    private function clearDb() {
+        $modules = ['system', 'backend'];
+        if (is_file(CONFIG_PATH . 'install_config.php')) {
+            $siteConfig = include CONFIG_PATH . 'install_config.php';
+            if (isset($siteConfig['modules'])) {
+                $modules = array_merge($modules, (array)$siteConfig['modules']);
+            }
+        }
+        try {
+            $db      = $this->getDb();
+            $dialect = $db->getDialect();
+            foreach ($modules as $i => $m) {
+                $module = App::getModuleById($m);
+                if ($module) {
+                    $sqls = $module->getDefinedTables($dialect);
+                    if ($sqls['tables']) {
+                        foreach ($sqls['tables'] as $t) {
+                            $db->exec('drop table if exists ' . $t);
+                        }
+                    }
+                    if ($sqls['views']) {
+                        foreach ($sqls['views'] as $t) {
+                            $db->exec('drop view if exists ' . $t);
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+        }
     }
 }

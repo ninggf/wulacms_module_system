@@ -13,7 +13,9 @@ namespace system;
 use wula\cms\CmfModule;
 use wulaphp\app\App;
 use wulaphp\io\Response;
+use wulaphp\router\IURLDispatcher;
 use wulaphp\router\Router;
+use wulaphp\router\UrlParsedInfo;
 
 /**
  * 系统内核模块.
@@ -53,7 +55,7 @@ class SystemModule extends CmfModule {
      *
      * @bind router\beforeDispatch
      */
-    public static function beforeDispatch($router, $url) {
+    public static function beforeDispatch(Router $router, $url) {
         if (!WULACMF_INSTALLED) {
             if (PHP_RUNTIME_NAME == 'cli-server' && is_file(WWWROOT . $url)) {
                 return;//运行在开发服务器
@@ -69,6 +71,23 @@ class SystemModule extends CmfModule {
                 Response::redirect($installURL);
             }
         }
+    }
+
+    /**
+     * @param Router $router
+     *
+     * @bind router\registerDispatcher
+     */
+    public static function regDispatcher(Router $router) {
+        $router->register(new class implements IURLDispatcher {
+            public function dispatch(string $url, Router $router, UrlParsedInfo $parsedInfo) {
+                if (!$url || $url == 'index.html') {
+                    Response::redirect(App::url('backend'));
+                }
+
+                return null;
+            }
+        }, 99999999);
     }
 }
 

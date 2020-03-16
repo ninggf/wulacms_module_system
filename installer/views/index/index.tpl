@@ -108,6 +108,12 @@
                             <input type="text" v-model="db.dbname" placeholder="数据库名称" @focus="removeTips('dbname')" class="layui-input dbname">
                         </div>
                     </div>
+                     <div class="layui-form-item">
+                        <label class="layui-form-label">表名前缀</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="db.prefix" placeholder="表名前缀"  class="layui-input ">
+                        </div>
+                    </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">用户名</label>
                         <div class="layui-input-block">
@@ -193,13 +199,13 @@
                         <div class="layui-progress-bar" lay-percent="0%">{{install_progress}}%</div>
                     </div>
 
-                    <button :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-primary install_right__pre" >
+                    <a :href="url1"  target="_blank" :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-primary install_right__pre" >
                         进入界面
-                    </button>
+                    </a>
 
-                    <button :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-primary install_right__next" >
+                    <a :href="url2" :class="{'layui-btn-disabled':install_progress < 100}" class="layui-btn layui-btn-primary install_right__next" >
                         进入后台
-                    </button>
+                    </a>
                 </div>
                
             </div>

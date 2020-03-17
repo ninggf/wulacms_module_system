@@ -138,6 +138,11 @@
                             <input type="number" v-model="db.port" placeholder="Port(默认3306)" class="layui-input">
                         </div>
                     </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block" style="display:inline-block;cursor: pointer;min-height: 22px;" @click="db.persistent?db.persistent=0:db.persistent=1">
+                            <input type="checkbox"   lay-skin="switch" class="switch" lay-text="持久链接|持久链接">
+                        </div>
+                    </div>
                     <button class="layui-btn layui-btn-primary install_right__pre" @click="go('pre')">上一步</button>
                     <button class="layui-btn layui-btn-green install_right__next" v-show="status!=1" @click="setup('db')">
                         下一步
@@ -167,9 +172,15 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">管理面板路径</label>
+                        <label class="layui-form-label">管理后台路径</label>
                         <div class="layui-input-block">
                             <input type="text" v-model="user.url" placeholder="URL" @focus="removeTips('url')" class="layui-input url">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">管理后台域名</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="user.domain" placeholder="域名" @focus="removeTips('domain')" class="layui-input domain">
                         </div>
                     </div>
 
@@ -221,13 +232,11 @@
     };
 
     layui.config({
-        base: "{'layui'|assets}"
+        base: "{'layui'|assets}",
+        module:"{'/'|res}"
     });
-
-    layui.use(['layer', 'element', 'form', '&install'], function (l, w, e, r) {
-        var form = layui.form;
-        form.render();
-        
+    layui.use(['layer','element', 'form', '@backend.install'], function (l, w, f, r) {
+        f.render();
     })
 </script>
 </body>

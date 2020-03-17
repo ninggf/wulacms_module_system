@@ -321,7 +321,8 @@ class IndexController extends Controller {
             'port'     => $cfg['port'] ? $cfg['port'] : 3306,
             'user'     => $cfg['dbusername'],
             'password' => $cfg['dbpwd'],
-            'encoding' => 'UTF8MB4'
+            'encoding' => 'UTF8MB4',
+            'prefix'   => $cfg['prefix']?rtrim(trim($cfg['prefix']),'_').'_':''
         ];
         $dbname   = $cfg['dbname'];
 
@@ -426,7 +427,7 @@ class IndexController extends Controller {
         if (is_file($cfg)) {
             $config          = @file_get_contents($cfg);
             $r["'{alias}'"]  = $dashboard ? "['dashboard' => '$dashboard']" : '';
-            $r["'{domain}'"] = '';
+            $r["{domain}"] = '';
             $config          = str_replace(array_keys($r), array_values($r), $config);
         } else {
             if ($dashboard) {
@@ -451,13 +452,15 @@ CFG;
 
             return 0;
         }
-        $dbconfig           = @file_get_contents(APPROOT . 'vendor' . '/wula/cms-support/tpl/dbconfig.php');
-        $r['{db.host}']     = $dbcfg['host'] ? $dbcfg['host'] : 'localhost';
-        $r['{db.port}']     = $dbcfg['port'] ? $dbcfg['port'] : 3306;
-        $r['{db.name}']     = $dbcfg['dbname'];
-        $r['{db.charset}']  = 'UTF8MB4';
-        $r['{db.user}']     = $dbcfg['dbusername'];
-        $r['{db.password}'] = $dbcfg['dbpwd'];
+        $dbconfig               = @file_get_contents(APPROOT . 'vendor' . '/wula/cms-support/tpl/dbconfig.php');
+        $r['{db.host}']         = $dbcfg['host'] ? $dbcfg['host'] : 'localhost';
+        $r['{db.port}']         = $dbcfg['port'] ? $dbcfg['port'] : 3306;
+        $r['{db.name}']         = $dbcfg['dbname'];
+        $r['{db.charset}']      = 'UTF8MB4';
+        $r['{db.user}']         = $dbcfg['dbusername'];
+        $r['{db.password}']     = $dbcfg['dbpwd'];
+        $r['{db.prefix}']       = $dbcfg['prefix'];
+        $r['{db.persistent}']   = $dbcfg['persistent'];
         $dbconfig           = str_replace(array_keys($r), array_values($r), $dbconfig);
         if (!@file_put_contents(CONFIG_PATH . 'dbconfig.php', $dbconfig)) {
             @unlink(CONFIG_PATH . 'config.php');
@@ -476,6 +479,8 @@ CFG;
             $dcf[] = 'db.user = ' . $r['{db.user}'];
             $dcf[] = 'db.password = ' . $r['{db.password}'];
             $dcf[] = 'db.charset = ' . $r['{db.charset}'];
+            $dcf[] = 'db.prefix = ' . $r['{db.prefix}'];
+            $dcf[] = 'db.persistent = '. $r['{db.persistent}'];
             @file_put_contents(CONFIG_PATH . '.env', implode("\n", $dcf));
         }
 

@@ -303,6 +303,8 @@ class IndexController extends Controller {
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
 
+        App::reloadCfg('default');//重新加载配置
+
         return json_encode([
             'status'  => 1,
             'step'    => 'doen',
@@ -322,7 +324,7 @@ class IndexController extends Controller {
             'user'     => $cfg['dbusername'],
             'password' => $cfg['dbpwd'],
             'encoding' => 'UTF8MB4',
-            'prefix'   => $cfg['prefix']?rtrim(trim($cfg['prefix']),'_').'_':''
+            'prefix'   => $cfg['prefix'] ? rtrim(trim($cfg['prefix']), '_') . '_' : ''
         ];
         $dbname   = $cfg['dbname'];
 
@@ -359,7 +361,7 @@ class IndexController extends Controller {
         try {
             $db = $this->getDb();
             $db->start();
-            if ($db->insert($user)->into('user')->exec() && $db->insert([
+            if ($db->insert($user)->into('{user}')->exec() && $db->insert([
                     ['user_id' => 1, 'role_id' => 1],
                     ['user_id' => 1, 'role_id' => 2]
                 ], true)->into('{user_role}')->exec()) {
@@ -425,24 +427,29 @@ class IndexController extends Controller {
 
         $cfg = CONFIG_PATH . 'install_config.php';
         if (is_file($cfg)) {
-            $config          = @file_get_contents($cfg);
-            $r["'{alias}'"]  = $dashboard ? "['dashboard' => '$dashboard']" : '';
-            $r["{domain}"] = '';
-            $config          = str_replace(array_keys($r), array_values($r), $config);
+            $config         = @file_get_contents($cfg);
+            $r["'{alias}'"] = $dashboard ? "'backend' => '$dashboard'" : '';
+            $r["{domain}"]  = $user['domain'];
+            $config         = str_replace(array_keys($r), array_values($r), $config);
         } else {
             if ($dashboard) {
-                $alias = "'alias' => ['dashboard'=>'$dashboard'],";
+                $alias = "'alias' => ['backend' => '$dashboard'],";
+            } else {
+                $alias = '';
             }
             $config = <<<CFG
 <?php
 
 return [
     'debug'     => env('debug', DEBUG_WARN),
+    'domain' => '{$user['domain']}',
+    {$alias}
+    'brandName' => 'WulaCms',
+    'brandImg'  => '',
     'resource'  => [
         'combinate' => env('resource.combinate', 0),
         'minify'    => env('resource.minify', 0)
-    ],
-    {$alias}
+    ]
 ];
 CFG;
         }
@@ -452,16 +459,16 @@ CFG;
 
             return 0;
         }
-        $dbconfig               = @file_get_contents(APPROOT . 'vendor' . '/wula/cms-support/tpl/dbconfig.php');
-        $r['{db.host}']         = $dbcfg['host'] ? $dbcfg['host'] : 'localhost';
-        $r['{db.port}']         = $dbcfg['port'] ? $dbcfg['port'] : 3306;
-        $r['{db.name}']         = $dbcfg['dbname'];
-        $r['{db.charset}']      = 'UTF8MB4';
-        $r['{db.user}']         = $dbcfg['dbusername'];
-        $r['{db.password}']     = $dbcfg['dbpwd'];
-        $r['{db.prefix}']       = $dbcfg['prefix'];
-        $r['{db.persistent}']   = $dbcfg['persistent'];
-        $dbconfig           = str_replace(array_keys($r), array_values($r), $dbconfig);
+        $dbconfig             = @file_get_contents(APPROOT . 'vendor' . '/wula/cms-support/tpl/dbconfig.php');
+        $r['{db.host}']       = $dbcfg['host'] ? $dbcfg['host'] : 'localhost';
+        $r['{db.port}']       = $dbcfg['port'] ? $dbcfg['port'] : 3306;
+        $r['{db.name}']       = $dbcfg['dbname'];
+        $r['{db.charset}']    = 'UTF8MB4';
+        $r['{db.user}']       = $dbcfg['dbusername'];
+        $r['{db.password}']   = $dbcfg['dbpwd'];
+        $r['{db.prefix}']     = $dbcfg['prefix'] ? rtrim(trim($dbcfg['prefix']), '_') . '_' : '';
+        $r['{db.persistent}'] = $dbcfg['persistent'];
+        $dbconfig             = str_replace(array_keys($r), array_values($r), $dbconfig);
         if (!@file_put_contents(CONFIG_PATH . 'dbconfig.php', $dbconfig)) {
             @unlink(CONFIG_PATH . 'config.php');
             $msg = '无法保存数据库配置文件';
@@ -480,7 +487,7 @@ CFG;
             $dcf[] = 'db.password = ' . $r['{db.password}'];
             $dcf[] = 'db.charset = ' . $r['{db.charset}'];
             $dcf[] = 'db.prefix = ' . $r['{db.prefix}'];
-            $dcf[] = 'db.persistent = '. $r['{db.persistent}'];
+            $dcf[] = 'db.persistent = ' . $r['{db.persistent}'];
             @file_put_contents(CONFIG_PATH . '.env', implode("\n", $dcf));
         }
 
@@ -510,7 +517,8 @@ CFG;
             'user'     => $cfg['dbusername'],
             'password' => $cfg['dbpwd'],
             'encoding' => 'UTF8MB4',
-            'dbname'   => $cfg['dbname']
+            'dbname'   => $cfg['dbname'],
+            'prefix'   => $cfg['prefix'] ? rtrim(trim($cfg['prefix']), '_') . '_' : ''
         ];
 
         return App::db($dbcfg);

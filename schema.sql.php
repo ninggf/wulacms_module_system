@@ -96,4 +96,4 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}syslog` (
     INDEX `IDX_USERID` (`time`,`type`,`user_id` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='系统日志表'";
 
-$tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员'),(1,'站长','拥有所有权限')";
+$tables['1.0.0'][] = "INSERT INTO `{prefix}role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员'),(1,'站长','拥有所有权限')";

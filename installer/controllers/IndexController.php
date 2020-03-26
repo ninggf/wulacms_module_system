@@ -303,14 +303,19 @@ class IndexController extends Controller {
         echo json_encode($rtn, JSON_UNESCAPED_UNICODE);
         flush();
 
-        App::reloadCfg('default');//重新加载配置
+        $dashboard = $config['user']['url'] ? $config['user']['url'] : 'backend';
+        if ($config['user']['domain']) {
+            $backendURL = VISITING_SCHEMA . $config['user']['domain'] . VISITING_PORT . '/' . $dashboard;
+        } else {
+            $backendURL = VISITING_HOST . '/' . $dashboard;
+        }
 
         return json_encode([
             'status'  => 1,
             'step'    => 'doen',
             'tip'     => '安装完成',
             'percent' => 100,
-            'url'     => ['/', App::url('backend')],
+            'url'     => ['/', $backendURL],
             'done'    => 1
         ], JSON_UNESCAPED_UNICODE);
     }

@@ -2,7 +2,7 @@
 
 namespace system\classes;
 /**
- * 这个类用于生成验证码图像, 同时可以对用户输入的验证码进行验证(PHP 5)
+ * 这个类用于生成验证码图像, 同时可以对用户输入的验证码进行验证
  *
  */
 class CaptchaCode {
@@ -86,15 +86,15 @@ class CaptchaCode {
     /**
      * 构造函数
      *
-     * @param string $sessionName
+     * @param string $codeName
      */
-    public function __construct($sessionName = 'auth_code') {
+    public function __construct($codeName = 'auth_code') {
         $this->setCode(null);
         $this->setMolestation(null);
         $this->setBgColor(null);
         $this->setImage(null);
         $this->setFont(null); // code, image 两部分必须在 font 之前定义
-        $this->setSession($sessionName);
+        $this->setSession($codeName);
     }
 
     /**
@@ -124,7 +124,7 @@ class CaptchaCode {
      *
      * @return void
      */
-    public function setCode($code) {
+    public function setCode($code = null) {
         if (is_array($code)) {
             if (!isset ($code ['characters']) || !is_string($code ['characters'])) {
                 $code ['characters'] = 'A-H,K-N,P-R,U-Y,2-4,6-9';
@@ -243,13 +243,15 @@ class CaptchaCode {
             if (!is_numeric($font ['size']) || $font ['size'] < 0) {
                 $font ['size'] = 12;
             }
-            if (!is_numeric($font ['left']) || $font ['left'] < 0 || $font ['left'] > $this->image ['width']) {
+            if (!isset($font['left']) || !is_numeric($font ['left']) || $font ['left'] < 0 || $font ['left'] > $this->image
+                ['width']) {
                 $font ['left'] = $this->image ['width'] - ($font ['size'] + $font ['space']) * $this->code ['length'] - $font ['size'];
             }
-            if (!is_integer($font ['top']) || $font ['top'] < 0 || $font ['top'] > $this->image ['height']) {
+            if (!isset($font['top']) || !is_integer($font ['top']) || $font ['top'] < 0 || $font ['top'] > $this->image
+                ['height']) {
                 $font ['top'] = ($this->image ['height'] - $font ['size']) / 2 + $font ['size'];
             }
-            if (!file_exists($font ['file'])) {
+            if (!isset($font['file']) || !file_exists($font ['file'])) {
                 $font ['file'] = __DIR__ . '/../fonts/arial.ttf';
             }
             $this->font = $font;

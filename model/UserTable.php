@@ -14,52 +14,15 @@ use wulaphp\auth\Passport;
 use wulaphp\db\DatabaseConnection;
 use wulaphp\form\FormTable;
 use wulaphp\io\Request;
-use wulaphp\validator\JQueryValidator;
 use wulaphp\validator\ValidateException;
 
 class UserTable extends FormTable {
-    use JQueryValidator;
-    /**
-     * @var \backend\form\HiddenField
-     * @type int
-     */
-    public $id;
-    /**
-     * 登录账户(<b class="text-danger">*</b>)
-     * @var \backend\form\TextField
-     * @type string
-     * @required
-     * @callback (checkUsername(id)) => Account exist
-     * @layout 2, col-xs-6
-     */
-    public $username;
-    /**
-     * 昵称(<b class="text-danger">*</b>)
-     * @var \backend\form\TextField
-     * @type string
-     * @required
-     * @layout 2, col-xs-6
-     */
-    public $nickname;
-    /**
-     * 手机号
-     * @var \backend\form\TextField
-     * @type string
-     * @phone
-     * @layout 3, col-xs-6
-     */
-    public $phone;
-    /**
-     * 邮件地址
-     * @var \backend\form\TextField
-     * @type string
-     * @email
-     * @layout 3,col-xs-6
-     */
-    public $email;
-
     public function roles() {
         return $this->belongsToMany(new RoleTable($this), 'user_role');
+    }
+
+    public function meta() {
+        return $this->hasMany(new UserMetaModel());
     }
 
     /**

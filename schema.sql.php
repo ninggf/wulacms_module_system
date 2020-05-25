@@ -25,7 +25,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}module` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}settings` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `group` VARCHAR(64) NOT NULL COMMENT '配置组',
+    `group` VARCHAR(24) NOT NULL COMMENT '配置组',
     `name` VARCHAR(32) NOT NULL COMMENT '字段名',
     `value` TEXT NULL COMMENT '值',
     PRIMARY KEY (`id`),
@@ -51,8 +51,9 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user` (
     `email` VARCHAR(128) NULL COMMENT '邮箱地址',
     `lastip` VARCHAR(64) NOT NULL DEFAULT '127.0.0.1' COMMENT '上次登录IP',
     `lastlogin` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '上次登录时间',
-    `status` SMALLINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1正常,0禁用,2密码过期',
+    `status` SMALLINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1正常,0禁用',
     `hash` VARCHAR(255) NOT NULL COMMENT '密码HASH',
+    `acl_ver` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '权限版本',
     `avatar` VARCHAR(512) NULL COMMENT '头像',
     PRIMARY KEY (`id`),
     UNIQUE INDEX `UDX_USERNAME` (`username` ASC),

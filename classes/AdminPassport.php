@@ -128,6 +128,7 @@ class AdminPassport extends Passport {
         $this->data['status']    = $user['status'];
         $this->data['lastip']    = $user['lastip'];
         $this->data['lastlogin'] = $user['lastlogin'];
+        $this->data['acl_ver']   = $user['acl_ver'];
         if (isset($user['pid']) && $user['pid']) {
             $this->data['pid'] = $user['pid'];
         } else {
@@ -141,44 +142,57 @@ class AdminPassport extends Passport {
     }
 
     public function restore() {
-        $this->data['roles'] = [];
-        $this->data['acls']  = null;
         if ($this->uid) {
             $table                = new UserTable();
             $user                 = $table->findOne($this->uid);
             $this->data['status'] = $user['status'];
             if ($user['status'] == '0') {
-                $this->data['acls'] = [];
-                $this->error        = __('Your account is locked.');
+                $this->data['acls']  = [];
+                $this->data['roles'] = [];
+                $this->error         = __('Your account is locked.');
             } else {
                 if ($this->uid != 1 && $this->uid != $this->data['pid']) {//非超级管理员且不是一级用户
                     $parent = $table->findOne($this->data['pid']);
                     if ($parent['status'] == '0') {//父用户被锁
                         $this->data['status'] = 0;
                         $this->data['acls']   = [];
+                        $this->data['roles']  = [];
                         $this->error          = __('Your account is locked.');
+                        $this->data           = [];
+
+                        return;
+                    } else {
+                        $proles = [];
+                        foreach ($parent['roles'] as $r) {
+                            $rid            = $r['id'];
+                            $proles[ $rid ] = $r['name'];
+                        }
+                        $this->data['parent']          = $parent->toArray();
+                        $this->data['parent']['roles'] = $proles;
                     }
-                    $proles = [];
-                    foreach ($parent['roles'] as $r) {
-                        $rid            = $r['id'];
-                        $proles[ $rid ] = $r['name'];
+                }
+                if ($user['acl_ver'] > $this->data['acl_ver']) { #权限版本不同时重新加载角色和权限
+                    $this->data['acls']    = [];
+                    $this->data['roles']   = [];
+                    $this->data['acl_ver'] = $user['acl_ver'];
+                    $levels                = [];
+
+                    foreach ($user['roles'] as $r) {
+                        $rid                         = $r['id'];
+                        $levels[]                    = $r['level'];
+                        $this->data['roles'][ $rid ] = $r['name'];
                     }
-                    $this->data['parent']          = $parent->toArray();
-                    $this->data['parent']['roles'] = $proles;
-                }
-                $levels = [];
-                foreach ($user['roles'] as $r) {
-                    $rid                         = $r['id'];
-                    $levels[]                    = $r['level'];
-                    $this->data['roles'][ $rid ] = $r['name'];
-                }
-                if ($this->uid != $this->data['pid']) {
-                    $this->data['maxRoleLevel'] = max(0, max($levels) - 1);
-                } else {
-                    $this->data['maxRoleLevel'] = 999;
+                    if ($this->uid != $this->data['pid']) {
+                        $this->data['maxRoleLevel'] = max(0, max($levels) - 1);
+                    } else {
+                        $this->data['maxRoleLevel'] = 999;
+                    }
                 }
             }
+        } else {
+            $this->data = [];
         }
+        $this->store(); # 有可能保存不了-_-
     }
 
     /**

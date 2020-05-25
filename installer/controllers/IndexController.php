@@ -162,6 +162,7 @@ class IndexController extends Controller {
     /**
      * 验证安全码
      * @return array
+     * @sessWrite
      */
     public function verify() {
         $code     = rqst('code');
@@ -173,7 +174,6 @@ class IndexController extends Controller {
         } else {
             $msg = '安全码不正确';
         }
-
         return ['status' => $verified, 'msg' => $msg, 'step' => 'verify'];
     }
 
@@ -181,6 +181,7 @@ class IndexController extends Controller {
      * 环境与语言选项
      *
      * @return array
+     * @sessWrite
      */
     public function setup() {
         $step = rqst('step');

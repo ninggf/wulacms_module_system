@@ -92,6 +92,29 @@ class SystemModule extends CmfModule {
         }, 99999999);
     }
 
+    public function menu(): array {
+        $menu = [
+            'system' => [
+                'name'  => '系统菜单',
+                'url'   => '',
+                'items' => [
+                    'child1' => ['name' => '子菜单1', 'url' => ''],
+                    'child2' => ['name' => '子菜单2', 'url' => ''],
+                ]
+            ]
+        ];
+
+        return $menu;
+    }
+
+    public function acl(): array {
+        return [
+            ['id' => 'system', 'opt' => '系统菜单'],
+            ['id' => 'system/child1', 'opt' => '查看子菜单1'],
+            ['id' => 'system/child2', 'opt' => '查看子菜单2'],
+        ];
+    }
+
     /**
      * @param Passport $passport
      *

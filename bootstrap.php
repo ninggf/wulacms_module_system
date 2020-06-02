@@ -98,8 +98,8 @@ class SystemModule extends CmfModule {
                 'name'  => '系统菜单',
                 'url'   => '',
                 'items' => [
-                    'child1' => ['name' => '子菜单1', 'url' => ''],
-                    'child2' => ['name' => '子菜单2', 'url' => ''],
+                    'child1' => ['name' => '子菜单1', 'url' => 'backend/test1'],
+                    'child2' => ['name' => '子菜单2', 'url' => 'backend/test2'],
                 ]
             ]
         ];

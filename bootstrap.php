@@ -109,9 +109,11 @@ class SystemModule extends CmfModule {
 
     public function acl(): array {
         return [
-            ['id' => 'system', 'opt' => '系统菜单'],
-            ['id' => 'system/child1', 'opt' => '查看子菜单1'],
-            ['id' => 'system/child2', 'opt' => '查看子菜单2'],
+            'system'        => '系统权限',
+            'system:child1' => '子菜单1权限',
+            'system:child2' => '子菜单2权限',
+            'system:del'    => '删除权限',
+            'system:add'    => '添加权限'
         ];
     }
 

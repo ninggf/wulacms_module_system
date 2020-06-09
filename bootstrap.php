@@ -96,12 +96,12 @@ class SystemModule extends CmfModule {
         $menu = [
             'system' => [
                 'name'  => '系统菜单',
-                'url'   => '',
+                'url'   => '#',
                 'items' => [
                     'child1' => ['name' => '子菜单1', 'url' => 'backend/test1'],
                     'child2' => ['name' => '子菜单2', 'url' => 'backend/test2'],
                 ]
-            ]
+            ],
         ];
 
         return $menu;
@@ -109,11 +109,25 @@ class SystemModule extends CmfModule {
 
     public function acl(): array {
         return [
-            'system'        => '系统权限',
-            'system:child1' => '子菜单1权限',
-            'system:child2' => '子菜单2权限',
-            'system:del'    => '删除权限',
-            'system:add'    => '添加权限'
+            'system' => [
+                'name' => '系统权限',
+                'rs'   => [
+                    'child1' => [
+                        'name' => '子菜单1权限',
+                        'opts' => [
+                            'del' => '删除',
+                            'add' => '新增',
+                        ]
+                    ],
+                    'child2' => [
+                        'name' => '子菜单2权限',
+                        'opts' => [
+                            'del' => '删除',
+                            'add' => '新增',
+                        ]
+                    ],
+                ]
+            ]
         ];
     }
 

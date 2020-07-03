@@ -117,13 +117,13 @@ class IndexController extends Controller {
             ]
         ];
 
-        $pass       = extension_loaded('curl') && version_compare('7.30.0', curl_version()['version'], '<=');
+        $pass       = extension_loaded('curl');
         $checked [] = [
             'Curl',
             [
                 'required' => '7.30.0+',
                 'checked'  => $pass ? curl_version()['version'] : '无',
-                'pass'     => $pass,
+                'pass'     => $pass && version_compare('7.30.0', curl_version()['version'], '<='),
                 'optional' => false
             ]
         ];
@@ -174,6 +174,7 @@ class IndexController extends Controller {
         } else {
             $msg = '安全码不正确';
         }
+
         return ['status' => $verified, 'msg' => $msg, 'step' => 'verify'];
     }
 

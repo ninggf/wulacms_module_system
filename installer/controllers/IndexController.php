@@ -121,9 +121,9 @@ class IndexController extends Controller {
         $checked [] = [
             'Curl',
             [
-                'required' => '7.30.0+',
+                'required' => '7.26.0+',
                 'checked'  => $pass ? curl_version()['version'] : '无',
-                'pass'     => $pass && version_compare('7.30.0', curl_version()['version'], '<='),
+                'pass'     => $pass && version_compare('7.26.0', curl_version()['version'], '<='),
                 'optional' => false
             ]
         ];

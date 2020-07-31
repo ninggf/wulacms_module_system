@@ -93,18 +93,8 @@ class SystemModule extends CmfModule {
     }
 
     public function menu(): array {
-        $menu = [
-            'system' => [
-                'name'  => '系统菜单',
-                'url'   => '#',
-                'items' => [
-                    'child1' => ['name' => '子菜单1', 'url' => 'backend/test1'],
-                    'child2' => ['name' => '子菜单2', 'url' => 'backend/test2'],
-                ]
-            ],
-        ];
 
-        return $menu;
+        return [];
     }
 
     public function acl(): array {

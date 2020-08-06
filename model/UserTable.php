@@ -17,6 +17,7 @@ use wulaphp\io\Request;
 use wulaphp\validator\ValidateException;
 
 class UserTable extends FormTable {
+
     public function roles() {
         return $this->belongsToMany(new RoleTable($this), 'user_role');
     }

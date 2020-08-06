@@ -90,7 +90,7 @@ class AdminPassport extends Passport {
     /**
      * 认证
      *
-     * @param array|int|string $data [0=>username,1=>password] or uid
+     * @param array|int|string|null $data [0=>username,1=>password] or uid
      *
      * @return bool
      */
@@ -124,7 +124,7 @@ class AdminPassport extends Passport {
         $this->nickname          = $user['nickname'];
         $this->phone             = $user['phone'];
         $this->email             = $user['email'];
-        $this->avatar            = $user['avatar'] ? $user['avatar'] : App::assets('jqadmin/images/avatar.jpg');
+        $this->avatar            = $user['avatar'];
         $this->data['status']    = $user['status'];
         $this->data['lastip']    = $user['lastip'];
         $this->data['lastlogin'] = $user['lastlogin'];

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{'backend/css/layui.css'|res}">
     <link rel="stylesheet" href="{'backend/css/install.css'|res}">
     <script type="text/javascript" src="{'backend/layui.js'|res}"></script>
-    <script type="text/javascript" src="{'backend/vue.min.js'|res}"></script>
+    <script type="text/javascript" src="{'backend/vue.js'|res}"></script>
 </head>
 <body style="background: #2F4056;">
 {literal}

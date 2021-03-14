@@ -11,13 +11,12 @@
 namespace system;
 
 use system\classes\AdminPassport;
-use wula\cms\CmfModule;
 use wulaphp\app\App;
 use wulaphp\auth\Passport;
+use wulaphp\cmf\CmfModule;
 use wulaphp\io\Response;
-use wulaphp\router\IURLDispatcher;
+use wulaphp\mvc\view\View;
 use wulaphp\router\Router;
-use wulaphp\router\UrlParsedInfo;
 
 /**
  * 系统内核模块.
@@ -27,23 +26,23 @@ use wulaphp\router\UrlParsedInfo;
  */
 class SystemModule extends CmfModule {
 
-    public function getName() {
+    public function getName(): string {
         return '内核';
     }
 
-    public function getDescription() {
+    public function getDescription(): string {
         return 'wualcms系统内核模块，提供用户、模块、日志、等基础功能。';
     }
 
-    public function getHomePageURL() {
+    public function getHomePageURL(): string {
         return 'https://www.wulacms.com/modules/system';
     }
 
-    public function getAuthor() {
+    public function getAuthor(): string {
         return 'Leo Ning';
     }
 
-    public function getVersionList() {
+    public function getVersionList(): array {
         $v['1.0.0'] = '初始版本';
 
         return $v;
@@ -56,79 +55,35 @@ class SystemModule extends CmfModule {
      * @param string $url
      *
      * @bind router\beforeDispatch
+     * @return \wulaphp\mvc\view\View
      */
-    public static function beforeDispatch(Router $router, $url) {
-        if (!WULACMF_INSTALLED) {
+    public static function beforeDispatch(Router $router, string $url): ?View {
+        if (defined('WULACMF_INSTALLED') && !WULACMF_INSTALLED) {
             if (PHP_RUNTIME_NAME == 'cli-server' && is_file(WWWROOT . $url)) {
-                return;//运行在开发服务器
+                return null;//运行在开发服务器
             }
-            $installURL = App::url('system/installer');
-            if (WWWROOT_DIR != '/') {
-                $regURL = substr($installURL, strlen(WWWROOT_DIR) - 1);
-            } else {
-                $regURL = $installURL;
-            }
-            $regURL = ltrim($regURL, '/');
-            if (!Router::is($regURL . '(/.*)?', true)) {
-                Response::redirect($installURL);
-            }
+            Response::respond(503, "Please run 'php artisn install' first");
         }
-    }
 
-    /**
-     * @param Router $router
-     *
-     * @bind router\registerDispatcher
-     */
-    public static function regDispatcher(Router $router) {
-        $router->register(new class implements IURLDispatcher {
-            public function dispatch(string $url, Router $router, UrlParsedInfo $parsedInfo) {
-                if (!$url || $url == 'index.html') {
-                    Response::redirect(App::url('backend'));
-                }
-
-                return null;
-            }
-        }, 99999999);
+        return null;
     }
 
     public function menu(): array {
-
         return [];
     }
 
     public function acl(): array {
-        return [
-            'system' => [
-                'name' => '系统权限',
-                'rs'   => [
-                    'child1' => [
-                        'name' => '子菜单1权限',
-                        'opts' => [
-                            'del' => '删除',
-                            'add' => '新增',
-                        ]
-                    ],
-                    'child2' => [
-                        'name' => '子菜单2权限',
-                        'opts' => [
-                            'del' => '删除',
-                            'add' => '新增',
-                        ]
-                    ],
-                ]
-            ]
-        ];
+        return [];
     }
 
     /**
-     * @param Passport $passport
+     * @param Passport|null $passport
      *
      * @filter passport\newAdminPassport
      *
      * @return Passport
      */
-    public static function createAdminPassport($passport) {
+    public static function createAdminPassport(?Passport $passport) {
         if ($passport instanceof Passport) {
             $passport = new AdminPassport();
         }

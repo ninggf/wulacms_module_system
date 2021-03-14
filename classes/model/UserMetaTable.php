@@ -8,10 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace system\model;
+namespace system\classes\model;
 
+use wulaphp\db\MetaTable;
 use wulaphp\db\Table;
 
-class AclTable extends Table {
+class UserMetaTable extends Table {
+    use MetaTable;
 
+    protected $primaryKeys = [];
 }

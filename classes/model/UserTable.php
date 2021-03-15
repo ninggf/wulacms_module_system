@@ -11,13 +11,13 @@
 namespace system\classes\model;
 
 use wulaphp\auth\Passport;
+use wulaphp\db\DatabaseConnection;
 use wulaphp\form\FormTable;
 use wulaphp\util\TreeWalker;
 
 class UserTable extends FormTable {
     /**
      * @type int
-     * @required
      */
     public $id;
     /**
@@ -31,7 +31,6 @@ class UserTable extends FormTable {
 
     /**
      * @return array
-     * @throws \wulaphp\db\DialectException
      */
     public function roles(): array {
         return $this->belongsToMany(new RoleModel($this), 'user_role');
@@ -61,7 +60,7 @@ class UserTable extends FormTable {
         return $this->update($data, $w);
     }
 
-    public function newAccount($data) {
+    public function newAccount(array $data): bool {
         return false;
     }
 
@@ -128,6 +127,48 @@ SQL;
     }
 
     /**
+     * 设置用户角色.
+     *
+     * @param int   $uid
+     * @param array $rids
+     *
+     * @return bool
+     */
+    public function setRoles(int $uid, array $rids): bool {
+        $data = [];
+        if ($rids) {
+            $rm    = new RoleModel($this->dbconnection);
+            $roles = $rm->getRolesByUserId($uid);
+            foreach ($roles as $r) {
+                if (in_array($r['id'], $rids)) {
+                    $d['user_id'] = $uid;
+                    $d['role_id'] = $r['id'];
+                    $data[]       = $d;
+                }
+            }
+        }
+
+        $rst = $this->trans(function (DatabaseConnection $db) use ($uid, $data, $rids) {
+            # 删除已有的角色
+            if (!$db->cudx('DELETE FROM {user_role} WHERE user_id = %d', $uid)) {
+                return false;
+            }
+            # 更新权限版本
+            if (!$this->updateAclVer($uid, $db)) {
+                return false;
+            }
+            # 更新角色
+            if ($data && !$db->inserts($data)->into('{user_role}')->execute()) {
+                return false;
+            }
+
+            return true;
+        });
+
+        return !empty($rst);
+    }
+
+    /**
      * 用户拥有的角色.
      *
      * @param int $uid
@@ -135,8 +176,8 @@ SQL;
      * @return array
      */
     public function myRoles(int $uid): array {
-        $roleSql = 'SELECT R.* from {role} AS R INNER JOIN {user} AS U ON R.tenant_id = U.tenant_id WHERE U.id = %d';
-        $roles   = $this->dbconnection->query($roleSql, $uid);
+        $rm      = new RoleModel($this->dbconnection);
+        $roles   = $rm->getRolesByUserId($uid);
         $nodes   = TreeWalker::build($roles);
         $sql     = 'SELECT R.* FROM {user_role} AS UR INNER JOIN {role} AS R ON (UR.role_id = R.id) WHERE UR.user_id = %d ORDER BY UR.role_id ASC';
         $roles   = $this->dbconnection->query($sql, $uid);
@@ -152,5 +193,19 @@ SQL;
         }
 
         return $myRoles;
+    }
+
+    /**
+     * 更新用户权限版本.
+     *
+     * @param int                                 $uid
+     * @param \wulaphp\db\DatabaseConnection|null $db
+     *
+     * @return bool
+     */
+    public function updateAclVer(int $uid, ?DatabaseConnection $db = null): bool {
+        $db = $db ?? $this->dbconnection;
+
+        return $db->cudx('UPDATE {user} SET acl_ver = acl_ver + 1 WHERE id = %d', $uid);
     }
 }

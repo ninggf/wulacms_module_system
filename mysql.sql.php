@@ -76,9 +76,9 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user_role` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}role_permission` (
     `id` CHAR(32) NOT NULL COMMENT 'md5(role_id+uri+op)',
-    `role_id` INT UNSIGNED NOT NULL,
-    `uri` VARCHAR(128) NOT NULL,
-    `op` VARCHAR(12) NOT NULL,
+    `role_id` INT UNSIGNED NOT NULL COMMENT '角色ID',
+    `uri` VARCHAR(128) NOT NULL COMMENT '资源URI',
+    `op` VARCHAR(12) NOT NULL COMMENT '操作',
     PRIMARY KEY (`id`),
     INDEX IDX_ROLE_ID (role_id ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='角色权限'";

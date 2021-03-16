@@ -140,7 +140,7 @@ class AdminPassport extends Passport {
                     $this->userRoles($table);
                 }
             } else {
-                $this->data['acls']  = [];
+                $this->data['acls']  = null;
                 $this->data['roles'] = [];
             }
         } else {
@@ -209,7 +209,7 @@ class AdminPassport extends Passport {
     }
 
     protected function userRoles(UserTable $userTable) {
-        $this->data['acls']  = [];
+        $this->data['acls']  = null;
         $this->data['roles'] = [];
         $roels               = $userTable->myRoles($this->uid);
         foreach ($roels as $r) {

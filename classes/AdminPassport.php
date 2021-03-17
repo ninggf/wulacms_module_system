@@ -129,6 +129,9 @@ class AdminPassport extends Passport {
     }
 
     public function restore() {
+        if (defined('NO_RESTORE_PASSPORT')) {
+            return;
+        }
         if ($this->uid) {
             //TODO: 缓存处理
             $table = new UserTable();

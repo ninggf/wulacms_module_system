@@ -11,6 +11,7 @@
 namespace system;
 
 use system\classes\AdminPassport;
+use system\classes\cmd\ResetPasswdCommand;
 use system\classes\model\RoleModel;
 use system\classes\model\UserMetaTable;
 use system\classes\model\UserTable;
@@ -104,14 +105,6 @@ class SystemModule extends CmfModule {
         return null;
     }
 
-    public function menu(): array {
-        return [];
-    }
-
-    public function acl(): array {
-        return [];
-    }
-
     /**
      * @param Passport|null $passport
      *
@@ -125,5 +118,21 @@ class SystemModule extends CmfModule {
         }
 
         return $passport;
+    }
+
+    /**
+     * 注册重置用户密码命令.
+     *
+     * @param array $cmds
+     *
+     * @filter artisan\init_admin_commands
+     * @return array
+     */
+    public static function addResetPasswdCmd(array $cmds): array {
+        if (defined('WULACMF_INSTALLED') && WULACMF_INSTALLED) {
+            $cmds['reset:passwd'] = new ResetPasswdCommand('admin');
+        }
+
+        return $cmds;
     }
 }

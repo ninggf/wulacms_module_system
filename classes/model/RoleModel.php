@@ -11,8 +11,20 @@
 namespace system\classes\model;
 
 use wulaphp\db\Table;
+use wulaphp\validator\Validator;
 
 class RoleModel extends Table {
+    use Validator;
+
+    /**
+     * @required 角色代码必填
+     */
+    public $name;
+    /**
+     * @required 角色名称必填
+     */
+    public $role;
+
     /**
      * @orm
      * @return array
@@ -49,9 +61,43 @@ class RoleModel extends Table {
      *
      * @return array
      */
-    public function getRolesByTanentId(int $tid): array {
+    public function getRolesByTenantId(int $tid): array {
         $roleSql = 'SELECT R.* from {role} AS R  WHERE R.tenant_id = %d';
 
         return $this->dbconnection->query($roleSql, $tid);
+    }
+
+    /**
+     * 添加角色
+     * @param array $role
+     *
+     * @return bool|int
+     * @Author LW 2021/3/16 15:29
+     */
+    public function addRole(array $role) {
+        return $this->insert($role);
+    }
+
+    /**
+     * 更新角色信息
+     * @param array $role
+     * @param int   $id
+     *
+     * @return bool|\wulaphp\db\sql\UpdateSQL
+     * @Author LW 2021/3/16 16:15
+     */
+    public function updateRole(array $role,int $id){
+        return $this->update($role, $id);
+    }
+
+    /**
+     * 删除角色
+     * @param array $ids
+     *
+     * @return bool|\wulaphp\db\sql\DeleteSQL
+     * @Author LW 2021/3/16 17:07
+     */
+    public function delRole(array $ids){
+        return $this->delete(['id IN' => $ids]);
     }
 }

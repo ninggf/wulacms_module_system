@@ -60,7 +60,8 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}setting` (
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}role` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '角色ID',
     tenant_id INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '租户ID',
-    name VARCHAR(32) NOT NULL COMMENT '角色名称',
+    name VARCHAR(32) NOT NULL COMMENT '角色代码',
+    role varchar(32) NOT NULL COMMENT '角色名',
     pid INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '继承自角色',
     PRIMARY KEY (id),
     INDEX IDX_TENANT_ID (tenant_id ASC),

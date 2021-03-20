@@ -42,8 +42,6 @@ class AdminPassport extends Passport {
      * @param array|null $extra 额外数据
      *
      * @return bool
-     * @see table `acl`
-     *
      */
     protected function checkAcl(string $op, string $res, ?array $extra = null): bool {
         static $checked = [];
@@ -65,16 +63,18 @@ class AdminPassport extends Passport {
         $reses[] = $op . ':' . $res;
         // 对资源的全部操作授权
         $reses[] = '*:' . $res;
+        $reses[] = '*:*';
         $ress    = explode('/', $res);
         if (count($ress) > 1) {
             // 对上级资源的全部操作授权
             while ($ress) {
                 array_pop($ress);
                 $reses[] = '*:' . implode('/', $ress);
+                if (isset($checked[ $resid ])) {
+                    return $checked[ $resid ];
+                }
             }
         }
-        // 对所有资源的全部操作授权，特别是网站拥有者
-        $reses[] = '*:*';
         // 权限检测.
         foreach ($reses as $opres) {
             if (isset($this->data['acls'][ $opres ])) {
@@ -184,14 +184,26 @@ class AdminPassport extends Passport {
         }
 
         $this->uid = $user['id'];
+        $tenantId  = intval($user['tenant_id'] ?? 0);
+        if (!defined('APP_TENANT_ID')) {
+            $tenant = apply_filter('passport\TenantInfo', ['tenant_id' => $tenantId, 'username' => $user['name']]);
 
-        if (isset($user['tenant_id']) && $user['tenant_id']) {
-            $this->data['tenant_id'] = $user['tenant_id'];
-            //TODO: 处理租户
-        } else {
-            $this->data['tenant_id'] = 0;
+            if (!$tenant) {
+                $user['status'] = 0;
+                $this->error    = __('Your tenant account is locked.');
+
+                return false;
+            }
         }
 
+        if ($tenantId != APP_TENANT_ID) {
+            $user['status'] = 0;
+            $this->error    = __('Your tenant account is locked.');
+
+            return false;
+        }
+        $this->data['tenant_id'] = $tenantId;
+        $this->data['tenant']    = APP_TENANT_INFO;
         $this->userMeta($user);
         $this->username       = $user['name'];
         $this->tenantId       = $user['tenant_id'];

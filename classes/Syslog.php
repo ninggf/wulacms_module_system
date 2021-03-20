@@ -27,49 +27,82 @@ class Syslog {
     /**
      * 信息.
      *
-     * @param string      $type
+     * @param string      $logger
      * @param string      $message
      * @param string      $action
      * @param int         $uid
      * @param string|null $oldValue
      * @param string|null $newValue
      */
-    public static function info(string $type, string $message, string $action = '', int $uid = 0, ?string $oldValue = null, ?string $newValue = null) {
-        self::_log('INFO', $uid, $type, $message, $action, $oldValue, $newValue);
+    public static function info(string $logger, string $message, string $action = '', int $uid = 0, ?string $oldValue = null, ?string $newValue = null) {
+        self::_log('INFO', $uid, $logger, $message, $action, $oldValue, $newValue);
     }
 
     /**
      * 警告.
      *
-     * @param string      $type
+     * @param string      $logger
      * @param string      $message
      * @param string      $action
      * @param int         $uid
      * @param string|null $oldValue
      * @param string|null $newValue
      */
-    public static function warn(string $type, string $message, string $action = '', int $uid = 0, ?string $oldValue = null, ?string $newValue = null) {
-        self::_log('WARN', $uid, $type, $message, $action, $oldValue, $newValue);
+    public static function warn(string $logger, string $message, string $action = '', int $uid = 0, ?string $oldValue = null, ?string $newValue = null) {
+        self::_log('WARN', $uid, $logger, $message, $action, $oldValue, $newValue);
     }
 
     /**
      * 错误日志.
      *
-     * @param string      $type
+     * @param string      $logger
      * @param string      $message
      * @param string      $action
      * @param int         $uid
      * @param string|null $oldValue
      * @param string|null $newValue
      */
-    public static function error(string $type, string $message, string $action = '', int $uid = 0, ?string $oldValue = null, ?string $newValue = null) {
-        self::_log('ERROR', $uid, $type, $message, $action, $oldValue, $newValue);
+    public static function error(string $logger, string $message, string $action = '', int $uid = 0, ?string $oldValue = null, ?string $newValue = null) {
+        self::_log('ERROR', $uid, $logger, $message, $action, $oldValue, $newValue);
     }
 
-    private static function _log($level, $uid, $type, $message, $action, $v1, $v2) {
+    /**
+     * 日志器.
+     * @return ILogger[]
+     */
+    public static function loggers(): array {
+        static $loggers = null;
+
+        if ($loggers === null) {
+            $loggers = apply_filter('system\Logger', []);
+        }
+
+        return $loggers;
+    }
+
+    /**
+     * 获取指定日志器.
+     *
+     * @param string $id
+     *
+     * @return ILogger|null
+     */
+    public static function logger(string $id): ?ILogger {
+        if ($id) {
+            $loggers = self::loggers();
+
+            return $loggers[ $id ] ?? null;
+        }
+
+        return null;
+    }
+
+    private static function _log($level, $uid, $logger, $message, $action, $v1, $v2) {
         if (!self::$table) {
             self::$table = new SyslogTable();
         }
-        self::$table->log($level, $type, $uid, $action, $message, $v1, $v2);
+        if (($log = self::logger($logger)) instanceof ILogger) {
+            self::$table->log($level, $logger, $uid, $action, $log->convertMessage($message), $v1, $v2);
+        }
     }
 }

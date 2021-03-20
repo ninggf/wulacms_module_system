@@ -23,7 +23,7 @@ class SyslogTable extends Table {
 
     /**
      * @param string      $level
-     * @param string      $type
+     * @param string      $logger
      * @param int         $uid
      * @param string      $action
      * @param string      $message
@@ -32,32 +32,18 @@ class SyslogTable extends Table {
      *
      * @return bool
      */
-    public function log(string $level, string $type, int $uid, string $action, string $message, ?string $oldValue = null, ?string $newValue = null): bool {
+    public function log(string $level, string $logger, int $uid, string $action, string $message, ?string $oldValue = null, ?string $newValue = null): bool {
         static $tenantids = [];
         $log['create_time'] = time();
         $log['user_id']     = intval($uid);
-        if ($log['user_id']) {
-            if (isset($tenantids[ $uid ])) {
-                $tenantId = $tenantids[ $uid ];
-            } else {
-                $tenantId = 0;
-                $tenant   = $this->db()->queryOne('select tenant_id from {user} where id = %d', $log['user_id']);
-                if ($tenant) {
-                    $tenantId = $tenant['tenant_id'];
-                }
-                $tenantids[ $uid ] = $tenantId;
-            }
-            $log['tenant_id'] = $tenantId;
-        } else {
-            $log['tenant_id'] = 0;
-        }
-        $log['type']      = $type;
-        $log['level']     = $level;
-        $log['operation'] = $action;
-        $log['ip']        = Request::getIp();
-        $log['message']   = $message;
-        $log['value1']    = $oldValue;
-        $log['value2']    = $newValue;
+        $log['tenant_id']   = defined('APP_TENANT_ID') ? APP_TENANT_ID : 0;
+        $log['logger']      = $logger;
+        $log['level']       = $level;
+        $log['operation']   = $action;
+        $log['ip']          = Request::getIp();
+        $log['message']     = $message;
+        $log['value1']      = $oldValue;
+        $log['value2']      = $newValue;
 
         try {
             return $this->insert($log);

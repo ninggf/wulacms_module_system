@@ -16,6 +16,7 @@ use wulaphp\form\FormTable;
 use wulaphp\util\TreeWalker;
 
 class UserTable extends FormTable {
+    const USER_STATUS = ['锁定','正常','重设密码','密码过期'];
     /**
      * @type int
      */
@@ -56,13 +57,32 @@ class UserTable extends FormTable {
             $data['id'] = $uid;
         }
         $w = ['id' => $uid];
-
         return $this->update($data, $w);
     }
 
-    public function newAccount(array $data): bool {
-        return false;
+    /**
+     * 添加账户
+     * @param array $data
+     *
+     * @return int
+     * @Author LW 2021/3/18 17:03
+     */
+    public function newAccount(array $data): int {
+        $data['create_time'] = time();
+        $data['update_time'] = time();
+        return $this->insert($data);
     }
+
+    /**
+     * @param array $uids
+     *
+     * @return bool
+     * @Author LW 2021/3/18 19:37
+     */
+    public function delAccount(array $uids):bool{
+        return $this->delete(['id IN' => $uids]);
+    }
+
 
     /**
      * 更新用户密码.
@@ -72,7 +92,7 @@ class UserTable extends FormTable {
      *
      * @return string
      */
-    public function chagnePassword(int $id, string $password): string {
+    public function changePassword(int $id, string $password): string {
         $data = ['passwd' => Passport::passwd($password)];
         if ($this->update($data, ['id' => $id])) {
             return $data['passwd'];

@@ -76,14 +76,16 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user_role` (
     INDEX IDX_ROLE_ID (role_id ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户的角色'";
 
-$tables['1.0.0'][]= "CREATE TABLE IF NOT EXISTS `{prefix}user_session` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user_token` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
     `create_time` INT UNSIGNED NOT NULL COMMENT '创建时间',
     `expire_time` INT UNSIGNED NOT NULL COMMENT '过期时间',
     `device` SMALLINT UNSIGNED NOT NULL COMMENT '设备: 0 - pc; 1...',
     `token` CHAR(32) NOT NULL COMMENT 'Token',
+    `os` varchar(32) NULL COMMENT '系统',
     `ip` VARCHAR(64) NOT NULL COMMENT '登录IP',
+    `agent` VARCHAR(64) NOT NULL COMMENT '客户端',
     PRIMARY KEY (`id`),
     UNIQUE INDEX UDX_USE_TOKEN (`user_id` ASC , `token` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户会话'";

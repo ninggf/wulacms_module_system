@@ -14,6 +14,7 @@ use system\classes\model\RolePermission;
 use system\classes\model\UserMetaTable;
 use system\classes\model\UserTable;
 use wulaphp\auth\Passport;
+use wulaphp\cache\Cache;
 use wulaphp\db\sql\Query;
 
 /**
@@ -117,10 +118,11 @@ class AdminPassport extends Passport {
 
         if ($this->verifyUserData($user)) {
             $this->userRoles($table);
-            $this->data['acl_ver']   = $user['acl_ver'];
-            $this->data['logintime'] = time();
-            $this->data['astoken']   = md5($user['passwd'] . $user['name'] . $_SERVER['HTTP_USER_AGENT']) . '/' . $user['id'];
-            $this->data['passwd']    = $user['passwd'];
+            $this->data['acl_ver']       = $user['acl_ver'];
+            $this->data['logintime']     = time();
+            $this->data['astoken']       = md5($user['passwd'] . $user['name'] . $_SERVER['HTTP_USER_AGENT']) . '/' . $user['id'];
+            $this->data['passwd']        = $user['passwd'];
+            $this->data['nextCheckTime'] = time() + 60;
 
             return true;
         }
@@ -133,7 +135,24 @@ class AdminPassport extends Passport {
             return;
         }
         if ($this->uid) {
-            //TODO: 缓存处理
+            if ($this->data['nextCheckTime'] > time()) {
+                if (!defined('APP_TENANT_ID')) {
+                    define('APP_TENANT_ID', $this->tenantId);
+                }
+
+                return;
+            }
+            $cache         = Cache::getCache();
+            $userDataValid = $cache->get('adm_passport@' . $this->uid);
+            if ($userDataValid) {
+                if (!defined('APP_TENANT_ID')) {
+                    define('APP_TENANT_ID', $this->tenantId);
+                }
+                $this->data['nextCheckTime'] = time() + 60;
+                $this->store();
+
+                return;
+            }
             $table = new UserTable();
             $user  = $table->findOne($this->uid);
             if ($this->verifyUserData($user)) {
@@ -146,6 +165,7 @@ class AdminPassport extends Passport {
                 $this->data['acls']  = null;
                 $this->data['roles'] = [];
             }
+            $this->data['nextCheckTime'] = time() + 60;
         } else {
             $this->isLogin = false;
             $this->data    = [];
@@ -185,25 +205,16 @@ class AdminPassport extends Passport {
 
         $this->uid = $user['id'];
         $tenantId  = intval($user['tenant_id'] ?? 0);
-        if (!defined('APP_TENANT_ID')) {
-            $tenant = apply_filter('passport\TenantInfo', ['tenant_id' => $tenantId, 'username' => $user['name']]);
-
-            if (!$tenant) {
-                $user['status'] = 0;
-                $this->error    = __('Your tenant account is locked.');
-
-                return false;
-            }
-        }
-
-        if ($tenantId != APP_TENANT_ID) {
+        $tenant    = Tenant::getByDomain($user['name']);
+        if (!$tenant->isEnabled() || $tenant->data()['id'] != $tenantId) {
             $user['status'] = 0;
             $this->error    = __('Your tenant account is locked.');
 
             return false;
         }
+
         $this->data['tenant_id'] = $tenantId;
-        $this->data['tenant']    = APP_TENANT_INFO;
+        $this->data['tenant']    = $tenant->data();
         $this->userMeta($user);
         $this->username       = $user['name'];
         $this->tenantId       = $user['tenant_id'];

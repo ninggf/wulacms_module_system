@@ -102,6 +102,7 @@ class Syslog {
             self::$table = new SyslogTable();
         }
         if (($log = self::logger($logger)) instanceof ILogger) {
+            $log->filter($v1, $v2);
             self::$table->log($level, $logger, $uid, $action, $log->convertMessage($message), $v1, $v2);
         }
     }

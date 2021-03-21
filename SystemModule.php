@@ -15,8 +15,11 @@ use system\classes\cmd\ResetPasswdCommand;
 use system\classes\model\RoleModel;
 use system\classes\model\UserMetaTable;
 use system\classes\model\UserTable;
+use wulaphp\app\App;
 use wulaphp\auth\Passport;
+use wulaphp\cache\RtCache;
 use wulaphp\cmf\CmfModule;
+use wulaphp\conf\Configuration;
 use wulaphp\db\DatabaseConnection;
 use wulaphp\io\Response;
 use wulaphp\mvc\view\View;
@@ -31,7 +34,7 @@ use wulaphp\router\Router;
 class SystemModule extends CmfModule {
 
     public function getName(): string {
-        return '内核';
+        return __('System');
     }
 
     public function getDescription(): string {
@@ -56,7 +59,7 @@ class SystemModule extends CmfModule {
     public function upgradeTo1_0_0(DatabaseConnection $db): bool {
         return !empty($db->trans(function (DatabaseConnection $db) {
             $role = new RoleModel($db);
-            if (!$role->create(['id' => 1, 'name' => 'Admin'])) {
+            if (!$role->create(['id' => 1, 'name' => 'admin', 'role' => 'Administrator'])) {
                 return false;
             }
             $user  = new UserTable(true, $db);
@@ -134,5 +137,38 @@ class SystemModule extends CmfModule {
         }
 
         return $cmds;
+    }
+
+    /**
+     * 加载配置时触发.(只在APP_TENANT_ID定义后有效)
+     *
+     * @filter on_load_config
+     *
+     * @param \wulaphp\conf\Configuration $config
+     *
+     * @return \wulaphp\conf\Configuration
+     */
+    public static function onLoadConfig(Configuration $config): Configuration {
+        if (defined('APP_TENANT_ID')) {
+            //从缓存加载
+            $name    = $config->name();
+            $setting = RtCache::get('cfg.' . $name);
+            if (!is_array($setting)) {
+                //从数据库加载
+                try {
+                    $setting = App::table('setting')->findAll([
+                        'group'     => $name,
+                        'tenant_id' => APP_TENANT_ID
+                    ], 'name,value')->toArray('value', 'name');
+                    RtCache::add('cfg.' . $name, $setting);
+                } catch (\Exception $e) {
+                }
+            }
+            if ($setting) {
+                $config->setConfigs($setting);
+            }
+        }
+
+        return $config;
     }
 }

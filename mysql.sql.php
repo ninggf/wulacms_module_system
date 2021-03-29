@@ -14,6 +14,8 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `create_time` INT UNSIGNED NOT NULL COMMENT '创建时间',
   `update_time` INT UNSIGNED NOT NULL COMMENT '最后更新时间',
+  `update_uid` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '操作uid',
+  `deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '是否删除：0:否；1是',
   `tenant_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '租户ID，默认为0，系统用户',
   `is_super_user` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否是超级管理员',
   `name` VARCHAR(32) NOT NULL COMMENT '用于登录',
@@ -21,8 +23,6 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user` (
   `passwd` VARCHAR(255) NOT NULL COMMENT '密码HASH',
   `passwd_expire_at` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '密码过期时间',
   `acl_ver` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '权限版本',
-  `deleted` TINYINT NOT NULL COMMENT '是否删除：0:否；1是',
-  `update_uid` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '操作uid',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `UDX_NAME` (`name` ASC),
   INDEX `IDX_TENANT_ID` USING BTREE (`tenant_id` ASC)
@@ -30,9 +30,9 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user_meta` (
     `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
+    `deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '是否删除：0:否；1是',
     `name` VARCHAR(16) NOT NULL COMMENT '元数据Key',
     `value` TEXT NULL COMMENT '元数据值',
-    `deleted` TINYINT NOT NULL COMMENT '是否删除：0:否；1是',
     PRIMARY KEY (user_id , name)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户元数据'";
 
@@ -62,13 +62,13 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}setting` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}role` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '角色ID',
+    `create_time` INT UNSIGNED NOT NULL COMMENT '创建时间',
+    `update_time` INT UNSIGNED NOT NULL COMMENT '最后更新时间',
     `pid` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '继承自角色',
     `tenant_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '租户ID',
     `name` VARCHAR(32) NOT NULL COMMENT '角色代码',
     `role` varchar(32) NOT NULL COMMENT '角色名称',
     `remark` VARCHAR(256) NULL COMMENT '说明',
-    `create_time` INT UNSIGNED NOT NULL COMMENT '创建时间',
-    `update_time` INT UNSIGNED NOT NULL COMMENT '最后更新时间',
     PRIMARY KEY (id),
     UNIQUE INDEX UDX_TENANT_ROLE (tenant_id ASC , name ASC),
     INDEX IDX_PID (pid ASC)
@@ -77,7 +77,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}role` (
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user_role` (
     `user_id` INT UNSIGNED NOT NULL,
     `role_id` INT UNSIGNED NOT NULL,
-    `deleted` TINYINT NOT NULL COMMENT '是否删除：0:否；1是',
+    `deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '是否删除：0:否；1是',
     PRIMARY KEY (`user_id` , `role_id`),
     INDEX IDX_ROLE_ID (role_id ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户的角色'";

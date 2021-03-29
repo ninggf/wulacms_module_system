@@ -58,12 +58,18 @@ class SystemModule extends CmfModule {
     // 第一次安装时创建账户信息.
     public function upgradeTo1_0_0(DatabaseConnection $db): bool {
         return !empty($db->trans(function (DatabaseConnection $db) {
-            $role = new RoleModel($db);
-            if (!$role->create(['id' => 1, 'name' => 'admin', 'role' => 'Administrator'])) {
+            $role  = new RoleModel($db);
+            $ctime = time();
+            if (!$role->create([
+                'id'          => 1,
+                'name'        => 'admin',
+                'role'        => 'Administrator',
+                'create_time' => $ctime,
+                'update_time' => $ctime,
+            ])) {
                 return false;
             }
-            $user  = new UserTable($db);
-            $ctime = time();
+            $user = new UserTable($db);
             if (!$user->create([
                 'id'            => 1,
                 'name'          => 'admin',

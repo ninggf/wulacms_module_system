@@ -62,7 +62,7 @@ class SystemModule extends CmfModule {
             if (!$role->create(['id' => 1, 'name' => 'admin', 'role' => 'Administrator'])) {
                 return false;
             }
-            $user  = new UserTable(true, $db);
+            $user  = new UserTable($db);
             $ctime = time();
             if (!$user->create([
                 'id'            => 1,

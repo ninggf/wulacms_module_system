@@ -13,9 +13,14 @@ namespace system\classes;
 use system\classes\model\RolePermission;
 use system\classes\model\UserMetaTable;
 use system\classes\model\UserTable;
+use system\classes\model\UserToken;
+use system\dto\UserTokenDto;
+use wulaphp\app\App;
 use wulaphp\auth\Passport;
 use wulaphp\cache\Cache;
 use wulaphp\db\sql\Query;
+use wulaphp\io\Request;
+use wulaphp\validator\ValidateException;
 
 /**
  * 管理员通行证.
@@ -57,32 +62,15 @@ class AdminPassport extends Passport {
         if (!$this->data['acls']) {
             return false;
         }
-        $resid = $op . ':' . $res;
-        if (isset($checked[ $resid ])) {
-            return $checked[ $resid ];
+        $opOnRes = $op . ':' . $res;
+        if (isset($checked[ $opOnRes ])) {
+            return $checked[ $opOnRes ];
         }
-        $reses[] = $op . ':' . $res;
-        // 对资源的全部操作授权
-        $reses[] = '*:' . $res;
-        $reses[] = '*:*';
-        $ress    = explode('/', $res);
-        if (count($ress) > 1) {
-            // 对上级资源的全部操作授权
-            while ($ress) {
-                array_pop($ress);
-                $reses[] = '*:' . implode('/', $ress);
-                if (isset($checked[ $resid ])) {
-                    return $checked[ $resid ];
-                }
-            }
-        }
-        // 权限检测.
-        foreach ($reses as $opres) {
-            if (isset($this->data['acls'][ $opres ])) {
-                $checked[ $resid ] = true;
 
-                return $checked[ $resid ];
-            }
+        if (isset($this->data['acls'][ $opOnRes ])) {
+            $checked[ $opOnRes ] = true;
+
+            return true;
         }
 
         return false;
@@ -116,10 +104,10 @@ class AdminPassport extends Passport {
             }
         }
 
-        if ($this->verifyUserData($user)) {
+        if ($this->verifyUserData($user, true)) {
             $this->userRoles($table);
             $this->data['acl_ver']       = $user['acl_ver'];
-            $this->data['logintime']     = time();
+            $this->data['longtime']      = time();
             $this->data['astoken']       = md5($user['passwd'] . $user['name'] . $_SERVER['HTTP_USER_AGENT']) . '/' . $user['id'];
             $this->data['passwd']        = $user['passwd'];
             $this->data['nextCheckTime'] = time() + 60;
@@ -134,7 +122,7 @@ class AdminPassport extends Passport {
         if (defined('NO_RESTORE_PASSPORT')) {
             return;
         }
-        if ($this->uid) {
+        if ($this->isLogin) {
             if ($this->data['nextCheckTime'] > time()) {
                 if (!defined('APP_TENANT_ID')) {
                     define('APP_TENANT_ID', $this->tenantId);
@@ -155,6 +143,13 @@ class AdminPassport extends Passport {
             }
             $table = new UserTable();
             $user  = $table->findOne($this->uid);
+            if (!$user['id']) {
+                $this->isLogin = false;
+                $this->data    = [];
+                $this->store();
+
+                return;
+            }
             if ($this->verifyUserData($user)) {
                 $this->data['passwd'] = $user['passwd'];
                 if ($user['acl_ver'] > $this->data['acl_ver']) { #权限版本不同时重新加载角色和权限
@@ -167,8 +162,8 @@ class AdminPassport extends Passport {
             }
             $this->data['nextCheckTime'] = time() + 60;
         } else {
-            $this->isLogin = false;
-            $this->data    = [];
+            $this->uid  = 0;
+            $this->data = [];
         }
         $this->store();
     }
@@ -185,22 +180,16 @@ class AdminPassport extends Passport {
 
     /**
      * @param Query $user
+     * @param bool  $isLogin
      *
      * @return bool
      */
-    protected function verifyUserData(Query $user): bool {
+    protected function verifyUserData(Query $user, bool $isLogin = false): bool {
         $status = $user['status'];
         if ($status == '0') {
             $this->error = __('Your account is locked.');
 
             return false;
-        }
-        if ($status == 1 && $user['passwd_expire_at'] && time() >= $user['passwd_expire_at']) {
-            $user['status'] = $status = '3';
-        }
-
-        if ($status == '2' || $status == '3') {
-            $_SESSION['resetPasswd'] = 1;//重设密码
         }
 
         $this->uid = $user['id'];
@@ -211,6 +200,20 @@ class AdminPassport extends Passport {
             $this->error    = __('Your tenant account is locked.');
 
             return false;
+        }
+
+        //检测TOKEN
+        if (!$this->checkToken($isLogin)) {
+            $this->isLogin = false;
+            $this->uid     = 0;
+
+            return false;
+        }
+
+        if ($user['passwd_expire_at'] && time() >= $user['passwd_expire_at']) {
+            $this->data['passwd_expired'] = true;
+        } else {
+            $this->data['passwd_expired'] = false;
         }
 
         $this->data['tenant_id'] = $tenantId;
@@ -261,5 +264,48 @@ class AdminPassport extends Passport {
         }
         $this->data['acls'] = $acls;
         $this->store();
+    }
+
+    /**
+     * @param bool $isNew 登录
+     *
+     * @return bool
+     */
+    protected function checkToken(bool $isNew = false): bool {
+        $userToken = new UserToken();
+        if ($isNew) {
+            $allowLoginTwice = App::bcfg('allowLoginTwice@common', true);
+            $tokenExpInt     = App::cfg('tokenExpInt@common', '+10 years');
+            if (!$allowLoginTwice) {
+                $userToken->update(['expire_time' => time()], ['user_id' => $this->uid, 'expire_time >' => time()]);
+            }
+            $token              = new UserTokenDto();
+            $token->user_id     = $this->uid;
+            $token->token       = md5(rand_str() . $this->uid . $this->username);
+            $token->ip          = Request::getIp();
+            $token->agent       = $_SERVER['HTTP_USER_AGENT'];
+            $token->expire_time = strtotime($tokenExpInt, time());
+            try {
+                $userToken->newToken($token);
+                $this->data['token'] = $token->token;
+
+                return true;
+            } catch (ValidateException $e) {
+                $this->error = $e->getMessage();
+
+                return false;
+            }
+        }
+        if (isset($this->data['token'])) {
+            $token = $userToken->findOne(['user_id' => $this->uid, 'token' => $this->data['token']], 'id,
+            expire_time')->ary();
+            if ($token['expire_time'] > time()) {
+                $userToken->update(['expire_time' => $token['expire_time'] + 60], $token);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

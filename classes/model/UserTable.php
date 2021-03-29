@@ -10,25 +10,32 @@
 
 namespace system\classes\model;
 
+use wulaphp\app\App;
 use wulaphp\auth\Passport;
 use wulaphp\db\DatabaseConnection;
-use wulaphp\form\FormTable;
+use wulaphp\db\Table;
 use wulaphp\util\TreeWalker;
+use wulaphp\validator\Validator;
 
-class UserTable extends FormTable {
-    const USER_STATUS = ['锁定','正常','重设密码','密码过期'];
+class UserTable extends Table {
+    use Validator;
+
+    const USER_STATUS = ['锁定', '正常'];
     /**
-     * @type int
+     * @required<update>
+     * @num
      */
     public $id;
     /**
      * 账户.
-     *
-     * @type string
-     * @required (id)
-     * @callback (checkUsername) => {account allready exists}
+     * @required<new>
+     * @callback (checkUsername) => {account already exists}
      */
     public $name;
+    /**
+     * @required<new> => {password is required}
+     */
+    public $passwd;
 
     /**
      * @return array
@@ -51,38 +58,59 @@ class UserTable extends FormTable {
      * @param int   $uid
      *
      * @return bool 更新成功返回true,反之返回false.
+     * @throws \wulaphp\validator\ValidateException
      */
     public function updateAccount(array $data, int $uid): bool {
-        if (!isset($data['id']) || $data['id'] != $uid) {
-            $data['id'] = $uid;
+        $data['id']          = $uid;
+        $data['update_time'] = time();
+        $w                   = ['id' => $uid];
+        $this->validate($data, 'update');
+        if (isset($data['passwd'])) {
+            $data['passwd'] = Passport::passwd($data['passwd']);
         }
-        $w = ['id' => $uid];
+
         return $this->update($data, $w);
     }
 
     /**
      * 添加账户
+     *
      * @param array $data
      *
      * @return int
      * @Author LW 2021/3/18 17:03
+     * @throws \wulaphp\validator\ValidateException
      */
     public function newAccount(array $data): int {
         $data['create_time'] = time();
         $data['update_time'] = time();
+        $expireInt           = App::cfg('passwordExpInt@common');
+        if(!isset($data['passwd_expire_at'])){
+            if ($expireInt && $expireInt != '0') {
+                $data['passwd_expire_at'] = strtotime($expireInt, time());
+            } else {
+                $data['passwd_expire_at'] = 0;
+            }
+        }
+        unset($data['id']);
+        $this->validate($data, 'new');
+        if (isset($data['passwd'])) {
+            $data['passwd'] = Passport::passwd($data['passwd']);
+        }
+
         return $this->insert($data);
     }
 
     /**
      * @param array $uids
-     *
+     * @param int $updateUid
      * @return bool
      * @Author LW 2021/3/18 19:37
      */
-    public function delAccount(array $uids):bool{
-        return $this->delete(['id IN' => $uids]);
+    public function delAccount(array $uids,int $updateUid): bool {
+        //不能删除超级管理员
+        return $this->recycle(['id IN' => $uids, 'is_super_user <>' => 1],$updateUid);
     }
-
 
     /**
      * 更新用户密码.
@@ -90,15 +118,24 @@ class UserTable extends FormTable {
      * @param int    $id       用户ID
      * @param string $password 密码(明文)
      *
-     * @return string
+     * @return array|null
+     * @throws \wulaphp\validator\ValidateException
      */
-    public function changePassword(int $id, string $password): string {
-        $data = ['passwd' => Passport::passwd($password)];
+    public function changePassword(int $id, string $password): ?array {
+        $data = ['passwd' => $password];
+        $this->validate($data, 'passwd');
+        $expireInt = App::cfg('passwordExpInt@common');
+        if ($expireInt && $expireInt != '0') {
+            $data['passwd_expire_at'] = strtotime($expireInt, time());
+        } else {
+            $data['passwd_expire_at'] = 0;
+        }
+        $data['passwd'] = Passport::passwd($password);
         if ($this->update($data, ['id' => $id])) {
-            return $data['passwd'];
+            return $data;
         }
 
-        return '';
+        return null;
     }
 
     /**
@@ -227,5 +264,10 @@ SQL;
         $db = $db ?? $this->dbconnection;
 
         return $db->cudx('UPDATE {user} SET acl_ver = acl_ver + 1 WHERE id = %d', $uid);
+    }
+
+    protected function onValidatorInited() {
+        $passwdStrength = App::cfg('passwdStrength', '1');
+        $this->addRule('passwd', ["passwd($passwdStrength)"]);
     }
 }

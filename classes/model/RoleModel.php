@@ -10,6 +10,7 @@
 
 namespace system\classes\model;
 
+use wulaphp\db\DatabaseConnection;
 use wulaphp\db\Table;
 use wulaphp\util\TreeNode;
 use wulaphp\util\TreeWalker;
@@ -78,6 +79,7 @@ class RoleModel extends Table {
      * @Author LW 2021/3/16 15:29
      */
     public function addRole(array $role) {
+        $role['create_time'] = $role['update_time'] = time();
         return $this->insert($role);
     }
 
@@ -104,33 +106,61 @@ class RoleModel extends Table {
      * @return bool|\wulaphp\db\sql\DeleteSQL
      * @Author LW 2021/3/16 17:07
      */
-    public function delRole(array $ids,int $tenant_id) {
-        return $this->delete(['id IN' => $ids, 'tenant_id' => $tenant_id]);
+    public function delRole(array $ids, int $tenant_id) {
+        $where = ['id IN' => $ids, 'tenant_id' => $tenant_id];
+        $res   = $this->trans(function (DatabaseConnection $db) use ($ids, $tenant_id, $where) {
+            //更新用户acl
+            $sqlUser = 'UPDATE {user} SET acl_ver = acl_ver + 1 WHERE id IN (SELECT user_id FROM {user_role} WHERE role_id IN (%d))';
+            if(!$db->cudx($sqlUser, implode(',',$ids))){
+                return false;
+            }
+
+            //删除role
+            if (!$this->delete($where)) {
+                return false;
+            }
+            //删除 role权限
+            $sqlRolePer = 'DELETE FROM {role_permission} WHERE role_id IN (%d)';
+            if (!$db->cudx($sqlRolePer, implode(',', $ids))) {
+                return false;
+            }
+            //删除 user_role
+            $sqlUserRole = 'DELETE FROM {user_role} WHERE role_id IN (%d)';
+            if (!$db->cudx($sqlUserRole, implode(',', $ids))) {
+                return false;
+            }
+            return true;
+        });
+
+        return !empty($res);
     }
 
     /**
      * 检查当前角色的pid是否是我的子类id
-     * @param int $pid 当前pid
-     * @param int $id 当前角色id
+     *
+     * @param int $pid      当前pid
+     * @param int $id       当前角色id
      * @param int $tenantId 租户id
      *
      * @return bool
      * @Author LW 2021/3/18 10:43
      */
-    public function checkRoleIsMySubRole(int $pid,int $id,int $tenantId): bool {
-            if($pid == $id){
-                return false;
-            }
-            $nodes = $this->roleNodes($tenantId);
-            $role = $nodes->get($id);
-            $children = [];
-            $role->allChildren($children);
-            $childrenIds = array_keys($children);
-            return in_array($pid,$childrenIds);
+    public function checkRoleIsMySubRole(int $pid, int $id, int $tenantId): bool {
+        if ($pid == $id) {
+            return false;
+        }
+        $nodes    = $this->roleNodes($tenantId);
+        $role     = $nodes->get($id);
+        $children = [];
+        $role->allChildren($children);
+        $childrenIds = array_keys($children);
+
+        return in_array($pid, $childrenIds);
     }
 
     /**
      * 查询当前租户下所有的角色tree节点
+     *
      * @param int $tenantId
      *
      * @return \wulaphp\util\TreeNode

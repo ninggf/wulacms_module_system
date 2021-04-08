@@ -2,8 +2,6 @@
 
 namespace system\classes;
 
-use backend\classes\layui\TableData;
-
 /**
  * Base logger class
  * @package system\classes
@@ -34,9 +32,9 @@ interface ILogger {
      * @param string $id
      * @param array  $args
      *
-     * @return TableData
+     * @return array
      */
-    function getData(string $id, array $args): TableData;
+    function getData(string $id, array $args): array;
 
     /**
      * 转换消息.

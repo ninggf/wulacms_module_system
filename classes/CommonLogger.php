@@ -10,7 +10,6 @@
 
 namespace system\classes;
 
-use backend\classes\layui\TableData;
 use system\classes\model\SyslogTable;
 use wulaphp\db\sql\QueryBuilder;
 
@@ -25,9 +24,9 @@ abstract class CommonLogger implements ILogger {
      * @param string $id
      * @param array  $args
      *
-     * @return TableData
+     * @return array
      */
-    public function getData(string $id, array $args): TableData {
+    public function getData(string $id, array $args): array {
         $sysLog = (new SyslogTable())->alias('L');
 
         $where['L.logger']    = $id;
@@ -76,15 +75,11 @@ abstract class CommonLogger implements ILogger {
             $this->walk($item);
         });
 
-        return new TableData($logs, $total);
+        return ['data' => $logs, 'count' => $total, 'code' => 0];
     }
 
     public function convertMessage(string $msg): string {
         return $msg;
-    }
-
-    public function getIconCls(): ?string {
-        return 'layui-icon-log';
     }
 
     public function getCols(): array {

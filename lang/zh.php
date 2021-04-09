@@ -30,7 +30,7 @@ return [
     '%s auto sign in successfully'                   => '%s 自动登录成功',
     'Common Setting'                                 => '通用设置',
     'Logs'                                           => '日志',
-    'Common Log'                                     => '普通日志',
+    'Common Log'                                     => '操作日志',
     'Login Log'                                      => '登录日志',
     'sign out %s'                                    => '%s 退出',
     'New Value'                                      => '新的值',

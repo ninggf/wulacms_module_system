@@ -14,6 +14,7 @@ class InitAdminManager extends Handler {
         $manager->getResource('system', __('System'))->addOperate('r', $viewOpName);
         $manager->getResource('system/account', __('Account'))->addOperate('r', $viewOpName);
 
+        //角色
         $role = $manager->getResource('system/account/role', __('Role'));
         $role->addOperate('r', $viewOpName);
         $role->addOperate('add', __('Add'));
@@ -21,19 +22,24 @@ class InitAdminManager extends Handler {
         $role->addOperate('del', __('Delete'));
         $role->addOperate('grant', __('Grant'));
 
+        //用户
         $user = $manager->getResource('system/account/user', __('User'));
         $user->addOperate('r', $viewOpName);
         $user->addOperate('add', __('Add'));
         $user->addOperate('edit', __('Edit'));
         $user->addOperate('del', __('Delete'));
 
+        //设置
         $manager->getResource('system/settings', __('Settings'))->addOperate('r', $viewOpName);
         $settings = Setting::settings();
         foreach ($settings as $s) {
-            $set = $manager->getResource('system/settings/' . $s->getId(), $s->getName());
-            $set->addOperate('r', $viewOpName);
-            $set->addOperate('save', __('Save'));
+            if ($s instanceof Setting) {
+                $set = $manager->getResource('system/settings/' . $s->getId(), $s->getName());
+                $set->addOperate('r', $viewOpName);
+                $set->addOperate('save', __('Save'));
+            }
         }
+        //日志
         $manager->getResource('system/logger', __('Logs'))->addOperate('r', __('View'));
         $loggers = Syslog::loggers();
         foreach ($loggers as $logger) {

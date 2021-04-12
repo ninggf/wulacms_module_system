@@ -54,7 +54,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}syslog` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}setting` (
     `tenant_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '租户ID',
-    `group` VARCHAR(16) NOT NULL DEFAULT 'default' COMMENT '配置组',
+    `group` VARCHAR(20) NOT NULL DEFAULT 'default' COMMENT '配置组',
     `name` VARCHAR(16) NOT NULL COMMENT '配置项名',
     `value` TEXT NULL COMMENT '配置项值',
     PRIMARY KEY (`tenant_id`, `group`, `name`)

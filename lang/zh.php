@@ -34,5 +34,15 @@ return [
     'Login Log'                                      => '登录日志',
     'sign out %s'                                    => '%s 退出',
     'New Value'                                      => '新的值',
-    'Old Value'                                      => '原来值'
+    'Old Value'                                      => '原来值',
+    'Media'                                          => '媒体',
+    'Upload Setting'                                 => '上传设置',
+    'Add Role'                                       => '添加角色',
+    'Edit Role'                                      => '编辑角色',
+    'Role Grant'                                     => '角色授权',
+    'Delete Role'                                    => '删除角色',
+    'Add Category'                                   => '添加分类',
+    'Add User'                                       => '添加用户',
+    'Edit User'                                      => '编辑用户',
+    'Delete User'                                    => '删除用户'
 ];

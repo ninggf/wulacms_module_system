@@ -242,8 +242,9 @@ class AdminPassport extends Passport {
         $this->data['roles'] = [];
         $roels               = $userTable->myRoles($this->uid);
         foreach ($roels as $r) {
-            $rid                         = $r['id'];
-            $this->data['roles'][ $rid ] = $r['name'];
+            $rid                          = $r['id'];
+            $this->data['roles'][ $rid ]  = $r['name'];//标识
+            $this->data['rolens'][ $rid ] = $r['role'];//名称
         }
     }
 

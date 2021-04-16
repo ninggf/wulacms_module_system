@@ -80,7 +80,31 @@ class RoleModel extends Table {
      */
     public function addRole(array $role) {
         $role['create_time'] = $role['update_time'] = time();
+
         return $this->insert($role);
+    }
+
+    /**
+     * 创建一个内置角色.
+     *
+     * @param string $name
+     * @param string $role
+     * @param string $remark
+     * @param int    $tenant_id
+     *
+     * @return bool
+     */
+    public function newSystemRole(string $name, string $role, string $remark, int $tenant_id = 0): bool {
+        $data['update_time'] = $data['create_time'] = time();
+        $data['pid']         = 0;
+        $data['tenant_id']   = $tenant_id;
+        $data['system']      = 1;
+        $data['name']        = $name;
+        $data['role']        = $role;
+        $data['remark']      = $remark;
+        $id                  = $this->insert($data);
+
+        return !empty($id);
     }
 
     /**
@@ -103,15 +127,15 @@ class RoleModel extends Table {
      * @param array $ids
      * @param int   $tenant_id
      *
-     * @return bool|\wulaphp\db\sql\DeleteSQL
+     * @return bool
      * @Author LW 2021/3/16 17:07
      */
-    public function delRole(array $ids, int $tenant_id) {
-        $where = ['id IN' => $ids, 'tenant_id' => $tenant_id];
+    public function delRole(array $ids, int $tenant_id): bool {
+        $where = ['id IN' => $ids, 'tenant_id' => $tenant_id, 'system' => 0];
         $res   = $this->trans(function (DatabaseConnection $db) use ($ids, $tenant_id, $where) {
             //更新用户acl
             $sqlUser = 'UPDATE {user} SET acl_ver = acl_ver + 1 WHERE id IN (SELECT user_id FROM {user_role} WHERE role_id IN (%d))';
-            if(!$db->cudx($sqlUser, implode(',',$ids))){
+            if (!$db->cudx($sqlUser, implode(',', $ids))) {
                 return false;
             }
 
@@ -129,6 +153,7 @@ class RoleModel extends Table {
             if (!$db->cudx($sqlUserRole, implode(',', $ids))) {
                 return false;
             }
+
             return true;
         });
 

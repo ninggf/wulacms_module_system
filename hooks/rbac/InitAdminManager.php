@@ -2,6 +2,7 @@
 
 namespace system\hooks\rbac;
 
+use system\classes\Message;
 use system\classes\Setting;
 use system\classes\Syslog;
 use wulaphp\hook\Handler;
@@ -28,6 +29,17 @@ class InitAdminManager extends Handler {
         $user->addOperate('add', __('Add'));
         $user->addOperate('edit', __('Edit'));
         $user->addOperate('del', __('Delete'));
+
+        $manager->getResource('system/message', __('Message'))->addOperate('r', $viewOpName);
+        $messageTypes = Message::messages();
+        foreach ($messageTypes as $type => $msg) {
+            $msg = $manager->getResource('system/message/' . $type, $msg->getName());
+            $msg->addOperate('r', $viewOpName);
+            $msg->addOperate('add', __('Add'));
+            $msg->addOperate('edit', __('Edit'));
+            $msg->addOperate('del', __('Delete'));
+            $msg->addOperate('pub', __('Publish'));
+        }
 
         //设置
         $manager->getResource('system/settings', __('Settings'))->addOperate('r', $viewOpName);

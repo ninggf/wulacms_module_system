@@ -104,3 +104,35 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}role_permission` (
     PRIMARY KEY (`id`),
     INDEX IDX_ROLE_ID (role_id ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='角色权限'";
+
+$tables['1.1.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}message` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `create_time` INT NOT NULL COMMENT '创建时间',
+  `create_uid` INT UNSIGNED NOT NULL COMMENT '创建用户',
+  `update_time` INT UNSIGNED NOT NULL COMMENT '更新时间',
+  `update_uid` INT UNSIGNED NOT NULL COMMENT '更新用户',
+  `tenant_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '租户ID',
+  `uid` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '用户ID，为0时发给所有用户',
+  `status` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '状态： 0-草稿；1-发布；2-删除',
+  `type` VARCHAR(16) NOT NULL COMMENT '消息类型',
+  `title` VARCHAR(128) NOT NULL COMMENT '消息标题',
+  `desc` VARCHAR(256) NULL COMMENT '简单说明',
+  `content` TEXT NULL COMMENT '内容',
+  `url` VARCHAR(512) NULL COMMENT '详情URL',
+  PRIMARY KEY (`id`),
+  INDEX `IDX_STATUS` (`status` ASC),
+  INDEX `IDX_UID` (`uid` ASC))
+ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '消息'";
+
+$tables['1.1.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}message_read_log` (
+  `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
+  `message_id` INT UNSIGNED NOT NULL COMMENT '消息ID',
+  `read_time` INT UNSIGNED NOT NULL COMMENT '第一次阅读时间',
+  `read_ip` VARCHAR(128) NOT NULL COMMENT '第一次读消息时的IP',
+  `last_read_time` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '最后一次阅读时间',
+  `last_read_ip` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '最后一次阅读时的IP',
+  `read_count` INT UNSIGNED NOT NULL COMMENT '一共阅读次数',
+  PRIMARY KEY (`user_id`, `message_id`))
+ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '消息阅读记录'";
+
+$tables['1.1.0'][] = "ALTER TABLE `{prefix}role` ADD COLUMN `system` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '内置角色' AFTER `update_time`";

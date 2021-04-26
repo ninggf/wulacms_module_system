@@ -48,7 +48,7 @@ class UserTable extends Table {
      * @return array
      */
     public function meta(): array {
-        return $this->hasMany(new UserMetaTable());
+        return $this->hasMany(new UserMetaTable($this->dbconnection));
     }
 
     /**
@@ -85,7 +85,7 @@ class UserTable extends Table {
         $data['create_time'] = time();
         $data['update_time'] = time();
         $expireInt           = App::cfg('passwordExpInt@common');
-        if(!isset($data['passwd_expire_at'])){
+        if (!isset($data['passwd_expire_at'])) {
             if ($expireInt && $expireInt != '0') {
                 $data['passwd_expire_at'] = strtotime($expireInt, time());
             } else {
@@ -103,13 +103,14 @@ class UserTable extends Table {
 
     /**
      * @param array $uids
-     * @param int $updateUid
+     * @param int   $updateUid
+     *
      * @return bool
      * @Author LW 2021/3/18 19:37
      */
-    public function delAccount(array $uids,int $updateUid): bool {
+    public function delAccount(array $uids, int $updateUid): bool {
         //不能删除超级管理员
-        return $this->recycle(['id IN' => $uids, 'is_super_user <>' => 1],$updateUid);
+        return $this->recycle(['id IN' => $uids, 'is_super_user <>' => 1], $updateUid);
     }
 
     /**
@@ -194,14 +195,8 @@ SQL;
     public function setRoles(int $uid, array $rids): bool {
         $data = [];
         if ($rids) {
-            $rm    = new RoleModel($this->dbconnection);
-            $roles = $rm->getRolesByUserId($uid);
-            foreach ($roles as $r) {
-                if (in_array($r['id'], $rids)) {
-                    $d['user_id'] = $uid;
-                    $d['role_id'] = $r['id'];
-                    $data[]       = $d;
-                }
+            foreach ($rids as $rid) {
+                $data[] = ['user_id' => $uid, 'role_id' => $rid];
             }
         }
 

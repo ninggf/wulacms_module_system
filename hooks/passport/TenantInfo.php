@@ -13,8 +13,7 @@ class TenantInfo extends Handler {
     }
 
     private function alter(Tenant $tenant) {
-        $td = $tenant->data();
-        if (!strpos($td['domain'], '@')) {
+        if ($tenant->id == - 1 && !strpos($tenant->domain, '@')) {
             $tenant->setId(0)->setStatus(1)->setName('Owner');
         }
     }

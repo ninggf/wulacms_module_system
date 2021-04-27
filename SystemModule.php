@@ -176,6 +176,27 @@ class SystemModule extends CmfModule {
                 $config->setConfigs($setting);
             }
         }
+        if ($config->name() == 'service') {
+            $services = $config->geta('services', []);
+            if (!isset($services['crontab'])) {
+                $services['crontab'] = [
+                    'type'   => 'script',
+                    'script' => 'modules/system/bin/cron.php',
+                    'status' => 'enabled',
+                    'sleep'  => 1
+                ];
+            }
+            if (!isset($services['cronExecutor'])) {
+                $services['cronExecutor'] = [
+                    'type'   => 'script',
+                    'script' => 'modules/system/bin/executor.php',
+                    'status' => 'enabled',
+                    'worker' => 2,
+                    'sleep'  => 1
+                ];
+            }
+            $config->set('services', $services);
+        }
 
         return $config;
     }

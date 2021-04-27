@@ -55,7 +55,27 @@ abstract class BaseTask {
      */
     private $remark;
 
-    public function setup($id, DatabaseConnection $db = null, array $options = []): bool {
+    /**
+     * BaseTask constructor.
+     *
+     * @param string $name   任务实例名
+     * @param string $remark 说明.
+     */
+    public function __construct(string $name = '', string $remark = '') {
+        $this->name   = $name;
+        $this->remark = $remark;
+    }
+
+    /**
+     * 运行前配置.
+     *
+     * @param int                                 $id
+     * @param \wulaphp\db\DatabaseConnection|null $db
+     * @param array                               $options
+     *
+     * @return bool
+     */
+    public function setup(int $id, DatabaseConnection $db = null, array $options = []): bool {
         $this->id      = $id;
         $this->db      = $db;
         $this->options = $options;
@@ -101,7 +121,7 @@ abstract class BaseTask {
      */
     public final function log(string $text) {
         if ($this->id) {
-            $sql = 'INSERT INTO `{task_log}` VALUES(%s,%d,%s)';
+            $sql = 'INSERT INTO `{task_log}`(task_queue_id,create_time,content) VALUES(%s,%d,%s)';
             $this->db->cud($sql, $this->id, time(), $text);
         }
     }

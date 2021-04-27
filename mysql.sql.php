@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `{prefix}task_queue` (
   `options` LONGTEXT NULL COMMENT '配置与数据（JSON格式）',
   `msg` TEXT NULL COMMENT '出错信息',
   PRIMARY KEY (`id`),
-  INDEX `IDX_TASK_ID` (`task_id` ASC),
+  UNIQUE INDEX `UDX_TASK_ID` (`task_id` ASC,`start_time` DESC),
   INDEX `IDX_STATUS_RT` (`status` ASC, `start_time` DESC)
 )ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '任务队列'
 SQL;

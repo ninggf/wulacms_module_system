@@ -16,6 +16,7 @@ use wulaphp\validator\Validator;
 
 class RolePermission extends Table {
     use Validator;
+
     /**
      * @required 角色id必填
      */
@@ -30,34 +31,36 @@ class RolePermission extends Table {
      */
     public $op;
 
-
     /**
      * 获取角色的所有权限
+     *
      * @param int $rid
      *
      * @return array
      * @Author LW 2021/3/22 17:38
      */
-    public function getPermissionByRoleId(int $rid):array {
+    public function getPermissionByRoleId(int $rid): array {
         $sql = 'SELECT uri,op from {role_permission}  WHERE role_id = %d';
         $res = $this->dbconnection->query($sql, $rid);
-        if(!empty($res)){
+        if (!empty($res)) {
             foreach ($res as &$value) {
                 $value['resId'] = $value['op'] . ':' . $value['uri'];
             }
         }
+
         return $res;
     }
 
     /**
      * 更新角色权限
+     *
      * @param int   $rid
      * @param array $permissions
      *
      * @return bool
      * @Author LW 2021/3/22 17:09
      */
-    public function updatePermissionByRoleId(int $rid,array $permissions):bool{
+    public function updatePermissionByRoleId(int $rid, array $permissions): bool {
         $res = $this->trans(function (DatabaseConnection $db) use ($rid, $permissions) {
             //删除角色当前权限
             if (!$db->cudx('DELETE FROM {role_permission} WHERE role_id = %d', $rid)) {
@@ -68,25 +71,29 @@ class RolePermission extends Table {
                 return false;
             }
             //更新当前角色所有用户的权限版本
-            if(!$this->updateRoleAclVer($rid,$db)){
+            if (!$this->updateRoleAclVer($rid, $db)) {
                 return false;
             }
+
             return true;
         });
-        return  !empty($res);
+
+        return !empty($res);
     }
 
     /**
      * 更新角色下所有用户的aclVer
+     *
      * @param int                                 $rid
      * @param \wulaphp\db\DatabaseConnection|null $db
      *
      * @return bool
      * @Author LW 2021/3/22 17:21
      */
-    private function updateRoleAclVer(int $rid,?DatabaseConnection $db = null):bool{
-        $db = $db ?? $this->dbconnection;
+    private function updateRoleAclVer(int $rid, ?DatabaseConnection $db = null): bool {
+        $db  = $db ?? $this->dbconnection;
         $sql = 'UPDATE {user} SET acl_ver = acl_ver + 1 WHERE id IN (SELECT user_id FROM {user_role} WHERE role_id = %d)';
+
         return $db->cudx($sql, $rid);
     }
 

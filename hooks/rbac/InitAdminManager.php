@@ -13,8 +13,12 @@ class InitAdminManager extends Handler {
         /**@var \wulaphp\auth\AclResourceManager $manager */
         $manager = $args[0];
         $manager->getResource('system', __('System'))->addOperate('r', $viewOpName);
-        $manager->getResource('system/account', __('Account'))->addOperate('r', $viewOpName);
 
+        $task = $manager->getResource('system/task', __('Task'));
+        $task->addOperate('r', $viewOpName);
+        $task->addOperate('m', __('Manage'));
+
+        $manager->getResource('system/account', __('Account'))->addOperate('r', $viewOpName);
         //角色
         $role = $manager->getResource('system/account/role', __('Role'));
         $role->addOperate('r', $viewOpName);

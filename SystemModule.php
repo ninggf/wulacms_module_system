@@ -52,6 +52,7 @@ class SystemModule extends CmfModule {
     public function getVersionList(): array {
         $v['1.0.0'] = '初始版本';
         $v['1.1.0'] = '添加消息功能';
+        $v['1.2.0'] = '添加后台任务功能';
 
         return $v;
     }

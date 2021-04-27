@@ -136,3 +136,55 @@ $tables['1.1.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}message_read_log` (
 ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '消息阅读记录'";
 
 $tables['1.1.0'][] = "ALTER TABLE `{prefix}role` ADD COLUMN `system` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '内置角色' AFTER `update_time`";
+
+$tables['1.2.0'][] = <<<SQL
+CREATE TABLE IF NOT EXISTS `{prefix}task` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id` INT UNSIGNED NOT NULL COMMENT '创建用户',
+  `create_time` INT UNSIGNED NOT NULL COMMENT '创建时间',
+  `name` VARCHAR(64) NOT NULL COMMENT '任务名称',
+  `task` VARCHAR(128) NOT NULL COMMENT '任务类全类名',
+  `retry` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '出错时重试次数，0不重试',
+  `interval` SMALLINT UNSIGNED NOT NULL DEFAULT 30 COMMENT '重试间隔，单位秒',
+  `status` ENUM('S','R') NOT NULL DEFAULT 'R' COMMENT '任务状态： S-停止；R-运行中',
+  `next_runtime` INT UNSIGNED NOT NULL COMMENT '下次执行时间',
+  `first_runtime` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '第一次执行时间',
+  `last_runtime` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '最后一次执行时间',
+  `crontab` VARCHAR(256) NULL COMMENT 'crontab表达式',
+  `options` LONGTEXT NULL COMMENT '配置信息（JSON格式）',
+  `remark` TEXT NULL COMMENT '描述信息',
+  PRIMARY KEY (`id`),
+  INDEX `IDX_USER_ID` (`user_id` ASC),
+  INDEX `IDX_STATUS_RT` (`status` ASC, `next_runtime` DESC)
+) ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '任务列表'
+SQL;
+
+$tables['1.2.0'][] = <<<SQL
+CREATE TABLE IF NOT EXISTS `{prefix}task_queue` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `task_id` INT UNSIGNED NOT NULL COMMENT '任务ID',
+  `create_time` INT UNSIGNED NOT NULL COMMENT '创建时间',
+  `status` ENUM('P', 'R', 'F', 'E') NOT NULL DEFAULT 'P' COMMENT '状态： P-待运行;R-运行中;F-完成;E-出错',
+  `progress` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '任务进度',
+  `start_time` INT UNSIGNED NOT NULL COMMENT '下一次时间',
+  `end_time` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '结束时间',
+  `retried` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '已经重试次数',
+  `options` LONGTEXT NULL COMMENT '配置与数据（JSON格式）',
+  `msg` TEXT NULL COMMENT '出错信息',
+  PRIMARY KEY (`id`),
+  INDEX `IDX_TASK_ID` (`task_id` ASC),
+  INDEX `IDX_STATUS_RT` (`status` ASC, `start_time` DESC)
+)ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '任务队列'
+SQL;
+
+$tables['1.2.0'][] = <<<SQL
+CREATE TABLE IF NOT EXISTS `{prefix}task_log` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `task_queue_id` INT UNSIGNED NOT NULL COMMENT '任务实例ID',
+  `create_time` INT UNSIGNED NOT NULL COMMENT '记录时间',
+  `content` TEXT NOT NULL COMMENT '日志内容',
+  PRIMARY KEY (`id`),
+  INDEX `FDX_TASK_QID` (`task_queue_id` ASC)
+) ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '任务执行日志'
+SQL;
+

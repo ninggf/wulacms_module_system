@@ -5,6 +5,7 @@ namespace system\hooks\rbac;
 use system\classes\Message;
 use system\classes\Setting;
 use system\classes\Syslog;
+use wulaphp\app\App;
 use wulaphp\hook\Handler;
 
 class InitAdminManager extends Handler {
@@ -44,7 +45,17 @@ class InitAdminManager extends Handler {
             $msg->addOperate('del', __('Delete'));
             $msg->addOperate('pub', __('Publish'));
         }
-
+        // 文件上传
+        $uploader = App::acfg('uploader');
+        $uploader = array_filter($uploader, function ($v) {
+            return $v{0} != '#';
+        }, ARRAY_FILTER_USE_KEY);
+        if ($uploader) {
+            $file = $manager->getResource('system/file', __('File'));
+            foreach ($uploader as $t => $v) {
+                $file->addOperate($t, $v['name'] ?? $t);
+            }
+        }
         //设置
         $manager->getResource('system/settings', __('Settings'))->addOperate('r', $viewOpName);
         $settings = Setting::settings();

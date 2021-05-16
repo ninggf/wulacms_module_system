@@ -48,7 +48,7 @@ class InitAdminManager extends Handler {
         // 文件上传
         $uploader = App::acfg('uploader');
         $uploader = array_filter($uploader, function ($v) {
-            return $v{0} != '#';
+            return $v[0] != '#';
         }, ARRAY_FILTER_USE_KEY);
         if ($uploader) {
             $file = $manager->getResource('system/file', __('File'));

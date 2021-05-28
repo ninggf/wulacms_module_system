@@ -124,7 +124,7 @@ class SystemModule extends CmfModule {
      * @return Passport
      */
     public static function createAdminPassport(?Passport $passport) {
-        if ($passport instanceof Passport) {
+        if (!$passport instanceof Passport) {
             $passport = new AdminPassport();
         }
 
@@ -178,23 +178,23 @@ class SystemModule extends CmfModule {
         }
         if ($config->name() == 'service') {
             $services = $config->geta('services', []);
-            if (!isset($services['crontab'])) {
-                $services['crontab'] = [
-                    'type'   => 'script',
-                    'script' => 'modules/system/bin/cron.php',
-                    'status' => 'enabled',
-                    'sleep'  => 1
-                ];
-            }
-            if (!isset($services['cronExecutor'])) {
-                $services['cronExecutor'] = [
-                    'type'   => 'script',
-                    'script' => 'modules/system/bin/executor.php',
-                    'status' => 'enabled',
-                    'worker' => 2,
-                    'sleep'  => 1
-                ];
-            }
+            # 任务启动者
+            $cronDef             = (array)$services['crontab'] ?? [];
+            $services['crontab'] = array_merge([
+                'type'   => 'script',
+                'script' => 'modules/system/bin/cron.php',
+                'status' => 'enabled',
+                'sleep'  => 1
+            ], $cronDef);
+            # 任务执行者
+            $execDef                  = (array)$services['cronExecutor'] ?? [];
+            $services['cronExecutor'] = array_merge([
+                'type'   => 'script',
+                'script' => 'modules/system/bin/executor.php',
+                'status' => 'enabled',
+                'worker' => 1,
+                'sleep'  => 1
+            ], $execDef);
             $config->set('services', $services);
         }
 

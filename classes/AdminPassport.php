@@ -36,8 +36,17 @@ class AdminPassport extends Passport {
         if (empty($myroles)) {
             return false;
         }
+        foreach ((array)$roles as $r) {
+            if ($r[0] == '!') {
+                if (in_array(mb_substr($r, 1), $myroles)) {
+                    return false;
+                }
+            } else if (!in_array($r, $myroles)) {
+                return false;
+            }
+        }
 
-        return !empty(array_intersect($myroles, (array)$roles));
+        return true;
     }
 
     /**

@@ -124,7 +124,7 @@ class SystemModule extends CmfModule {
      * @return Passport
      */
     public static function createAdminPassport(?Passport $passport) {
-        if (!$passport instanceof Passport) {
+        if (!$passport instanceof AdminPassport) {
             $passport = new AdminPassport();
         }
 

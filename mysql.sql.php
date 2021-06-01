@@ -187,3 +187,8 @@ CREATE TABLE IF NOT EXISTS `{prefix}task_log` (
   INDEX `FDX_TASK_QID` (`task_queue_id` ASC)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '任务执行日志'
 SQL;
+
+$tables['1.2.1'][]= <<<SQL
+alter table `{prefix}task_queue`
+	add `running` tinyint unsigned default 0 null comment '是否正在运行' after status;
+SQL;

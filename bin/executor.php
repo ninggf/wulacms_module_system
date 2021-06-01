@@ -24,7 +24,7 @@ class TaskExecutorLoopScript extends \wulaphp\command\LoopScript {
         }
         $taskIns = \system\classes\BaseTask::getTasks();
         foreach ($tasks as $task) {
-            $rst = $db->cud('UPDATE {task_queue} SET status = %s WHERE id=%d and status=%s', 'R', $task['id'], 'P');
+            $rst = $db->cud('UPDATE {task_queue} SET status = %s,running=1 WHERE id=%d and status=%s', 'R', $task['id'], 'P');
             if ($rst === 1) {
                 try {
                     if (isset($taskIns[ $task['task'] ])) {
@@ -32,7 +32,7 @@ class TaskExecutorLoopScript extends \wulaphp\command\LoopScript {
                         $clz->setup($task['id'], $db, json_decode($task['options'], true));
                         $rst = $clz->execute();
                         if ($rst) {
-                            $db->cud('UPDATE {task_queue} SET end_time = %d, status=%s, progress=100 WHERE id=%d', time(), 'F', $task['id']);
+                            $db->cud('UPDATE {task_queue} SET end_time = %d,status=%s,running=0, progress=100 WHERE id=%d', time(), 'F', $task['id']);
                         } else {
                             throw new Exception('执行失败', 2);
                         }
@@ -42,6 +42,7 @@ class TaskExecutorLoopScript extends \wulaphp\command\LoopScript {
                 } catch (Exception $e) {
                     $data['end_time'] = time();
                     $data['status']   = 'E';
+                    $data['running']  = 0;
                     $data['progress'] = 100;
                     if ($e->getCode() == 1) {
                         $data['msg'] = $e->getMessage();

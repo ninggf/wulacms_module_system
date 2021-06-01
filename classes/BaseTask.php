@@ -292,6 +292,19 @@ abstract class BaseTask {
     }
 
     /**
+     * 创建$task对应的类实例.
+     *
+     * @param string $task
+     *
+     * @return \system\classes\BaseTask|null
+     */
+    public static function createTask(string $task): ?BaseTask {
+        $tasks = self::getTasks();
+
+        return $tasks[ $task ] ?? null;
+    }
+
+    /**
      * 任务ID.
      * @return string
      */

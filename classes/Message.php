@@ -12,10 +12,29 @@ abstract class Message {
     public abstract function getName(): string;
 
     /**
-     * 发送消息.
+     * 发送消息(其实就是将消息写到数据库里啦).
+     *
+     * @throws \wulaphp\validator\ValidateException
      */
-    public function send() {
+    public function send(MessageDto $dto, int $uid, int $id = 0): bool {
+        $data  = $dto->getData($id ? 'update' : 'new');
+        $model = new \system\classes\model\Message();
+        if ($id) {
+            $data['update_time'] = time();
+            $data['update_uid']  = 0;
+            $data['status']      = 0;
+            $data['uid']         = $data['uid'] ?? 0;
+            $rst                 = $model->update()->set($data)->where(['id' => $id])->affected();
+        } else {
+            unset($data['uid'], $data['id']);
+            $data['type']        = $this->getType();
+            $data['tenant_id']   = 0;
+            $data['create_time'] = $data['update_time'] = time();
+            $data['create_uid']  = $data['update_uid'] = $uid;
+            $rst                 = $model->insert($data);
+        }
 
+        return $rst > 0;
     }
 
     /**
@@ -58,6 +77,12 @@ abstract class Message {
         }
 
         return self::$messageTypes;
+    }
+
+    public static function createMessage(string $type): ?Message {
+        $messages = self::messages();
+
+        return $messages[ $type ] ?? null;
     }
 
     /**

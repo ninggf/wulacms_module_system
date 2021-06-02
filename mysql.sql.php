@@ -192,3 +192,11 @@ $tables['1.2.1'][]= <<<SQL
 alter table `{prefix}task_queue`
 	add `running` tinyint unsigned default 0 null comment '是否正在运行' after status;
 SQL;
+
+$tables['1.2.1'][] = <<<SQL
+alter table `{prefix}message`
+	add publish_time int unsigned default 0 not null comment '发布时间' ,
+    add publish_uid  int unsigned default 0 not null comment '发布者',
+    add deleted tinyint unsigned default 0 not null comment '删除';
+SQL;
+

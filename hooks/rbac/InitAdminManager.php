@@ -40,7 +40,6 @@ class InitAdminManager extends Handler {
         foreach ($messageTypes as $type => $msg) {
             $msg = $manager->getResource('system/message/' . $type, $msg->getName());
             $msg->addOperate('r', $viewOpName);
-            $msg->addOperate('add', __('Add'));
             $msg->addOperate('edit', __('Edit'));
             $msg->addOperate('del', __('Delete'));
             $msg->addOperate('pub', __('Publish'));

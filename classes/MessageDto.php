@@ -26,7 +26,10 @@ class MessageDto extends Params {
      * @callback<new> (checkUid) => {user not found}
      */
     public $uid;
-
+    /**
+     * 摘要
+     * @var string
+     */
     public $desc;
     /**
      * @var string

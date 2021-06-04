@@ -2,10 +2,27 @@
 
 namespace system\classes;
 
+use wulaphp\app\App;
 use wulaphp\mvc\view\View;
 
 abstract class Message {
     private static $messageTypes = null;
+
+    public static function getAllNewCount(int $uid) {
+        $where['uid @'] = [0, $uid];
+        $sql            = <<<'SQL'
+select count(*) as cnt from {message} M 
+    where uid in (0,%d) 
+    and status = 1
+    and not exists(
+        select user_id from {message_read_log}  where message_id = M.id and user_id = %d
+    )
+SQL;
+        $db             = App::db();
+        $cnt            = $db->query($sql, $uid, $uid)[0];
+
+        return $cnt['cnt'] ?: 0;
+    }
 
     public abstract function getType(): string;
 
@@ -38,6 +55,59 @@ abstract class Message {
     }
 
     /**
+     * 获取数据.
+     *
+     * @param int      $uid   用户ID
+     * @param int      $start 开始位置
+     * @param int      $limit 分页大小
+     * @param array    $where 条件
+     * @param int|null $total 查询总数
+     *
+     * @return array
+     * @throws \wulaphp\db\DialectException
+     */
+    public function getMessages(int $uid, int $start = 0, int $limit = 10, ?int &$total = null, array $where = []): array {
+        $db = App::db();
+
+        $sql  = <<<'SQL'
+SELECT 
+       {_fields_}
+ FROM {message} AS M
+LEFT JOIN {message_read_log} as RL ON RL.message_id = M.id and RL.user_id = %d
+WHERE M.status = 1
+and M.tenant_id =0
+and M.uid in (0,%d)
+{and cond}
+ORDER BY RL.read_time ,id desc 
+LIMIT %d,%d
+SQL;
+        $args = [$uid, $uid];
+        if ($where) {
+            $cond = $where[0];
+            $sql  = str_replace('{and cond}', 'and ' . $cond, $sql);
+            array_shift($where);
+            if ($where) {
+                $args = array_merge($args, $where);
+            }
+        } else {
+            $sql = str_replace('{and cond}', '', $sql);
+        }
+        $sql1   = str_replace('{_fields_}', 'M.*,IFNULL(RL.read_time,0) as read_time',
+            $sql);
+        $args[] = $start;
+        $args[] = $limit;
+
+        $datas = $db->query($sql1, ...$args);
+        if ($datas && !is_null($total)) {
+            $sql2  = str_replace('{_fields_}', 'count(*) as total', $sql);
+            $cnt   = $db->query($sql2, ...$args)[0];
+            $total = $cnt['total'] ?: 0;
+        }
+
+        return $datas;
+    }
+
+    /**
      * 编辑视图.
      *
      * @return \wulaphp\mvc\view\View
@@ -56,11 +126,13 @@ abstract class Message {
     /**
      * 消息中心视图.
      *
-     * @param array $data
+     * @param int $uid
+     * @param int $start
+     * @param int $limit
      *
      * @return \wulaphp\mvc\view\View
      */
-    public abstract function getNotifyView(array $data): View;
+    public abstract function getNotifyView(int $uid, int $start = 0, int $limit = 30): View;
 
     /**
      * 获取系统支持的消息类型列表.
@@ -93,5 +165,25 @@ abstract class Message {
     public static function register(Message $message) {
         $type                        = $message->getType();
         self::$messageTypes[ $type ] = $message;
+    }
+
+    /**
+     * 获取新消息
+     */
+    public function getNewCount(int $uid, int $tenant_id = 0): int {
+        $sql = <<<'SQL'
+select count(*) as cnt from {message} M 
+    where uid in (0,%d) 
+    and status = 1
+    and tenant_id = 0
+    and type = %s
+    and not exists(
+        select user_id from {message_read_log}  where message_id = M.id and user_id = %d
+    )
+SQL;
+        $db  = App::db();
+        $cnt = $db->query($sql, $uid, $this->getType(), $uid)[0];
+
+        return $cnt['cnt'] ?: 0;
     }
 }

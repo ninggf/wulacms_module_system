@@ -6,6 +6,10 @@ use wulaphp\db\Table;
 
 class Message extends Table {
 
+    public function readlogs() {
+        return $this->hasMany('message_read_log');
+    }
+
     public function deleteMsg(int $id, int $uid): int {
         $data['update_time'] = time();
         $data['update_uid']  = $uid;

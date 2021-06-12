@@ -10,7 +10,6 @@ abstract class Message {
     private static $messageTypes = null;
 
     public static function getAllNewCount(int $uid) {
-        $where['uid @'] = [0, $uid];
         $sql            = <<<'SQL'
 select count(*) as cnt from {message} M 
     where uid in (0,%d) 

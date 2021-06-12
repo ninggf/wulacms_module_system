@@ -2,6 +2,7 @@
 
 namespace system\classes;
 
+use system\classes\model\MessageMetaTable;
 use wulaphp\app\App;
 use wulaphp\mvc\view\View;
 
@@ -29,12 +30,26 @@ SQL;
     public abstract function getName(): string;
 
     /**
+     * 元数据定义.
+     *
+     * @return array
+     * @author Leo Ning <windywany@gmail.com>
+     * @date   2021-06-12 12:34:55
+     * @since  1.0.0
+     */
+    public function getMetas(): array {
+        return [];
+    }
+
+    /**
      * 发送消息(其实就是将消息写到数据库里啦).
      *
      * @throws \wulaphp\validator\ValidateException
      */
     public function send(MessageDto $dto, int $uid, int $id = 0): bool {
-        $data  = $dto->getData($id ? 'update' : 'new');
+        $data = $dto->getData($id ? 'update' : 'new');
+        $meta = $data['meta'] ?? [];
+        unset($data['meta']);
         $model = new \system\classes\model\Message();
         if ($id) {
             $data['update_time'] = time();
@@ -48,7 +63,20 @@ SQL;
             $data['tenant_id']   = 0;
             $data['create_time'] = $data['update_time'] = time();
             $data['create_uid']  = $data['update_uid'] = $uid;
-            $rst                 = $model->insert($data);
+            $id                  = $rst = $model->insert($data);
+        }
+
+        if ($id && $meta) {
+            $myMetas = $this->getMetas();
+            if (!$myMetas) {
+                return $rst > 0;
+            }
+            # 只保存消息支持的元数据
+            $meta      = array_filter($meta, function ($item, $key) use ($myMetas) {
+                return isset($myMetas[ $key ]);
+            });
+            $metaModel = new MessageMetaTable();
+            $metaModel->setMetas($id, $meta);
         }
 
         return $rst > 0;
@@ -92,8 +120,7 @@ SQL;
         } else {
             $sql = str_replace('{and cond}', '', $sql);
         }
-        $sql1   = str_replace('{_fields_}', 'M.*,IFNULL(RL.read_time,0) as read_time',
-            $sql);
+        $sql1   = str_replace('{_fields_}', 'M.*,IFNULL(RL.read_time,0) as read_time', $sql);
         $args[] = $start;
         $args[] = $limit;
 
@@ -151,6 +178,16 @@ SQL;
         return self::$messageTypes;
     }
 
+    /**
+     * 创建指定类型的消息实例.
+     *
+     * @param string $type
+     *
+     * @return \system\classes\Message|null
+     * @author Leo Ning <windywany@gmail.com>
+     * @date   2021-06-12 11:21:22
+     * @since  1.0.0
+     */
     public static function createMessage(string $type): ?Message {
         $messages = self::messages();
 

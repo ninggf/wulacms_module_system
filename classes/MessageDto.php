@@ -36,8 +36,8 @@ class MessageDto extends Params {
      * @url
      */
     public $url;
-
     public $content;
+    public $meta;
 
     public function checkMessage(int $value, array $data, string $msg) {
         if (\system\classes\model\Message::sexist(['id' => $value])) {

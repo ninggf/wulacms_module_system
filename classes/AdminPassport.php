@@ -29,9 +29,6 @@ class AdminPassport extends Passport {
     protected $tenantId = 0;
 
     public function is($roles): bool {
-        if ($this->isSuperUser) {
-            return true;
-        }
         $myroles = $this->data['roles'];
         if (empty($myroles)) {
             return false;
@@ -243,7 +240,7 @@ class AdminPassport extends Passport {
         $this->phone    = $meta['phone'] ?? '';
         $this->email    = $meta['email'] ?? '';
         $this->avatar   = $meta['avatar'] ?? '';
-        $this->data     = array_merge($meta, $this->data);
+        $this->meta     = array_merge($this->meta, $meta);
     }
 
     protected function userRoles(UserTable $userTable) {

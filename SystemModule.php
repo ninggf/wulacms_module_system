@@ -54,6 +54,7 @@ class SystemModule extends CmfModule {
         $v['1.1.0'] = '添加消息功能';
         $v['1.2.0'] = '添加后台任务功能';
         $v['1.2.1'] = '添加running字段';
+        $v['1.3.0'] = '添加message_meta表';
 
         return $v;
     }

@@ -13,12 +13,13 @@ namespace system\classes\model;
 use wulaphp\app\App;
 use wulaphp\auth\Passport;
 use wulaphp\db\DatabaseConnection;
+use wulaphp\db\HasMeta;
 use wulaphp\db\Table;
 use wulaphp\util\TreeWalker;
 use wulaphp\validator\Validator;
 
 class UserTable extends Table {
-    use Validator;
+    use Validator, HasMeta;
 
     const USER_STATUS = ['锁定', '正常'];
     /**

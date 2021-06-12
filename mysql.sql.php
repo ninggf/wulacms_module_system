@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS `{prefix}task_log` (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '任务执行日志'
 SQL;
 
-$tables['1.2.1'][]= <<<SQL
+$tables['1.2.1'][] = <<<SQL
 alter table `{prefix}task_queue`
 	add `running` tinyint unsigned default 0 null comment '是否正在运行' after status;
 SQL;
@@ -198,5 +198,16 @@ alter table `{prefix}message`
 	add publish_time int unsigned default 0 not null comment '发布时间' ,
     add publish_uid  int unsigned default 0 not null comment '发布者',
     add deleted tinyint unsigned default 0 not null comment '删除';
+SQL;
+
+$tables['1.3.0'][] = <<<'SQL'
+create table `{prefix}message_meta`
+(
+    message_id int unsigned not null comment '消息ID',
+    name       varchar(16)  not null comment '元数据名',
+    `value`    text         null comment '元数据值',
+    PRIMARY KEY (message_id, name),
+    INDEX IDX_NAME (name)
+) ENGINE = InnoDB DEFAULT CHARACTER SET={encoding} COMMENT = '通知无数据表';
 SQL;
 

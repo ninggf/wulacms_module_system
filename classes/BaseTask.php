@@ -111,6 +111,8 @@ abstract class BaseTask {
         if ($this->id) {
             $sql = 'UPDATE {task_queue} SET msg = %s, status = %s WHERE id = %s';
             $this->db->cud($sql, $msg, 'E', $this->id);
+            $sql = 'INSERT INTO `{task_log}`(task_queue_id,create_time,content) VALUES(%s,%d,%s)';
+            $this->db->cud($sql, $this->id, time(), $msg);
         }
     }
 

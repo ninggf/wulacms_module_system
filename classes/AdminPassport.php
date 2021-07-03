@@ -111,12 +111,14 @@ class AdminPassport extends Passport {
         }
 
         if ($this->verifyUserData($user, true)) {
+            $checkInteval = App::icfgn('passportCheckIntval', 120);
             $this->userRoles($table);
             $this->data['acl_ver']       = $user['acl_ver'];
             $this->data['longtime']      = time();
+            $this->data['longip']        = Request::getIp();
             $this->data['astoken']       = md5($user['passwd'] . $user['name'] . $_SERVER['HTTP_USER_AGENT']) . '/' . $user['id'];
             $this->data['passwd']        = $user['passwd'];
-            $this->data['nextCheckTime'] = time() + 60;
+            $this->data['nextCheckTime'] = time() + $checkInteval;
 
             return true;
         }
@@ -124,9 +126,9 @@ class AdminPassport extends Passport {
         return false;
     }
 
-    public function restore() {
+    protected function restore() {
         if (defined('NO_RESTORE_PASSPORT')) {
-            return;
+            return false;
         }
         if ($this->isLogin) {
             if ($this->data['nextCheckTime'] > time()) {
@@ -134,27 +136,26 @@ class AdminPassport extends Passport {
                     define('APP_TENANT_ID', $this->tenantId);
                 }
 
-                return;
+                return false;
             }
-            $cache         = Cache::getCache();
-            $userDataValid = $cache->get('adm_passport@' . $this->uid);
+            $checkInteval                = App::icfgn('passportCheckIntval', 120);
+            $this->data['nextCheckTime'] = time() + $checkInteval;
+            $cache                       = Cache::getCache();
+            $userDataValid               = $cache->get('adm_passport@' . $this->uid);
             if ($userDataValid) {
                 if (!defined('APP_TENANT_ID')) {
                     define('APP_TENANT_ID', $this->tenantId);
                 }
-                $this->data['nextCheckTime'] = time() + 60;
-                $this->store();
 
-                return;
+                return false;
             }
             $table = new UserTable();
             $user  = $table->findOne($this->uid);
             if (!$user['id']) {
                 $this->isLogin = false;
                 $this->data    = [];
-                $this->store();
 
-                return;
+                return false;
             }
             if ($this->verifyUserData($user)) {
                 $this->data['passwd'] = $user['passwd'];
@@ -162,16 +163,18 @@ class AdminPassport extends Passport {
                     $this->data['acl_ver'] = $user['acl_ver'];
                     $this->userRoles($table);
                 }
+
+                return true;
             } else {
                 $this->data['acls']  = null;
                 $this->data['roles'] = [];
             }
-            $this->data['nextCheckTime'] = time() + 60;
         } else {
             $this->uid  = 0;
             $this->data = [];
         }
-        $this->store();
+
+        return false;
     }
 
     /**

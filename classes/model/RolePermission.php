@@ -75,6 +75,12 @@ class RolePermission extends Table {
                 return false;
             }
 
+            try {
+                fire('backend\grantPermission', $rid, $permissions);
+            } catch (\Exception $e) {
+                return false;
+            }
+
             return true;
         });
 

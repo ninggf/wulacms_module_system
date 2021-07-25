@@ -181,7 +181,7 @@ class SystemModule extends CmfModule {
         if ($config->name() == 'service') {
             $services = $config->geta('services', []);
             # 任务启动者
-            $cronDef             = (array)$services['crontab'] ?? [];
+            $cronDef             = (array)($services['crontab'] ?? []);
             $services['crontab'] = array_merge([
                 'type'   => 'script',
                 'script' => 'modules/system/bin/cron.php',
@@ -189,7 +189,7 @@ class SystemModule extends CmfModule {
                 'sleep'  => 1
             ], $cronDef);
             # 任务执行者
-            $execDef                  = (array)$services['cronExecutor'] ?? [];
+            $execDef                  = (array)($services['cronExecutor'] ?? []);
             $services['cronExecutor'] = array_merge([
                 'type'   => 'script',
                 'script' => 'modules/system/bin/executor.php',

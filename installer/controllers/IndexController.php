@@ -44,14 +44,14 @@ class IndexController extends Controller {
         }
         $checked['安全模式']        = CmfModule::checkEnv('safe_mode', 0);
         $checked['文件上传']        = CmfModule::checkEnv('file_uploads', 1);
-        $checked['输出缓冲区']       = CmfModule::checkEnv('output_buffering', 0, true);
+        $checked['输出缓冲区']      = CmfModule::checkEnv('output_buffering', 0, true);
         $checked['自动开启SESSION'] = CmfModule::checkEnv('session.auto_start', 0);
-        $checked ['PHP版本']      = [
+        $checked ['PHP版本']        = [
             'required' => '5.6.0+',
             'checked'  => phpversion(),
             'pass'     => version_compare('5.6.0', phpversion(), '<=')
         ];
-        $pass                   = extension_loaded('pdo');
+        $pass                       = extension_loaded('pdo');
         if ($pass) {
             $drivers = \PDO::getAvailableDrivers();
             if (empty ($drivers)) {
@@ -123,11 +123,11 @@ class IndexController extends Controller {
             'optional' => true
         ];
         $f                       = TMP_PATH;
-        $checked['tmp目录']        = CmfModule::checkFile($f);
+        $checked['tmp目录']      = CmfModule::checkFile($f);
         $f                       = LOGS_PATH;
-        $checked['logs目录']       = CmfModule::checkFile($f);
+        $checked['logs目录']     = CmfModule::checkFile($f);
         $f                       = CONFIG_PATH;
-        $checked['conf目录']       = CmfModule::checkFile($f);
+        $checked['conf目录']     = CmfModule::checkFile($f);
         $_SESSION['started']     = 1;
 
         return view('index', [
@@ -161,7 +161,9 @@ class IndexController extends Controller {
                     'dbuser',
                     'dbpwd',
                     'dbname',
-                    'dbcharset'
+                    'dbcharset',
+                    'prefix',
+                    'persistent'
                 ], true, [
                     'dbhost'    => 'host',
                     'dbport'    => 'port',
@@ -246,7 +248,7 @@ class IndexController extends Controller {
                         throw_exception('安装失败');
                     }
                     $ms = $_SESSION['install_ms'];
-                    $idx++;
+                    $idx ++;
                     $len = count($ms);
                     if ($idx >= $len) {
                         $data['next']     = 4;
@@ -307,14 +309,16 @@ class IndexController extends Controller {
                             throw_exception('无法保存配置文件:' . CONF_DIR . '/config.php');
                         }
                     }
-                    $dbconfig           = @file_get_contents(APPROOT . 'vendor' . '/wula/cms-support/tpl/dbconfig.php');
-                    $r['{db.host}']     = $dbcfg['host'];
-                    $r['{db.port}']     = $dbcfg['port'];
-                    $r['{db.name}']     = $dbcfg['dbname'];
-                    $r['{db.charset}']  = $dbcfg['encoding'];
-                    $r['{db.user}']     = $dbcfg['user'];
-                    $r['{db.password}'] = $dbcfg['password'];
-                    $dbconfig           = str_replace(array_keys($r), array_values($r), $dbconfig);
+                    $dbconfig             = @file_get_contents(APPROOT . 'vendor' . '/wula/cms-support/tpl/dbconfig.php');
+                    $r['{db.host}']       = $dbcfg['host'];
+                    $r['{db.port}']       = $dbcfg['port'];
+                    $r['{db.name}']       = $dbcfg['dbname'];
+                    $r['{db.charset}']    = $dbcfg['encoding'];
+                    $r['{db.user}']       = $dbcfg['user'];
+                    $r['{db.password}']   = $dbcfg['password'];
+                    $r['{db.prefix}']     = $dbcfg['prefix'];
+                    $r['{db.persistent}'] = $dbcfg['persistent'];
+                    $dbconfig             = str_replace(array_keys($r), array_values($r), $dbconfig);
                     if (!@file_put_contents(CONFIG_PATH . 'dbconfig.php', $dbconfig)) {
                         throw_exception('无法保存数据库配置文件:' . CONF_DIR . '/dbconfig.php');
                     }

@@ -163,10 +163,27 @@
                                 <label for="">编码</label>
                                 <div class="radio">
                                     <label class="radio-inline">
-                                        <input type="radio" name="dbcharset" value="UTF8" checked> UTF8
+                                        <input type="radio" name="dbcharset" value="UTF8"> UTF8
                                     </label>
                                     <label class="radio-inline">
-                                        <input type="radio" name="dbcharset" value="UTF8MB4"> UTF8MB4
+                                        <input type="radio" name="dbcharset" value="UTF8MB4" checked> UTF8MB4
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group clearfix">
+                            <div class="col-xs-6">
+                                <label for="">表前缀</label>
+                                <input type="text" name="prefix" class="form-control"/>
+                            </div>
+                            <div class="col-xs-6">
+                                <label for="">持久连接</label>
+                                <div class="radio">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="persistent" value="0" checked> 否
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="persistent" value="1"> 是
                                     </label>
                                 </div>
                             </div>

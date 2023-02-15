@@ -10,9 +10,6 @@
 
 namespace system\classes;
 
-use backend\classes\Widget;
-use system\classes\widget\ServiceStatusWidget;
-use system\classes\widget\TaskQueueStatusWidget;
 use wulaphp\app\App;
 use wulaphp\io\Response;
 use wulaphp\router\Router;
@@ -76,30 +73,12 @@ trait SystemHookHandlers {
                 $account->icon        = '&#xe672;';
             }
             if ($passport->cando('m:system/task')) {
-                $task         = $system->getMenu('task');
-                $task->name   = __('Tasks');
-                $taskQueueNum = App::icfg('taskQueueNum');
-                if ($taskQueueNum > 1) {
-                    for ($i = 0; $i < $taskQueueNum; $i++) {
-                        $mm              = $task->getMenu('tq' . $i, '任务队列(' . ($i + 1) . ')', $i + 1);
-                        $mm->iconCls     = 'alicon';
-                        $mm->icon        = '&#xe610;';
-                        $mm->data['url'] = App::url('system/task') . '?tq=' . $i;
-                    }
-                } else {
-                    $task->data['url'] = App::url('system/task') . '?tq=0';
-                }
-                $task->pos     = 999995;
-                $task->iconCls = 'alicon';
-                $task->icon    = '&#xe610;';
-            }
-            if ($passport->cando('m:system/log')) {
-                $log              = $system->getMenu('logs');
-                $log->name        = __('System Logs');
-                $log->data['url'] = App::url('system/logs');
-                $log->pos         = 999998;
-                $log->icon        = '&#xe623;';
-                $log->iconCls     = 'alicon';
+                $task              = $system->getMenu('task');
+                $task->name        = __('Tasks');
+                $task->data['url'] = App::url('system/task');
+                $task->pos         = 999995;
+                $task->iconCls     = 'alicon';
+                $task->icon        = '&#xe610;';
             }
         }
         //应用
@@ -125,12 +104,8 @@ trait SystemHookHandlers {
         $manager->getResource('system', '系统管理', 'm');
         $res = $manager->getResource('system/setting', '设置', 'm');
         $res->addOperate('default', '通用设置');
-        $res = $manager->getResource('system/account', '管理账户', 'm');
-        $res->addOperate('e', '编辑账户');
-        $res->addOperate('d', '删除账户');
-        $res->addOperate('acl', '角色授权');
-        $res->addOperate('er', '编辑角色');
-        $res->addOperate('dr', '删除角色');
+        $res = $manager->getResource('system/account', '管理员', 'm');
+        $res->addOperate('acl', '授权');
         $manager->getResource('system/module', '模块', 'm');
         $manager->getResource('system/task', '任务', 'm');
         $manager->getResource('system/log', '日志', 'm');
@@ -188,13 +163,5 @@ trait SystemHookHandlers {
         ];
 
         return $cols;
-    }
-
-    /**
-     * @bind on_register_widget
-     */
-    public static function regwidget() {
-        Widget::register('service', new ServiceStatusWidget());
-        Widget::register('taskq', new TaskQueueStatusWidget());
     }
 }

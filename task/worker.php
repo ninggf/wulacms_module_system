@@ -9,37 +9,19 @@
  */
 
 include __DIR__ . '/../../../bootstrap.php';
-//分组检测
-if (isset($_SERVER['taskGroup'])) {
-    $taskGroupDf = explode(',', trim($_SERVER['taskGroup']));
-    if ($taskGroupDf) {
-        $taskGroup = $taskGroupDf;
-    } else {
-        $taskGroup = ['0'];
-    }
-}
-try {
-    $db = \wulaphp\app\App::db();
-} catch (Exception $e) {
-    log_error('[0]' . $e->getMessage(), 'taskq.worker');
-    exit(EXIT_SUCCESS);
-}
 while (true) {
     try {
-        if (isset($taskGroup)) {
-            $where['group IN'] = $taskGroup;
-            if (count($taskGroup) == 1) {
-                $gp = " AND `group` = '{$taskGroup[0]}'";
-            } else {
-                $gps = implode("','", $taskGroup);
-                $gp  = " AND `group` IN ('{$gps}')";
-            }
-        } else {
-            $gp = '';
-        }
-        $query = 'SELECT name,id,task,options,retryCnt,retry,retryInt,`group` FROM {task_queue} WHERE runat <= %d AND status = \'P\' AND run_time = 0 ' . $gp . ' ORDER BY runat ASC';
-
-        $rst = $db->queryOne($query, time());
+        $db = \wulaphp\app\App::db();
+    } catch (Exception $e) {
+        exit(0);
+    }
+    try {
+        $q   = $db->select('name,id,task,options,retryCnt,retry,retryInt');
+        $rst = $q->from('{task_queue}')->where([
+            'status'   => 'P',
+            'run_time' => 0,
+            'runat <=' => time()
+        ])->desc('priority')->desc('runat')->asc('create_time')->get(0);
 
         if ($rst) {
             $sql = 'UPDATE {task_queue} SET status = %s, run_time = %d WHERE id = %s AND status = \'P\' AND run_time = 0';
@@ -55,6 +37,8 @@ while (true) {
         if ($rst) {
             $cls = $rst['task'];
             if (!is_subclass_of($cls, \system\classes\Task::class)) {
+                $errror_msg = '没有继承Task基类' . '-name=' . $q['name'] . '-class=' . $q['task'];
+                log_error($errror_msg, 'taskq');
                 $sql = 'UPDATE {task_queue} SET status = %s, finish_time = %d, msg = %s WHERE id = %s';
                 $db->cud($sql, 'E', time(), 'Task is not subclass of ' . \system\classes\Task::class, $rst['id']);
                 $db->close();
@@ -78,10 +62,12 @@ while (true) {
                     } else {
                         $runat = time() + $rst['retryInt'];
                     }
-                    $tq = new \system\task\TaskQueue('', $db);
-                    $id = $tq->newTask($rst['name'], $cls, 'P', $rst['retryCnt'], $runat, $opts, $rst['retryInt'], $rst['group']);
+                    $tq = new \system\task\TaskQueue($db);
+                    $id = $tq->newTask($rst['name'], $cls, 'P', $rst['retryCnt'], $runat, $opts, $rst['retryInt']);
                 }
             } else {
+                $errror_msg = ($msg ? $msg : '未知错误') . '-name=' . $q['name'] . '-class=' . $q['task'];
+                log_error($errror_msg, 'taskq');
                 if ($rst['retry'] < $rst['retryCnt']) {
                     $intv = $rst['retryInt'] ? $rst['retryInt'] : 60;
                     $sql  = 'UPDATE {task_queue} SET run_time = 0,progress = 0, retry = retry + 1, status = %s,runat = %d, msg = %s WHERE id = %s';
@@ -96,8 +82,7 @@ while (true) {
         exit(0);
     } catch (Exception $e) {
         //估计有问题，让worker多睡觉一会
-        log_error('[1]' . $e->getMessage(), 'taskq.worker');
         $db->close();
-        exit(2);
+        exit(0);
     }
 }

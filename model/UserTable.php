@@ -85,23 +85,21 @@ class UserTable extends FormTable {
     /**
      * 更新账户信息.
      *
-     * @param array      $data
-     * @param string|int $uid
+     * @param array $data
      *
      * @return bool 更新成功返回true,反之返回false.
      */
-    public function updateAccount($data, $uid) {
+    public function updateAccount($data) {
         try {
             if (isset($data['roles'])) {
-                $rst = $this->trans(function (DatabaseConnection $db) use ($data, $uid) {
+                $rst = $this->trans(function (DatabaseConnection $db) use ($data) {
                     $id    = $data['id'];
                     $roles = $data['roles'];
                     unset($data['roles']);
                     $w = ['id' => $id];
-                    if ($uid != 1) {
-                        $w['pid'] = $uid;
+                    if (isset($data['pid'])) {
+                        $w['pid'] = $data['pid'];
                     }
-
                     if (!$this->update($data, $w)) {
                         return false;
                     }
@@ -129,8 +127,8 @@ class UserTable extends FormTable {
                     return false;
                 }
                 $w = ['id' => $id];
-                if ($uid != 1) {
-                    $w['pid'] = $uid;
+                if (isset($data['pid'])) {
+                    $w['pid'] = $data['pid'];
                 }
 
                 return $this->update($data, $w);

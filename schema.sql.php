@@ -82,17 +82,6 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}acl` (
     UNIQUE INDEX `UDX_ROLE_RES` (`role_id` ASC , `res` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='访问控制列表'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}syslog` (
-    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `type` VARCHAR(16) NOT NULL COMMENT '日志类型',
-    `time` INT NOT NULL COMMENT '时间',
-    `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
-    `level` ENUM('INFO', 'WARN', 'ERROR') NULL DEFAULT 'INFO' COMMENT '级别',
-    `ip` VARCHAR(64) NULL COMMENT 'IP',
-    `log` TEXT NULL COMMENT '日志正文',
-    PRIMARY KEY (`id`),
-    INDEX `IDX_USERID` (`user_id` ASC)
-)  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='系统日志表'";
 
 $tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员'),(1,'站长','拥有所有权限')";
 
@@ -132,39 +121,3 @@ $tables['1.1.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}task_log` (
 
 $tables['2.0.1'][] = "ALTER TABLE `{prefix}user`
 ADD COLUMN `pid` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '主账户ID' AFTER `id`";
-
-$tables['2.2.0'][] = "ALTER TABLE `{prefix}task_queue` 
-ADD COLUMN `group` VARCHAR(12) NOT NULL DEFAULT '0' COMMENT '任务组' AFTER `finish_time`";
-
-$tables['2.2.0'][] = "ALTER TABLE `{prefix}task_queue` 
-ADD COLUMN `task_id` varchar(32) NULL COMMENT '标识用于删除' AFTER `msg`,
-ADD INDEX `IDX_TASKID`(`task_id`)";
-
-$tables['2.3.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}regular_task_queue` (
-    `id` INT UNSIGNED NOT NULL COMMENT '主键，同时也是定时时间',
-    `schedule` VARCHAR(48) NOT NULL COMMENT '定时时间',
-    `status` ENUM('P', 'R', 'F') NOT NULL DEFAULT 'P' COMMENT '状态',
-    `finish_time` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '完成时间',
-    `succ` INT NOT NULL DEFAULT 0 COMMENT '成功数',
-    `fail` INT NOT NULL DEFAULT 0 COMMENT '失败',
-    `total` INT NOT NULL DEFAULT 0 COMMENT '任务总数',
-    PRIMARY KEY (`id`),
-    INDEX `IDX_FTIME_ID` (`finish_time` ASC, `id` ASC)
-)  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='定时任务队列'";
-
-$tables['2.3.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}regular_task` (
-    `id` VARCHAR(32) NOT NULL COMMENT '任务ID',
-    `create_time` INT UNSIGNED NOT NULL COMMENT '创建时间',
-    `name` VARCHAR(64) NULL COMMENT '任务名称',
-    `run_time` INT UNSIGNED NOT NULL DEFAULT 0  COMMENT '运行时间',
-    `finish_time` INT UNSIGNED NOT NULL DEFAULT 0  COMMENT '完成时间',
-    `status` ENUM('P', 'F', 'E') NOT NULL DEFAULT 'P' COMMENT '状态',
-    `msg` TEXT NULL COMMENT '错误信息',
-    PRIMARY KEY (`id`),
-    INDEX IDX_RUNTIME (`run_time`,`status`)
-)  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='定时任务'";
-
-$tables['2.4.0'][] = "ALTER TABLE `{prefix}role` 
-ADD COLUMN `uid` INT UNSIGNED NOT NULL DEFAULT 1 COMMENT '拥有者' AFTER `id`,
-DROP INDEX `UDX_NAME` ,
-ADD UNIQUE INDEX `UDX_NAME` (`uid` ASC, `name` ASC)";
